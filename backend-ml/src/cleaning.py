@@ -134,7 +134,7 @@ df_paper["sleep_duration"] = encode_sleep_paper(df_paper["sleep duration"])
 paper_features = [
     "age", "academic pressure", "cgpa", "study satisfaction", 
     "work/study hours", "financial stress", 
-    "sleep_duration", "gender"
+    "sleep_duration", "gender", "family history of mental illness"
 ]
 paper_cols = [c for c in paper_features if c in df_paper.columns] + suicide_cols + [TARGET_COL]
 
