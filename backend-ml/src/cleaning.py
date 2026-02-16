@@ -86,93 +86,92 @@ if df[TARGET_COL].dtype == "object":
 df[TARGET_COL] = df[TARGET_COL].fillna(0).astype(int)
 
 # ===============================
-# 7) SLEEP ORDINAL (FOR PAPER / PCA)
+# 7) DEFINE ENCODING SCHEMES
 # ===============================
-if "sleep duration" not in df.columns:
-    raise ValueError("❌ 'sleep duration' column not found!")
 
-if df["sleep duration"].dtype == "object":
-    sleep_map = {
-        "less than 5 hours": 1,
-        "5-6 hours": 2,
-        "7-8 hours": 3,
-        "more than 8 hours": 4
-    }
+# --- GENDER SCHEME ---
+# df_paper: Binary (Male=1, Female=0, Other=NaN -> Impute)
+# df_ml: One-Hot (always gender_male, gender_female, gender_other)
+gender_categories = ["male", "female", "other"]
 
-    df["sleep_duration_ordinal"] = (
-        df["sleep duration"]
-        .astype(str).str.strip().str.lower()
-        .map(sleep_map)
-    )
+def encode_gender_paper(series):
+    s = series.astype(str).str.strip().str.lower()
+    mapping = {"male": 1, "female": 0}
+    # Any unknown category becomes NaN, then we'll fill with median (usually 0 or 1)
+    return s.map(mapping)
 
-    df["sleep_duration_ordinal"] = df["sleep_duration_ordinal"].fillna(
-        df["sleep_duration_ordinal"].median()
-    )
-else:
-    df["sleep_duration_ordinal"] = pd.to_numeric(
-        df["sleep duration"], errors="coerce"
-    ).fillna(df["sleep duration"].median())
+# --- SLEEP SCHEME ---
+# df_paper: Ordinal (1 to 4)
+# df_ml: One-Hot (fixed categories)
+sleep_categories = ["less than 5 hours", "5-6 hours", "7-8 hours", "more than 8 hours", "others"]
+sleep_map = {
+    "less than 5 hours": 1,
+    "5-6 hours": 2,
+    "7-8 hours": 3,
+    "more than 8 hours": 4,
+    "others": 2  # default/median-ish
+}
 
-# ===============================
-# 8) ONE‑HOT ENCODE GENDER 
-# ===============================
-if "gender" in df.columns:
-    df["gender"] = df["gender"].astype(str).str.strip().str.lower()
-
-    gender_onehot = pd.get_dummies(
-        df["gender"],
-        prefix="gender",
-        drop_first=False
-    ).astype(int)
-
-    df = pd.concat([df.drop(columns=["gender"]), gender_onehot], axis=1)
-
-    print("✅ Gender One‑Hot Columns:", gender_onehot.columns.tolist())
+def encode_sleep_paper(series):
+    s = series.astype(str).str.strip().str.lower()
+    return s.map(sleep_map).fillna(2).astype(int)
 
 # ===============================
-# 9) PAPER DATASET
+# 8) GENERATE DATASET 1: df_paper (Research/PCA)
 # ===============================
-paper_cols = [
-    "age",
-    "academic pressure",
-    "cgpa",
-    "study satisfaction",
-    "work/study hours",
-    "financial stress",
-    "sleep_duration_ordinal",
-] + suicide_cols + [TARGET_COL]
+print("\n🛠 Generating df_paper (Research)...")
 
-# Add gender columns automatically
-gender_cols = [c for c in df.columns if c.startswith("gender_")]
-paper_cols += gender_cols
+df_paper = df.copy()
 
-paper_cols = [c for c in paper_cols if c in df.columns]
+# Gender -> Binary
+df_paper["gender"] = encode_gender_paper(df_paper["gender"])
+df_paper["gender"] = df_paper["gender"].fillna(df_paper["gender"].median()).astype(int)
 
-df_paper = df[paper_cols].copy()
+# Sleep -> Ordinal
+df_paper["sleep_duration"] = encode_sleep_paper(df_paper["sleep duration"])
+
+# Select columns
+paper_features = [
+    "age", "academic pressure", "cgpa", "study satisfaction", 
+    "work/study hours", "financial stress", 
+    "sleep_duration", "gender"
+]
+paper_cols = [c for c in paper_features if c in df_paper.columns] + suicide_cols + [TARGET_COL]
+
+df_paper = df_paper[paper_cols].copy()
 df_paper.to_csv(OUTDIR / "df_paper.csv", index=False)
-
-print("\n✅ Saved df_paper:", OUTDIR / "df_paper.csv")
+print("✅ Saved df_paper.csv (Shape:", df_paper.shape, ")")
 
 # ===============================
-# 10) ML DATASET (Sleep One‑Hot)
+# 9) GENERATE DATASET 2: df_ml (Prediction/Dashboard)
 # ===============================
-df_ml = df_paper.copy()
+print("\n🛠 Generating df_ml (ML/Dashboard)...")
 
-df_ml = df_ml.drop(columns=["sleep_duration_ordinal"], errors="ignore")
+df_ml = df.copy()
 
-sleep_onehot = pd.get_dummies(
-    df["sleep duration"],
-    prefix="sleep",
-    drop_first=False
-).astype(int)
+# A) Gender -> One-Hot (Guaranteed Columns)
+# Using Categorical ensures that even if 'other' isn't in this slice, the column is created
+df_ml["gender"] = pd.Categorical(df_ml["gender"].astype(str).str.strip().str.lower(), categories=gender_categories)
+gender_dummies = pd.get_dummies(df_ml["gender"], prefix="gender").astype(int)
 
-df_ml = pd.concat([df_ml, sleep_onehot], axis=1)
+# B) Sleep -> One-Hot (Guaranteed Columns)
+df_ml["sleep"] = pd.Categorical(df_ml["sleep duration"].astype(str).str.strip().str.lower(), categories=sleep_categories)
+sleep_dummies = pd.get_dummies(df_ml["sleep"], prefix="sleep").astype(int)
+
+# C) Combine
+# drop the raw text columns and the newly created categoricals
+df_ml = df_ml.drop(columns=["gender", "sleep", "sleep duration"], errors="ignore")
+df_ml = pd.concat([df_ml, gender_dummies, sleep_dummies], axis=1)
+
+# Select ML columns (all relevant numeric + dummies)
+ml_exclude = ["id", "city", "profession", "degree"]
+ml_cols = [c for c in df_ml.columns if c not in ml_exclude]
+df_ml = df_ml[ml_cols].copy()
 
 df_ml.to_csv(OUTDIR / "df_ml.csv", index=False)
-
-print("\n✅ Saved df_ml:", OUTDIR / "df_ml.csv")
-print("✅ df_ml shape:", df_ml.shape)
+print("✅ Saved df_ml.csv (Shape:", df_ml.shape, ")")
+print("✅ ML Columns:", [c for c in df_ml.columns if "gender" in c or "sleep" in c])
 
 print("\n✅ DONE ✅")
-print("1) df_paper.csv = PCA/correlation ready")
-print("2) df_ml.csv    = ML ready")
+print("1) df_paper: Gender=Binary, Sleep=Ordinal (Optimized for PCA)")
+print("2) df_ml:    Gender=OneHot, Sleep=OneHot (Optimized for Dashboard/ML)")
