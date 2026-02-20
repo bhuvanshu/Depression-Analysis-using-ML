@@ -173,13 +173,7 @@ def plot_depression_analytics(df: pd.DataFrame, outdir: Path):
         plt.ylabel("Number of People with Depression")
         plt.grid(True, linestyle="-", color="#e6e6e6")
         finalize_plot(outdir / "depression_by_age.png", "Number of People with Depression by Age Group")
-    
-    # 2. Overall Proportion
-    counts = df["Depression"].value_counts().sort_index()
-    labels = ["Not Depressed" if i == 0 else "Depressed" if i == 1 else f"Status {i}" for i in counts.index]
-    plt.figure(figsize=(8, 6))
-    plt.pie(counts.values, labels=labels, autopct="%.1f%%", startangle=90, colors=STYLE_SETTINGS["pie_colors"])
-    finalize_plot(outdir / "depression_distribution.png", "Distribution of Depression Among Students")
+
 
 def plot_impact_analysis(df: pd.DataFrame, outdir: Path):
     features = ["Academic Pressure", "Financial Stress", "Study Satisfaction", "Work/Study Hours"]
