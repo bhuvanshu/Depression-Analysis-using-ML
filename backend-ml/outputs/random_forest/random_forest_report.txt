@@ -1,0 +1,14 @@
+Random Forest
+=============
+Metrics:
+{'Model': 'Random Forest', 'Accuracy': 0.8383217530732229, 'Precision': 0.8578621223857474, 'Recall': 0.9029759478189971, 'F1-score': 0.8798411122144985, 'ROC-AUC': 0.8931377705360387}
+
+Report:
+              precision    recall  f1-score   support
+
+           0       0.79      0.72      0.75      1289
+           1       0.86      0.90      0.88      2453
+
+    accuracy                           0.84      3742
+   macro avg       0.83      0.81      0.82      3742
+weighted avg       0.84      0.84      0.84      3742

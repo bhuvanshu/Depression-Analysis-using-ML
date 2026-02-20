@@ -1,0 +1,14 @@
+Logistic Regression
+===================
+Metrics:
+{'Model': 'Logistic Regression', 'Accuracy': 0.8369855692143239, 'Precision': 0.8949849978568367, 'Recall': 0.8512026090501427, 'F1-score': 0.8725449226911827, 'ROC-AUC': 0.91146004148749}
+
+Report:
+              precision    recall  f1-score   support
+
+           0       0.74      0.81      0.77      1289
+           1       0.89      0.85      0.87      2453
+
+    accuracy                           0.84      3742
+   macro avg       0.82      0.83      0.82      3742
+weighted avg       0.84      0.84      0.84      3742
