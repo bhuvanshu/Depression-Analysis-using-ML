@@ -1,67 +1,52 @@
 import pandas as pd
 import numpy as np
+import warnings
 from pathlib import Path
 
-# ===============================
-# 1) SETTINGS
-# ===============================
+# Set up paths
 INPUT_FILE = "backend-ml/data/student_depression_dataset kaggle.csv"
 OUTDIR = Path("backend-ml/data")
 OUTDIR.mkdir(parents=True, exist_ok=True)
-
 TARGET_COL = "depression"
 
-# ===============================
-# 2) LOAD DATASET
-# ===============================
+# Load and clean column names
 df = pd.read_csv(INPUT_FILE)
 df.columns = df.columns.str.strip().str.lower()
-
 print("✅ Raw Shape:", df.shape)
 
-# ===============================
-# 3) DROP DEGREE COLUMN
-# ===============================
+# Configuration: Drop unnecessary columns
 if "degree" in df.columns:
     df.drop(columns=["degree"], inplace=True)
     print("✅ Dropped column: degree")
 
-# ===============================
-# 4) BASIC CLEANING
-# ===============================
+# Data cleaning: duplicates and whitespace
 df = df.drop_duplicates()
-
 for col in df.select_dtypes(include=["object"]).columns:
     df[col] = df[col].astype(str).str.strip()
 
+# Numeric conversion for columns that are mostly numbers
 for col in df.columns:
     if df[col].dtype == "object":
         temp = pd.to_numeric(df[col], errors="coerce")
         if temp.notna().mean() > 0.85:
             df[col] = temp
 
+# Handle missing values
 num_cols = df.select_dtypes(include=[np.number]).columns
 cat_cols = df.select_dtypes(include=["object"]).columns
-
 for col in num_cols:
     df[col] = df[col].fillna(df[col].median())
-
 for col in cat_cols:
     df[col] = df[col].fillna(df[col].mode()[0])
 
-# ===============================
-# 5) FILTER AGE 18–28
-# ===============================
+# Subset data: Filter age (18-28)
 if "age" not in df.columns:
     raise ValueError("❌ 'age' column not found!")
-
 df = df[(df["age"] >= 18) & (df["age"] <= 28)].copy()
 print("✅ After Age Filter (18–28):", df.shape)
 
-# ===============================
-# 6) BINARY ENCODING (Suicidal + Target ONLY)
-# ===============================
-def binarize_tf(series):
+# Binarization logic
+def binarize_values(series):
     s = series.astype(str).str.strip().str.lower()
     return s.map({
         "true": 1, "false": 0,
@@ -70,108 +55,68 @@ def binarize_tf(series):
         "1": 1, "0": 0
     })
 
-
-# Suicidal thoughts
+# Binarize Suicidal Thoughts, Target, and Family History
 suicide_cols = [c for c in df.columns if "suicid" in c]
 for c in suicide_cols:
-    df[c] = binarize_tf(df[c]).fillna(0).astype(int)
-
-# Target
-if TARGET_COL not in df.columns:
-    raise ValueError(f"❌ Target column '{TARGET_COL}' not found!")
-
-if df[TARGET_COL].dtype == "object":
-    df[TARGET_COL] = binarize_tf(df[TARGET_COL])
+    df[c] = binarize_values(df[c]).fillna(0).astype(int)
 
 df[TARGET_COL] = df[TARGET_COL].fillna(0).astype(int)
 
-# ===============================
-# 7) DEFINE ENCODING SCHEMES
-# ===============================
+fam_hist_cols = [c for c in df.columns if "family history" in c]
+for c in fam_hist_cols:
+    df[c] = binarize_values(df[c]).fillna(0).astype(int)
+    print(f"✅ Binarized: {c}")
 
-# --- GENDER SCHEME ---
-# df_paper: Binary (Male=1, Female=0, Other=NaN -> Impute)
-# df_ml: One-Hot (always gender_male, gender_female, gender_other)
-gender_categories = ["male", "female", "other"]
+# Encoding: Sleep Duration
+if "sleep duration" not in df.columns:
+    raise ValueError("❌ 'sleep duration' column not found!")
 
-def encode_gender_paper(series):
-    s = series.astype(str).str.strip().str.lower()
-    mapping = {"male": 1, "female": 0}
-    # Any unknown category becomes NaN, then we'll fill with median (usually 0 or 1)
-    return s.map(mapping)
+if df["sleep duration"].dtype == "object":
+    # Clean quotes and map to ordinal values
+    df["sleep duration"] = df["sleep duration"].astype(str).str.strip().str.replace("'", "").str.lower()
+    sleep_map = {
+        "less than 5 hours": 1,
+        "5-6 hours": 2,
+        "7-8 hours": 3,
+        "more than 8 hours": 4,
+        "others": 2
+    }
+    df["sleep_duration_ordinal"] = df["sleep duration"].map(sleep_map)
+    valid_median = df["sleep_duration_ordinal"].median()
+    df["sleep_duration_ordinal"] = df["sleep_duration_ordinal"].fillna(valid_median if pd.notna(valid_median) else 2)
+else:
+    df["sleep_duration_ordinal"] = pd.to_numeric(df["sleep duration"], errors="coerce").fillna(df["sleep duration"].median())
 
-# --- SLEEP SCHEME ---
-# df_paper: Ordinal (1 to 4)
-# df_ml: One-Hot (fixed categories)
-sleep_categories = ["less than 5 hours", "5-6 hours", "7-8 hours", "more than 8 hours", "others"]
-sleep_map = {
-    "less than 5 hours": 1,
-    "5-6 hours": 2,
-    "7-8 hours": 3,
-    "more than 8 hours": 4,
-    "others": 2  # default/median-ish
-}
+# Encoding: Gender
+if "gender" in df.columns:
+    df["gender"] = df["gender"].astype(str).str.strip().str.lower()
+    
+    # Binary encoding for paper (0=male, 1=female/other)
+    df["gender_binary"] = df["gender"].map({"male": 0, "female": 1}).fillna(1).astype(int)
+    
+    # Robust categorical type for ML one-hot encoding (includes 'other')
+    df["gender_cat"] = pd.Categorical(df["gender"], categories=["male", "female", "other"])
+    print("✅ Created gender encoding (Binary + Categorical)")
 
-def encode_sleep_paper(series):
-    s = series.astype(str).str.strip().str.lower()
-    return s.map(sleep_map).fillna(2).astype(int)
+# Export: Paper Dataset (Ordinal/Binary)
+paper_cols = [
+    "age", "gender_binary", "academic pressure", "cgpa", 
+    "study satisfaction", "work/study hours", "financial stress", 
+    "sleep_duration_ordinal"
+] + suicide_cols + fam_hist_cols + [TARGET_COL]
 
-# ===============================
-# 8) GENERATE DATASET 1: df_paper (Research/PCA)
-# ===============================
-print("\n🛠 Generating df_paper (Research)...")
-
-df_paper = df.copy()
-
-# Gender -> Binary
-df_paper["gender"] = encode_gender_paper(df_paper["gender"])
-df_paper["gender"] = df_paper["gender"].fillna(df_paper["gender"].median()).astype(int)
-
-# Sleep -> Ordinal
-df_paper["sleep_duration"] = encode_sleep_paper(df_paper["sleep duration"])
-
-# Select columns
-paper_features = [
-    "age", "academic pressure", "cgpa", "study satisfaction", 
-    "work/study hours", "financial stress", 
-    "sleep_duration", "gender", "family history of mental illness"
-]
-paper_cols = [c for c in paper_features if c in df_paper.columns] + suicide_cols + [TARGET_COL]
-
-df_paper = df_paper[paper_cols].copy()
+paper_cols = [c for c in paper_cols if c in df.columns]
+df_paper = df[paper_cols].copy()
 df_paper.to_csv(OUTDIR / "df_paper.csv", index=False)
-print("✅ Saved df_paper.csv (Shape:", df_paper.shape, ")")
+print(f"✅ Saved df_paper: {OUTDIR / 'df_paper.csv'} | Shape: {df_paper.shape}")
 
-# ===============================
-# 9) GENERATE DATASET 2: df_ml (Prediction/Dashboard)
-# ===============================
-print("\n🛠 Generating df_ml (ML/Dashboard)...")
+# Export: ML Dataset (One-Hot)
+df_ml = df_paper.drop(columns=["gender_binary", "sleep_duration_ordinal"], errors="ignore")
+gender_onehot = pd.get_dummies(df["gender_cat"], prefix="gender", drop_first=False).astype(int)
+sleep_onehot = pd.get_dummies(df["sleep duration"], prefix="sleep", drop_first=False).astype(int)
 
-df_ml = df.copy()
-
-# A) Gender -> One-Hot (Guaranteed Columns)
-# Using Categorical ensures that even if 'other' isn't in this slice, the column is created
-df_ml["gender"] = pd.Categorical(df_ml["gender"].astype(str).str.strip().str.lower(), categories=gender_categories)
-gender_dummies = pd.get_dummies(df_ml["gender"], prefix="gender").astype(int)
-
-# B) Sleep -> One-Hot (Guaranteed Columns)
-df_ml["sleep"] = pd.Categorical(df_ml["sleep duration"].astype(str).str.strip().str.lower(), categories=sleep_categories)
-sleep_dummies = pd.get_dummies(df_ml["sleep"], prefix="sleep").astype(int)
-
-# C) Combine
-# drop the raw text columns and the newly created categoricals
-df_ml = df_ml.drop(columns=["gender", "sleep", "sleep duration"], errors="ignore")
-df_ml = pd.concat([df_ml, gender_dummies, sleep_dummies], axis=1)
-
-# Select ML columns (all relevant numeric + dummies)
-ml_exclude = ["id", "city", "profession", "degree"]
-ml_cols = [c for c in df_ml.columns if c not in ml_exclude]
-df_ml = df_ml[ml_cols].copy()
-
+df_ml = pd.concat([df_ml, gender_onehot, sleep_onehot], axis=1)
 df_ml.to_csv(OUTDIR / "df_ml.csv", index=False)
-print("✅ Saved df_ml.csv (Shape:", df_ml.shape, ")")
-print("✅ ML Columns:", [c for c in df_ml.columns if "gender" in c or "sleep" in c])
+print(f"✅ Saved df_ml: {OUTDIR / 'df_ml.csv'} | Shape: {df_ml.shape}")
 
-print("\n✅ DONE ✅")
-print("1) df_paper: Gender=Binary, Sleep=Ordinal (Optimized for PCA)")
-print("2) df_ml:    Gender=OneHot, Sleep=OneHot (Optimized for Dashboard/ML)")
+print("\n✅ Processing Complete.")
