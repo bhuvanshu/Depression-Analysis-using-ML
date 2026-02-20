@@ -46,7 +46,7 @@ def handle_plots(y_test, y_pred, y_prob, model, feature_names, name, outdir):
         top10 = df_imp.head(10)
         plt.barh(top10["Feature"], top10["Importance"], color=plt.cm.viridis(np.linspace(0.7, 0.2, 10)), edgecolor='black')
         plt.gca().invert_yaxis()
-        finalize_plot(outdir / f"{safe_filename(name)}_fimp.png", f"Top 10 Features ({name})")
+        finalize_plot(outdir / f"{safe_filename(name)}_feature_importance.png", f"Feature Importance ({name})")
 
 def run_pipeline(model, X_train, X_test, y_train, y_test, name, outdir, feature_names):
     """Trains the model and returns performance metrics."""
