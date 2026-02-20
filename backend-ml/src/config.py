@@ -2,12 +2,15 @@ import numpy as np
 
 # Column Name Mappings
 COLUMN_RENAMES = {
-    "Have You Ever Had Suicidal Thoughts ?": "Suicidal",
-    "Academic Pressure": "Acad. Pressure",
-    "Study Satisfaction": "Satisfaction",
-    "Work/Study Hours": "Hours/Day",
-    "Financial Stress": "Fin. Stress",
-    "Family History Of Mental Illness": "Family Hist.",
+    "Have You Ever Had Suicidal Thoughts ?": "Suicidal Thoughts",
+    "Academic Pressure": "Academic Pressure",
+    "Study Satisfaction": "Study Satisfaction",
+    "Work/Study Hours": "Work/Study Hours",
+    "Financial Stress": "Financial Stress",
+    "Family History Of Mental Illness": "Family History",
+    "Gender_Binary": "Gender",
+    "Sleep_Duration_Ordinal": "Sleep Duration",
+    "Cgpa": "CGPA",
     "Gender_Female": "Female",
     "Gender_Male": "Male"
 }
