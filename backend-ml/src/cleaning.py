@@ -91,8 +91,8 @@ else:
 if "gender" in df.columns:
     df["gender"] = df["gender"].astype(str).str.strip().str.lower()
     
-    # Binary encoding for paper (0=male, 1=female/other)
-    df["gender_binary"] = df["gender"].map({"male": 0, "female": 1}).fillna(1).astype(int)
+    # Binary encoding for paper (0=female, 1=male)
+    df["gender_binary"] = df["gender"].map({"male": 1, "female": 0}).fillna(1).astype(int)
     
     # Robust categorical type for ML one-hot encoding (includes 'other')
     df["gender_cat"] = pd.Categorical(df["gender"], categories=["male", "female", "other"])
