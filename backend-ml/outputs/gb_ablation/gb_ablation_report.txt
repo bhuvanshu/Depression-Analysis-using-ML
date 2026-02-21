@@ -1,0 +1,18 @@
+GB Ablation Classifier
+-----------
+Accuracy  : 0.8012
+Precision : 0.8204
+Recall    : 0.8920
+F1-score  : 0.8547
+ROC-AUC   : 0.8601
+PR-AUC    : 0.9121
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.75      0.63      0.69      1289
+           1       0.82      0.89      0.85      2453
+
+    accuracy                           0.80      3742
+   macro avg       0.79      0.76      0.77      3742
+weighted avg       0.80      0.80      0.80      3742

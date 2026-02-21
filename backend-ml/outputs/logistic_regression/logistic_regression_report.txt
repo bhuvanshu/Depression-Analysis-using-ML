@@ -1,9 +1,13 @@
-Logistic Regression
-===================
-Metrics:
-{'Model': 'Logistic Regression', 'Accuracy': 0.8369855692143239, 'Precision': 0.8949849978568367, 'Recall': 0.8512026090501427, 'F1-score': 0.8725449226911827, 'ROC-AUC': 0.91146004148749}
+Logistic Regression Classifier
+-------------------
+Accuracy  : 0.8370
+Precision : 0.8950
+Recall    : 0.8512
+F1-score  : 0.8725
+ROC-AUC   : 0.9115
+PR-AUC    : 0.9476
 
-Report:
+Classification Report:
               precision    recall  f1-score   support
 
            0       0.74      0.81      0.77      1289
