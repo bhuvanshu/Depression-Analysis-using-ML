@@ -1,0 +1,74 @@
+=== PCA COMPONENT INTERPRETATION ===
+
+
+PC1 (Explains 15.14% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Have You Ever Had Suicidal Thoughts ?: 0.5639
+  + Academic Pressure: 0.5312
+  + Financial Stress: 0.4535
+  + Work/Study Hours: 0.3151
+  - Study Satisfaction: -0.2521
+
+PC2 (Explains 10.74% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Cgpa: 0.5537
+  - Gender_Binary: -0.5141
+  - Study Satisfaction: -0.4636
+  + Age: 0.4045
+  - Family History Of Mental Illness: -0.1579
+
+PC3 (Explains 10.22% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Age: 0.6438
+  - Sleep_Duration_Ordinal: -0.4619
+  + Gender_Binary: 0.4268
+  - Cgpa: -0.2496
+  + Family History Of Mental Illness: 0.2415
+
+PC4 (Explains 10.09% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Sleep_Duration_Ordinal: 0.5752
+  - Family History Of Mental Illness: -0.5086
+  - Study Satisfaction: -0.3558
+  + Gender_Binary: 0.2824
+  + Age: 0.2599
+
+PC5 (Explains 9.89% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Family History Of Mental Illness: 0.7592
+  + Sleep_Duration_Ordinal: 0.4772
+  + Cgpa: 0.2735
+  - Study Satisfaction: -0.2440
+  - Work/Study Hours: -0.1771
+
+PC6 (Explains 9.63% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Cgpa: 0.6071
+  + Gender_Binary: 0.5237
+  - Work/Study Hours: -0.3965
+  - Sleep_Duration_Ordinal: -0.2768
+  - Family History Of Mental Illness: -0.2202
+
+PC7 (Explains 9.44% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Work/Study Hours: 0.6804
+  + Cgpa: 0.3511
+  + Study Satisfaction: 0.3432
+  + Age: 0.3363
+  + Gender_Binary: 0.2846
+
+PC8 (Explains 9.11% of variance)
+------------------------------------------------------------
+Top contributing features:
+  + Study Satisfaction: 0.5478
+  + Age: 0.4398
+  + Financial Stress: 0.4321
+  - Work/Study Hours: -0.4195
+  - Gender_Binary: -0.2895
