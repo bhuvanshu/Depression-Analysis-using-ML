@@ -19,6 +19,7 @@ from sklearn.metrics import (
 )
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
+import joblib
 from src.config import COLUMN_RENAMES
 from src.utils import finalize_plot, save_text_report, safe_filename, ensure_outdir, save_pretty_table
 
@@ -202,6 +203,15 @@ if __name__ == "__main__":
 
     # Generate grouped bar chart (F1-score vs ROC-AUC)
     plot_model_comparison_bar(comp_df, outdir)
+
+    # Save the best model (Gradient Boosting) for production use
+    model_save_path = outdir / "gradient_boosting" / "model.joblib"
+    joblib.dump(best_model, model_save_path)
+    print(f"Model saved to: {model_save_path}")
+
+    # Also save the feature names used for training
+    feature_names_path = outdir / "gradient_boosting" / "feature_names.joblib"
+    joblib.dump(df.drop(columns=[target]).select_dtypes(include=[np.number]).columns.tolist(), feature_names_path)
 
     print("\n--- Model Comparison ---\n", comp_df)
     print(f"\nResults exported to: {outdir}")
