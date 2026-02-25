@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare Pro | Enterprise Analytics</title>
+    <meta name="description"
+        content="MindCare Pro — Enterprise-grade mental health screening analytics for student wellbeing.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- ═══════════════ SIDEBAR ═══════════════ -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i data-lucide="brain-circuit"></i>
+            <span>Mind<span class="brand-highlight">Care</span></span>
+        </div>
+
+        <nav>
+            <a href="index.html" class="nav-link">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Student Desk</span>
+            </a>
+            <a href="#" class="nav-link active" data-section="dashboard">
+                <i data-lucide="bar-chart-3"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link" data-section="reports">
+                <i data-lucide="file-text"></i>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="nav-link" data-section="settings">
+                <i data-lucide="settings"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-link">
+                <i data-lucide="help-circle"></i>
+                <span>Support</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <main class="content">
+        <header>
+            <div class="welcome-info">
+                <h1 id="view-title">Admin Dashboard</h1>
+                <p id="view-subtitle">Pulse check on student mental health metrics.</p>
+            </div>
+
+            <div class="header-actions">
+                <div class="search-wrapper">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Quick search students...">
+                </div>
+                <button class="icon-btn" title="Notifications">
+                    <i data-lucide="bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">AD</div>
+                    <span class="user-name">Admin</span>
+                    <i data-lucide="chevron-down" class="chevron-icon"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════ DASHBOARD VIEW ═══════════════ -->
+        <section id="dashboard" class="view-section active">
+            <div class="stats-grid">
+                <div class="glass-card stat-card">
+                    <div class="card-header">
+                        <div class="icon-label"><i data-lucide="users"></i></div>
+                        <span class="trend up"><i data-lucide="trending-up" class="trend-icon"></i> 12%</span>
+                    </div>
+                    <h3>Total Screenings</h3>
+                    <div class="value-group">
+                        <span class="value counter" data-target="1248">0</span>
+                    </div>
+                    <p class="stat-meta">Vs last 30 days</p>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <div class="card-header">
+                        <div class="icon-label icon-risk"><i data-lucide="alert-circle"></i></div>
+                        <span class="trend down"><i data-lucide="trending-down" class="trend-icon"></i> 2%</span>
+                    </div>
+                    <h3>High Risk Students</h3>
+                    <div class="value-group">
+                        <span class="value value-risk counter" data-target="156">0</span>
+                    </div>
+                    <p class="stat-meta">Immediate action recommended</p>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <div class="card-header">
+                        <div class="icon-label icon-cyan"><i data-lucide="graduation-cap"></i></div>
+                    </div>
+                    <h3>Avg. Academic Pressure</h3>
+                    <div class="value-group">
+                        <span class="value">3.8<span class="value-unit">/5.0</span></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-cyan" style="width: 76%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Donut Chart Card -->
+                <div class="glass-card">
+                    <div class="chart-header">
+                        <h3>Distribution</h3>
+                        <button class="icon-btn-sm"><i data-lucide="more-horizontal"></i></button>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="distributionChart"></canvas>
+                        <div class="chart-center-label">
+                            <div class="chart-center-value">82%</div>
+                            <div class="chart-center-text">Overall Health</div>
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-row">
+                            <span class="badge healthy">Healthy</span>
+                            <span class="legend-value">842</span>
+                        </div>
+                        <div class="legend-row">
+                            <span class="badge mild">Mild Issues</span>
+                            <span class="legend-value">250</span>
+                        </div>
+                        <div class="legend-row">
+                            <span class="badge risk">Critical Risk</span>
+                            <span class="legend-value">156</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enterprise Table -->
+                <div class="glass-card table-container">
+                    <div class="table-header">
+                        <h3>Recent Screenings</h3>
+                        <div class="table-actions">
+                            <div class="filter-chips">
+                                <button class="chip active">All</button>
+                                <button class="chip">High Risk</button>
+                                <button class="chip">Healthy</button>
+                            </div>
+                            <button class="btn-action">
+                                <i data-lucide="filter" class="btn-icon"></i>
+                                Filters
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enrollment ID</th>
+                                <th>Assessment Status</th>
+                                <th>Confidence</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-id">2024CS101</td>
+                                <td><span class="badge healthy">Healthy</span></td>
+                                <td class="td-mono">94.2%</td>
+                                <td class="td-date">Feb 22, 2026</td>
+                                <td><button class="btn-action">View <i data-lucide="external-link"
+                                            class="btn-icon-sm"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-id">2024ME045</td>
+                                <td><span class="badge risk">High Risk</span></td>
+                                <td class="td-mono td-risk">88.7%</td>
+                                <td class="td-date">Feb 21, 2026</td>
+                                <td><button class="btn-action btn-review">Review</button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-id">2024EE089</td>
+                                <td><span class="badge healthy">Healthy</span></td>
+                                <td class="td-mono">99.1%</td>
+                                <td class="td-date">Feb 21, 2026</td>
+                                <td><button class="btn-action">View <i data-lucide="external-link"
+                                            class="btn-icon-sm"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-id">2024BT112</td>
+                                <td><span class="badge mild">Mild</span></td>
+                                <td class="td-mono">72.4%</td>
+                                <td class="td-date">Feb 20, 2026</td>
+                                <td><button class="btn-action">View <i data-lucide="external-link"
+                                            class="btn-icon-sm"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-id">2024CE078</td>
+                                <td><span class="badge healthy">Healthy</span></td>
+                                <td class="td-mono">96.5%</td>
+                                <td class="td-date">Feb 19, 2026</td>
+                                <td><button class="btn-action">View <i data-lucide="external-link"
+                                            class="btn-icon-sm"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <span class="page-info">Showing 5 of 1,248</span>
+                        <button class="page-btn"><i data-lucide="chevron-left" class="page-icon"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn"><i data-lucide="chevron-right" class="page-icon"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════ REPORTS VIEW ═══════════════ -->
+        <section id="reports" class="view-section">
+            <!-- Reports KPIs -->
+            <div class="stats-grid stats-grid-4">
+                <div class="glass-card kpi-mini">
+                    <div class="kpi-mini-label">Total Engagement</div>
+                    <div class="kpi-mini-value">94.2%</div>
+                    <div class="kpi-mini-trend trend up"><i data-lucide="trending-up" class="trend-icon"></i> 3.1%</div>
+                </div>
+                <div class="glass-card kpi-mini">
+                    <div class="kpi-mini-label">Retention Rate</div>
+                    <div class="kpi-mini-value">88.1%</div>
+                    <div class="kpi-mini-trend trend up"><i data-lucide="trending-up" class="trend-icon"></i> 1.4%</div>
+                </div>
+                <div class="glass-card kpi-mini">
+                    <div class="kpi-mini-label">Avg. Response Time</div>
+                    <div class="kpi-mini-value">1.2 <span class="value-unit">days</span></div>
+                    <div class="kpi-mini-trend trend down"><i data-lucide="trending-down" class="trend-icon"></i> 0.3
+                    </div>
+                </div>
+                <div class="glass-card kpi-mini">
+                    <div class="kpi-mini-label">System Health</div>
+                    <div class="kpi-mini-value kpi-healthy">Optimal</div>
+                    <div class="kpi-mini-trend" style="color: var(--status-healthy);">All systems go</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="reports-grid">
+                <div class="glass-card">
+                    <div class="chart-header">
+                        <h3>Screening Trends (Monthly)</h3>
+                        <button class="btn-action">
+                            <i data-lucide="download" class="btn-icon"></i>
+                            Export CSV
+                        </button>
+                    </div>
+                    <div class="chart-placeholder">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="chart-header">
+                        <h3>Department Breakdown</h3>
+                        <button class="btn-action">
+                            <i data-lucide="filter" class="btn-icon"></i>
+                            Filter
+                        </button>
+                    </div>
+                    <div class="dept-bars">
+                        <div class="dept-row">
+                            <span class="dept-name">Computer Science</span>
+                            <div class="dept-bar-track">
+                                <div class="dept-bar-fill fill-primary" style="width: 85%;"></div>
+                            </div>
+                            <span class="dept-pct">85%</span>
+                        </div>
+                        <div class="dept-row">
+                            <span class="dept-name">Mechanical Eng.</span>
+                            <div class="dept-bar-track">
+                                <div class="dept-bar-fill fill-secondary" style="width: 62%;"></div>
+                            </div>
+                            <span class="dept-pct">62%</span>
+                        </div>
+                        <div class="dept-row">
+                            <span class="dept-name">Electrical Eng.</span>
+                            <div class="dept-bar-track">
+                                <div class="dept-bar-fill fill-cyan" style="width: 45%;"></div>
+                            </div>
+                            <span class="dept-pct">45%</span>
+                        </div>
+                        <div class="dept-row">
+                            <span class="dept-name">Civil Eng.</span>
+                            <div class="dept-bar-track">
+                                <div class="dept-bar-fill fill-mild" style="width: 38%;"></div>
+                            </div>
+                            <span class="dept-pct">38%</span>
+                        </div>
+                        <div class="dept-row">
+                            <span class="dept-name">Biotechnology</span>
+                            <div class="dept-bar-track">
+                                <div class="dept-bar-fill fill-healthy" style="width: 72%;"></div>
+                            </div>
+                            <span class="dept-pct">72%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Cohort Analysis -->
+            <div class="glass-card report-cohort">
+                <div class="chart-header">
+                    <h3>Risk Cohort Analysis</h3>
+                    <div class="table-actions">
+                        <button class="btn-action">
+                            <i data-lucide="printer" class="btn-icon"></i>
+                            Print Report
+                        </button>
+                        <button class="btn-action btn-primary-fill">
+                            <i data-lucide="download" class="btn-icon"></i>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cohort</th>
+                            <th>Students</th>
+                            <th>Avg. Confidence</th>
+                            <th>Trend (30d)</th>
+                            <th>Action Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge healthy">Healthy</span></td>
+                            <td class="td-mono">842</td>
+                            <td class="td-mono">96.3%</td>
+                            <td><span class="trend up"><i data-lucide="trending-up" class="trend-icon"></i>
+                                    Stable</span></td>
+                            <td class="td-mono">—</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge mild">Mild Depression</span></td>
+                            <td class="td-mono">250</td>
+                            <td class="td-mono">78.1%</td>
+                            <td><span class="trend down"><i data-lucide="trending-down" class="trend-icon"></i>
+                                    +4.2%</span></td>
+                            <td class="td-mono">61%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge risk">High Risk</span></td>
+                            <td class="td-mono">156</td>
+                            <td class="td-mono">89.4%</td>
+                            <td><span class="trend down"><i data-lucide="trending-down" class="trend-icon"></i>
+                                    +1.8%</span></td>
+                            <td class="td-mono">94%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══════════════ SETTINGS VIEW ═══════════════ -->
+        <section id="settings" class="view-section">
+            <div class="settings-layout">
+                <!-- Settings Sidebar -->
+                <div class="glass-card settings-nav">
+                    <nav class="settings-nav-list">
+                        <a href="#" class="settings-link active">
+                            <i data-lucide="sliders-horizontal" class="settings-link-icon"></i>
+                            General
+                        </a>
+                        <a href="#" class="settings-link">
+                            <i data-lucide="shield" class="settings-link-icon"></i>
+                            Security & Privacy
+                        </a>
+                        <a href="#" class="settings-link">
+                            <i data-lucide="bell" class="settings-link-icon"></i>
+                            Notifications
+                        </a>
+                        <a href="#" class="settings-link">
+                            <i data-lucide="cpu" class="settings-link-icon"></i>
+                            AI & ML Config
+                        </a>
+                        <a href="#" class="settings-link">
+                            <i data-lucide="users" class="settings-link-icon"></i>
+                            Team Management
+                        </a>
+                        <a href="#" class="settings-link">
+                            <i data-lucide="database" class="settings-link-icon"></i>
+                            Data & Export
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="settings-content">
+                    <div class="glass-card">
+                        <h3 class="settings-section-title">Risk Assessment Configuration</h3>
+                        <p class="settings-section-desc">Fine-tune the ML model's sensitivity and alert thresholds for
+                            student screening.</p>
+
+                        <div class="settings-group">
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-label">Risk Sensitivity Level</div>
+                                    <div class="setting-desc">Higher sensitivity flags more students for review.
+                                        Recommended: Standard.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <span class="range-label">Standard</span>
+                                    <input type="range" min="1" max="5" value="3" class="range-input">
+                                    <span class="range-label">Aggressive</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-label">Confidence Threshold</div>
+                                    <div class="setting-desc">Minimum model confidence (%) to classify a screening
+                                        result.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <div class="input-group">
+                                        <input type="number" value="75" min="50" max="99" class="number-input">
+                                        <span class="input-suffix">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-label">Real-time Notifications</div>
+                                    <div class="setting-desc">Send instant browser and email alerts for high-risk
+                                        detections.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-label">Automated Case Logs</div>
+                                    <div class="setting-desc">Auto-generate intervention case files for critical-risk
+                                        students.</div>
+                                </div>
+                                <div class="setting-control">
+                                    <label class="toggle">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-label">Two-Factor Authentication</div>
+                                    <div class="setting-desc">Require 2FA for all admin operations on this dashboard.
+                                    </div>
+                                </div>
+                                <div class="setting-control">
+                                    <button class="btn-action btn-primary-fill">Enable 2FA</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-actions">
+                            <button class="btn-action">Cancel</button>
+                            <button class="btn-action btn-primary-fill">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ═══════════ Initialize Icons ═══════════
+        lucide.createIcons();
+
+        // ═══════════ Section Switching ═══════════
+        const navLinks = document.querySelectorAll('.nav-link[data-section]');
+        const sections = document.querySelectorAll('.view-section');
+        const viewTitle = document.getElementById('view-title');
+        const viewSubtitle = document.getElementById('view-subtitle');
+
+        const titles = {
+            dashboard: "Admin Dashboard",
+            reports: "Reports & Analytics",
+            settings: "Settings"
+        };
+        const subtitles = {
+            dashboard: "Pulse check on student mental health metrics.",
+            reports: "Advanced analytics, trends, and longitudinal insights.",
+            settings: "Configure workspace, security, and model parameters."
+        };
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                sections.forEach(s => {
+                    s.classList.remove('active');
+                    s.style.animation = 'none';
+                });
+                const target = document.getElementById(sectionId);
+                target.classList.add('active');
+                void target.offsetWidth; // force reflow
+                target.style.animation = 'fadeIn 0.5s ease-out forwards';
+
+                viewTitle.textContent = titles[sectionId];
+                viewSubtitle.textContent = subtitles[sectionId];
+
+                // Re-init icons for newly visible sections
+                lucide.createIcons();
+            });
+        });
+
+        // ═══════════ Animated Counters ═══════════
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const duration = 2000;
+                const start = performance.now();
+
+                function update(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const value = Math.floor(progress * target);
+                    counter.textContent = value.toLocaleString();
+                    if (progress < 1) requestAnimationFrame(update);
+                }
+                requestAnimationFrame(update);
+            });
+        }
+        animateCounters();
+
+        // ═══════════ Filter Chips ═══════════
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+
+        // ═══════════ Donut Chart ═══════════
+        const ctx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Healthy', 'High Risk', 'Mild Depression'],
+                datasets: [{
+                    data: [842, 156, 250],
+                    backgroundColor: ['#10b981', '#f87171', '#f59e0b'],
+                    borderColor: 'rgba(255, 255, 255, 0.05)',
+                    borderWidth: 2,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                cutout: '82%',
+                plugins: { legend: { display: false } },
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { animateRotate: true, duration: 1200 }
+            }
+        });
+
+        // ═══════════ Trend Line Chart (Reports) ═══════════
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            const tCtx = trendCtx.getContext('2d');
+            const gradient = tCtx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.3)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
+
+            new Chart(tCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+                    datasets: [
+                        {
+                            label: 'Total Screenings',
+                            data: [820, 932, 1050, 1120, 1180, 1248],
+                            borderColor: '#6366f1',
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#6366f1',
+                            pointBorderColor: '#0B1220',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'High Risk',
+                            data: [120, 135, 142, 150, 160, 156],
+                            borderColor: '#f87171',
+                            backgroundColor: 'transparent',
+                            borderDash: [6, 4],
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#f87171'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', usePointStyle: true, padding: 20 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#64748b' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#64748b' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

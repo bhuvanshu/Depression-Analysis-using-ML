@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare | Student Well-being Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <nav>
+        <div class="logo">Mind<span>Care</span></div>
+        <div class="nav-links">
+            <a href="#" class="active">Screening</a>
+            <a href="admin.html">Admin Portal</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>Your Mental Health <span>Matters</span></h1>
+            <p>Take a quick 2-minute screening to understand your mental well-being. All data is kept confidential.</p>
+        </section>
+
+        <section class="form-container">
+            <form id="screeningForm">
+                <div class="form-step active" id="step1">
+                    <h3>Basic Information</h3>
+                    <div class="input-group">
+                        <label>Enrollment ID</label>
+                        <input type="text" name="enrollment_id" placeholder="e.g. 2024CS101" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Age</label>
+                        <input type="number" name="Age" min="15" max="100" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <select name="Gender" required>
+                            <option value="1">Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-next" onclick="nextStep(2)">Next <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="form-step" id="step2">
+                    <h3>Academic & Lifestyle</h3>
+                    <div class="input-group">
+                        <label>Academic Pressure (1-5)</label>
+                        <input type="range" name="Academic Pressure" min="1" max="5" value="3">
+                        <div class="range-labels"><span>Low</span><span>High</span></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Study Satisfaction (1-5)</label>
+                        <input type="range" name="Study Satisfaction" min="1" max="5" value="3">
+                        <div class="range-labels"><span>Low</span><span>High</span></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Sleep Duration</label>
+                        <select name="Sleep Duration" required>
+                            <option value="1">Less than 5 Hours</option>
+                            <option value="2">5-6 Hours</option>
+                            <option value="3">7-8 Hours</option>
+                            <option value="4">More than 8 Hours</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn-prev" onclick="nextStep(1)">Back</button>
+                        <button type="button" class="btn-next" onclick="nextStep(3)">Next</button>
+                    </div>
+                </div>
+
+                <div class="form-step" id="step3">
+                    <h3>Personal Factors</h3>
+                    <div class="input-group">
+                        <label>Have you ever had Suicidal Thoughts?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="Suicidal Thoughts" value="1"> Yes</label>
+                            <label><input type="radio" name="Suicidal Thoughts" value="0" checked> No</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Family History of Mental Illness?</label>
+                        <div class="radio-group">
+                            <label><input type="radio" name="Family History" value="1"> Yes</label>
+                            <label><input type="radio" name="Family History" value="0" checked> No</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Financial Stress (1-5)</label>
+                        <input type="range" name="Financial Stress" min="1" max="5" value="1">
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn-prev" onclick="nextStep(2)">Back</button>
+                        <button type="submit" class="btn-submit">Analyze My Results <i class="fas fa-brain"></i></button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section id="resultContainer" class="result-card hidden">
+            <div class="result-header">
+                <i class="fas fa-heartbeat"></i>
+                <h2>Analysis Complete</h2>
+            </div>
+            <div id="resultContent">
+                <p>Based on our AI model, your screening shows:</p>
+                <div id="predictionBadge" class="badge">Healthy</div>
+                <div class="probability-container">
+                    <p>Confidence:</p>
+                    <div class="progress-bar"><div id="probBar" style="width: 0%"></div></div>
+                </div>
+                <div class="suggestions">
+                    <h4>Next Steps:</h4>
+                    <ul id="suggestionList">
+                        <li>Maintain a consistent sleep schedule.</li>
+                        <li>Consider talking to a counselor if you feel overwhelmed.</li>
+                    </ul>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="btn-restart">Take Again</button>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
