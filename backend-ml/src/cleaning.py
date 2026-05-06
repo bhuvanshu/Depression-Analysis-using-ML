@@ -3,9 +3,10 @@ import numpy as np
 import warnings
 from pathlib import Path
 
-# Set up paths
-INPUT_FILE = "backend-ml/data/student_depression_dataset kaggle.csv"
-OUTDIR = Path("backend-ml/data")
+# Set up paths (relative to this script's location, not the working directory)
+root = Path(__file__).resolve().parents[1]  # backend-ml/
+INPUT_FILE = root / "data" / "student_depression_dataset kaggle.csv"
+OUTDIR = root / "data"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 TARGET_COL = "depression"
 
@@ -14,10 +15,8 @@ df = pd.read_csv(INPUT_FILE)
 df.columns = df.columns.str.strip().str.lower()
 print("✅ Raw Shape:", df.shape)
 
-# Configuration: Drop unnecessary columns
-if "degree" in df.columns:
-    df.drop(columns=["degree"], inplace=True)
-    print("✅ Dropped column: degree")
+# NOTE: Degree column is kept for df_paper (Degree_Group mapping).
+# It will NOT be included in df_ml.
 
 # Data cleaning: duplicates and whitespace
 df = df.drop_duplicates()
@@ -98,24 +97,106 @@ if "gender" in df.columns:
     df["gender_cat"] = pd.Categorical(df["gender"], categories=["male", "female", "other"])
     print("✅ Created gender encoding (Binary + Categorical)")
 
-# Export: Paper Dataset (Ordinal/Binary)
+# ── Degree_Group: Categorical grouping for df_paper ──
+if "degree" in df.columns:
+    # Clean: remove quotes, trim whitespace, lowercase
+    df["degree_clean"] = (
+        df["degree"]
+        .astype(str)
+        .str.strip()
+        .str.replace("'", "", regex=False)
+        .str.replace('"', "", regex=False)
+        .str.strip()
+        .str.lower()
+    )
+
+    # Categorical grouping: all Bachelor-level → Undergraduate, Master-level → Postgraduate
+    degree_map = {
+        # School
+        "class 12": "School",
+        # Undergraduate (all Bachelor-level & entry professional degrees)
+        "bsc": "Undergraduate",
+        "ba": "Undergraduate",
+        "bca": "Undergraduate",
+        "be": "Undergraduate",
+        "b.ed": "Undergraduate",
+        "llb": "Undergraduate",
+        "b.tech": "Undergraduate",
+        "b.com": "Undergraduate",
+        "b.arch": "Undergraduate",
+        "bba": "Undergraduate",
+        "bhm": "Undergraduate",
+        "b.pharm": "Undergraduate",
+        "mbbs": "Undergraduate",
+        # Postgraduate (all Master-level & postgrad professional degrees)
+        "m.tech": "Postgraduate",
+        "msc": "Postgraduate",
+        "mca": "Postgraduate",
+        "mba": "Postgraduate",
+        "ma": "Postgraduate",
+        "m.ed": "Postgraduate",
+        "m.com": "Postgraduate",
+        "m.pharm": "Postgraduate",
+        "llm": "Postgraduate",
+        "md": "Postgraduate",
+        "mhm": "Postgraduate",
+        "me": "Postgraduate",
+        # Doctorate
+        "phd": "Doctorate",
+        # Catch-all
+        "others": "Other",
+    }
+
+    df["degree_group"] = df["degree_clean"].map(degree_map).fillna("Other")
+    unmapped = df.loc[df["degree_group"] == "Other", "degree_clean"].unique()
+    if len(unmapped) > 0:
+        print(f"⚠️  Unmapped Degree values grouped as 'Other': {list(unmapped)}")
+    print("✅ Created Degree_Group column")
+    print(df["degree_group"].value_counts())
+
+    # Drop the temp cleaning column
+    df.drop(columns=["degree_clean"], inplace=True)
+else:
+    warnings.warn("'degree' column not found — skipping Degree_Group creation.")
+
+# Export: Paper Dataset (Ordinal/Binary + Degree_Group)
 paper_cols = [
     "age", "gender_binary", "academic pressure", "cgpa", 
     "study satisfaction", "work/study hours", "financial stress", 
     "sleep_duration_ordinal"
-] + suicide_cols + fam_hist_cols + [TARGET_COL]
+] + suicide_cols + fam_hist_cols
+
+# Add Degree_Group if it was created
+if "degree_group" in df.columns:
+    paper_cols.append("degree_group")
+
+paper_cols.append(TARGET_COL)
 
 paper_cols = [c for c in paper_cols if c in df.columns]
 df_paper = df[paper_cols].copy()
+df_paper = df_paper.drop_duplicates()
 df_paper.to_csv(OUTDIR / "df_paper.csv", index=False)
 print(f"✅ Saved df_paper: {OUTDIR / 'df_paper.csv'} | Shape: {df_paper.shape}")
 
-# Export: ML Dataset (One-Hot)
-df_ml = df_paper.drop(columns=["gender_binary", "sleep_duration_ordinal"], errors="ignore")
+# Export: ML Dataset (One-Hot) — includes one-hot encoded Degree
+df_ml = df_paper.drop(columns=["gender_binary", "sleep_duration_ordinal", "degree_group"], errors="ignore")
 gender_onehot = pd.get_dummies(df["gender_cat"], prefix="gender", drop_first=False).astype(int)
 sleep_onehot = pd.get_dummies(df["sleep duration"], prefix="sleep", drop_first=False).astype(int)
 
-df_ml = pd.concat([df_ml, gender_onehot, sleep_onehot], axis=1)
+# One-hot encode Degree_Group into 4 clean columns
+if "degree_group" in df.columns:
+    degree_onehot = pd.DataFrame({
+        "degree_school": (df["degree_group"] == "School").astype(int),
+        "degree_undergrad": (df["degree_group"] == "Undergraduate").astype(int),
+        "degree_postgrad": (df["degree_group"] == "Postgraduate").astype(int),
+        "degree_phd": (df["degree_group"] == "Doctorate").astype(int),
+    })
+    df_ml = pd.concat([df_ml, gender_onehot, sleep_onehot, degree_onehot], axis=1)
+else:
+    df_ml = pd.concat([df_ml, gender_onehot, sleep_onehot], axis=1)
+
+# Final dedup after all transformations
+df_ml = df_ml.drop_duplicates()
 df_ml.to_csv(OUTDIR / "df_ml.csv", index=False)
 print(f"✅ Saved df_ml: {OUTDIR / 'df_ml.csv'} | Shape: {df_ml.shape}")
 
