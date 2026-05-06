@@ -1,0 +1,4 @@
+PCA Interpretation — Degree_Group:
+PC1 loading: 0.6492, PC2 loading: 0.2647.
+Degree_Group contributes notablely to the principal components.
+It partially separates the data along the primary axes of variance.

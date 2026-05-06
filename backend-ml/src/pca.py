@@ -5,7 +5,7 @@ import seaborn as sns
 import sys
 from pathlib import Path
 
-# Add the project root to sys.path to allow 'from src.xxx' imports
+
 root = Path(__file__).resolve().parents[1]
 if str(root) not in sys.path:
     sys.path.append(str(root))
@@ -13,7 +13,7 @@ if str(root) not in sys.path:
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from src.utils import finalize_plot, save_text_report
-from src.config import TARGET_COL, COLUMN_RENAMES, LABEL_MAPS
+from src.config import TARGET_COL, COLUMN_RENAMES, LABEL_MAPS, DEGREE_GROUP_ORDINAL
       
 
 # -------------------------------------------------------------
@@ -314,9 +314,34 @@ def main():
         target = "Depression"
         
     print(f"✅ Data Loaded. Shape: {df.shape}")
+
+    # Encode Degree_Group ordinally for PCA (must be numeric)
+    if "Degree_Group" in df.columns:
+        df["Degree_Group"] = df["Degree_Group"].map(DEGREE_GROUP_ORDINAL).fillna(2)
+        print("✅ Encoded Degree_Group ordinally for PCA")
+
     print(f"Running PCA Pipeline for target: {target}")
     
     run_pca_pipeline(df, out_dir, target=target)
+
+    # Save Degree_Group PCA interpretation
+    pca_dir = out_dir / "pca"
+    loadings_path = pca_dir / "pca_components.csv"
+    if loadings_path.exists():
+        loadings = pd.read_csv(loadings_path, index_col=0)
+        if "Degree_Group" in loadings.index:
+            pc1_val = loadings.loc["Degree_Group", "PC1"]
+            pc2_val = loadings.loc["Degree_Group", "PC2"]
+            contribution = "minimal" if abs(pc1_val) < 0.1 and abs(pc2_val) < 0.1 else "moderate" if max(abs(pc1_val), abs(pc2_val)) < 0.3 else "notable"
+            pca_interp = (
+                f"PCA Interpretation — Degree_Group:\n"
+                f"PC1 loading: {pc1_val:.4f}, PC2 loading: {pc2_val:.4f}.\n"
+                f"Degree_Group contributes {contribution}ly to the principal components.\n"
+                f"It {'does not meaningfully separate' if contribution == 'minimal' else 'partially separates'} "
+                f"the data along the primary axes of variance.\n"
+            )
+            save_text_report(pca_dir / "degree_group_pca_interpretation.txt", pca_interp)
+            print(pca_interp)
 
 
 if __name__ == "__main__":
