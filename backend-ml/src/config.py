@@ -12,7 +12,12 @@ COLUMN_RENAMES = {
     "Sleep_Duration_Ordinal": "Sleep Duration",
     "Cgpa": "CGPA",
     "Gender_Female": "Female",
-    "Gender_Male": "Male"
+    "Gender_Male": "Male",
+    "Degree_Group": "Degree Group",
+    "Degree_School": "School",
+    "Degree_Undergrad": "Undergraduate",
+    "Degree_Postgrad": "Postgraduate",
+    "Degree_Phd": "Doctorate"
 }
 
 # Feature Lists
@@ -20,7 +25,7 @@ CORE_FEATURES = [
     "Gender", "Age", "Academic Pressure", "CGPA", 
     "Study Satisfaction", "Sleep Duration", "Dietary Habits", 
     "Suicidal Thoughts", "Work/Study Hours", "Financial Stress", 
-    "Family History"
+    "Family History", "Degree Group"
 ]
 
 TARGET_COL = "Depression"
@@ -59,5 +64,30 @@ LABEL_MAPS = {
     "Depression": {0: "0 (No)", 1: "1 (Yes)"},
     "Work/Study Hours": {
         0: "0-2h", 1: "2-4h", 2: "4-6h", 3: "6-8h", 4: "8-10h", 5: "10-12h"
+    },
+    "Degree Group": {
+        1: "School", 2: "Undergraduate", 3: "Postgraduate", 4: "Doctorate"
     }
+}
+
+# Ordinal encoding for Degree_Group (used in correlation & PCA)
+DEGREE_GROUP_ORDINAL = {
+    "School": 1,
+    "Undergraduate": 2,
+    "Postgraduate": 3,
+    "Doctorate": 4,
+    "Other": 2  # treat same as Undergraduate
+}
+
+# ── Risk Framework Constants (single source of truth) ──
+RISK_JUSTIFICATION = (
+    "Percentile-based thresholds are used to provide relative risk "
+    "stratification without relying on arbitrary probability cutoffs, "
+    "ensuring consistency across varying data distributions."
+)
+
+RISK_ACTIONS = {
+    "Low":      "Indicates general awareness level",
+    "Moderate": "Suggests monitoring and supportive interventions",
+    "High":     "Requires priority attention and further evaluation"
 }

@@ -1,0 +1,3 @@
+Correlation Interpretation — Degree_Group:
+Spearman correlation with Depression: -0.0812 (negligible, negative).
+This suggests minimal linear association between education level and depression.

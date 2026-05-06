@@ -9,7 +9,7 @@ def ensure_outdir(outdir: Path):
 def save_text_report(path: Path, text: str):
     """Saves a string to a text file, creating parent directories if needed."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text)
+    path.write_text(text, encoding="utf-8")
 
 def safe_filename(name: str) -> str:
     """Sanitizes a string to be used as a filename."""

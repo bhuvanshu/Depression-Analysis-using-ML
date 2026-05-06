@@ -1,0 +1,4 @@
+EDA Interpretation — Degree_Group:
+Depression rates vary across education levels.
+Highest rate: School (71.9%), Lowest rate: Postgraduate (61.9%).
+Overall depression rate: 65.6%.

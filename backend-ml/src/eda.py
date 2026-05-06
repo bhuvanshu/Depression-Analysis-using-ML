@@ -11,8 +11,8 @@ src_path = Path(__file__).resolve().parent
 if str(src_path) not in sys.path:
     sys.path.append(str(src_path))
 
-from utils import finalize_plot, safe_filename
-from config import TARGET_COL, STYLE_SETTINGS, LABEL_MAPS, COLUMN_RENAMES
+from utils import finalize_plot, safe_filename, save_text_report
+from config import TARGET_COL, STYLE_SETTINGS, LABEL_MAPS, COLUMN_RENAMES, DEGREE_GROUP_ORDINAL
 
 # ===============================
 # CONFIGURATION
@@ -196,6 +196,67 @@ def plot_impact_analysis(df: pd.DataFrame, outdir: Path):
     plt.savefig(outdir / "impact_analysis_grid.png", dpi=150)
     plt.close()
 
+def plot_degree_depression(df: pd.DataFrame, outdir: Path):
+    """Depression rate and count by Degree_Group."""
+    deg_col = "Degree_Group"
+    dep_col = "Depression"
+    if deg_col not in df.columns or dep_col not in df.columns:
+        return
+
+    order = ["School", "Undergraduate", "Postgraduate", "Doctorate", "Other"]
+    order = [o for o in order if o in df[deg_col].unique()]
+
+    grouped = df.groupby(deg_col)[dep_col].agg(["mean", "sum", "count"]).reindex(order)
+    grouped.columns = ["Rate", "Depressed", "Total"]
+    grouped["Not Depressed"] = grouped["Total"] - grouped["Depressed"]
+    overall_rate = df[dep_col].mean()
+
+    # Plot 1: Depression rate by degree group
+    fig, ax = plt.subplots(figsize=(10, 6))
+    colors = ["#e74c3c" if r > overall_rate else "#2ecc71" for r in grouped["Rate"]]
+    bars = ax.bar(grouped.index, grouped["Rate"], color=colors, edgecolor="black", alpha=0.85)
+    for bar, total, rate in zip(bars, grouped["Total"], grouped["Rate"]):
+        ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
+                f"{rate:.1%}\n(n={int(total)})", ha='center', va='bottom', fontsize=10, fontweight='bold')
+    ax.axhline(y=overall_rate, color='navy', linestyle='--', alpha=0.6,
+               label=f'Overall Rate: {overall_rate:.1%}')
+    ax.set_ylabel("Depression Rate", fontsize=12)
+    ax.set_xlabel("Education Level (Degree Group)", fontsize=12)
+    ax.set_ylim(0, min(1.0, grouped["Rate"].max() * 1.3))
+    ax.legend(fontsize=11)
+    ax.grid(axis="y", linestyle="--", alpha=0.3)
+    finalize_plot(outdir / "degree_group_vs_depression.png",
+                  "Depression Rate by Education Level")
+
+    # Plot 2: Stacked bar (depression counts)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.bar(grouped.index, grouped["Depressed"], label="Depressed (1)",
+           color="#e74c3c", edgecolor="black")
+    ax.bar(grouped.index, grouped["Not Depressed"], bottom=grouped["Depressed"],
+           label="Not Depressed (0)", color="#2ecc71", edgecolor="black")
+    for i, (idx, row) in enumerate(grouped.iterrows()):
+        ax.text(i, row["Total"] + grouped["Total"].max() * 0.01,
+                f"n={int(row['Total'])}", ha='center', va='bottom', fontsize=10, fontweight='bold')
+    ax.set_ylabel("Number of Students", fontsize=12)
+    ax.set_xlabel("Education Level (Degree Group)", fontsize=12)
+    ax.legend(fontsize=11)
+    ax.grid(axis="y", linestyle="--", alpha=0.3)
+    finalize_plot(outdir / "degree_group_depression_stacked.png",
+                  "Depression Distribution by Education Level")
+
+    # Save interpretation
+    highest = grouped["Rate"].idxmax()
+    lowest = grouped["Rate"].idxmin()
+    interp = (
+        f"EDA Interpretation — Degree_Group:\n"
+        f"Depression rates vary across education levels.\n"
+        f"Highest rate: {highest} ({grouped.loc[highest, 'Rate']:.1%}), "
+        f"Lowest rate: {lowest} ({grouped.loc[lowest, 'Rate']:.1%}).\n"
+        f"Overall depression rate: {overall_rate:.1%}.\n"
+    )
+    save_text_report(outdir / "degree_group_interpretation.txt", interp)
+    print(interp)
+
 # ===============================
 # MAIN EXECUTION
 # ===============================
@@ -238,15 +299,39 @@ def main():
     # 5. Impact Analysis (Key Indicators vs Target)
     plot_impact_analysis(df, EDA_OUTDIR)
 
-    # 6. Correlation Analysis
+    # 6. Degree_Group vs Depression Analysis
+    print("\nGenerating Degree_Group Analysis...")
+    plot_degree_depression(df, EDA_OUTDIR)
+
+    # 7. Encode Degree_Group ordinally for correlation (AFTER categorical plots)
+    if "Degree_Group" in df.columns:
+        df["Degree_Group"] = df["Degree_Group"].map(DEGREE_GROUP_ORDINAL).fillna(2)
+        print("✅ Encoded Degree_Group ordinally for correlation analysis")
+
+    # 8. Correlation Analysis (now includes Degree_Group as numeric)
     print("\nGenerating Correlation Analysis...")
     plot_correlations(df, CORR_OUTDIR / "correlation_heatmap.png")
 
     target = TARGET_COL.title()
     if target in df.columns:
         print(f"\n--- Top Correlations with {target} ---")
-        correlations = df.corr(method="spearman")[target].sort_values(ascending=False).dropna()
+        correlations = df.select_dtypes(include=[np.number]).corr(method="spearman")[target].sort_values(ascending=False).dropna()
         print(correlations)
+
+        # Save correlation interpretation for Degree_Group
+        dg_label = COLUMN_RENAMES.get("Degree_Group", "Degree_Group")
+        dg_corr = correlations.get("Degree_Group", None)
+        if dg_corr is not None:
+            strength = "negligible" if abs(dg_corr) < 0.1 else "weak" if abs(dg_corr) < 0.3 else "moderate"
+            direction = "positive" if dg_corr > 0 else "negative"
+            corr_interp = (
+                f"Correlation Interpretation — Degree_Group:\n"
+                f"Spearman correlation with Depression: {dg_corr:.4f} ({strength}, {direction}).\n"
+                f"This suggests {'minimal' if strength == 'negligible' else 'limited' if strength == 'weak' else 'some'} "
+                f"linear association between education level and depression.\n"
+            )
+            save_text_report(CORR_OUTDIR / "degree_group_correlation_interpretation.txt", corr_interp)
+            print(corr_interp)
 
     print(f"\n✅ Professional EDA & Correlation Analysis complete.")
     print(f"Plots saved to:\n  - {EDA_OUTDIR}\n  - {CORR_OUTDIR}")

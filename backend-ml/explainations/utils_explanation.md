@@ -1,18 +1,40 @@
 # Utils Explanation (`utils.py`)
 
-The `utils.py` file contains helper functions that provide common functionality needed by multiple scripts. It abstracts away repetitive tasks like file handling and plot formatting.
+The `utils.py` file contains shared helper functions that handle repetitive tasks across the entire pipeline. Rather than writing the same file-saving and plot-formatting code in every script, each module imports these utilities from one place.
 
-## Utilities
+## What It Provides
 
-### 1. File & Directory Management
-- **`ensure_outdir`**: A safety function that creates folders if they don't exist, preventing "File Not Found" errors during saving.
-- **`safe_filename`**: Sanitizes strings by removing slashes and special characters, converting them to lowercase and replacing spaces with underscores. This ensures generated images have consistent, OS-compatible filenames.
+### 1. Directory Management (`ensure_outdir`)
 
-### 2. Plotting Polish
-- **`finalize_plot`**: This is called at the end of every plotting function. It standardized the saving process, applying `tight_layout` (to prevent cut-off labels) and setting a high DPI for crisp images.
+A safety function that creates output folders automatically if they don't already exist. This prevents "File Not Found" errors when a script tries to save a chart or CSV to a directory that hasn't been created yet. Every analysis script calls this before writing any output.
 
-### 3. Academic Reporting
-- **`save_pretty_table`**: A specialized function that converts a pandas DataFrame into a styled image. 
-    - It uses **Zebra Striping** (alternating row colors) for readability.
-    - It applies **Steel Blue** headers.
-    - It is designed to export tables directly as PNGs, which are easier to embed in research papers or presentations than raw text.
+### 2. Filename Sanitization (`safe_filename`)
+
+Converts any string into a safe, OS-compatible filename by removing special characters (slashes, backslashes, punctuation), replacing spaces with underscores, and converting to lowercase. This is important because feature names like `"Have you ever had suicidal thoughts ?"` or `"Work/Study Hours"` would cause file system errors if used directly as filenames.
+
+### 3. Plot Finalization (`finalize_plot`)
+
+Called at the end of every plotting function across the project. It applies a consistent finishing process to every chart:
+
+- Adds a bold title if one is provided.
+- Applies `tight_layout()` to prevent labels and legends from being cut off.
+- Saves the figure at the configured DPI (150 by default) for crisp output.
+- Closes the plot to free memory — important when generating dozens of charts in sequence.
+
+This ensures every chart in the project, regardless of which script generated it, has the same polished appearance.
+
+### 4. Text Report Saving (`save_text_report`)
+
+Writes a string to a text file, automatically creating parent directories if needed. Used by the PCA, EDA, and risk classification scripts to save interpretation reports and statistical summaries alongside their visual outputs.
+
+### 5. Publication-Quality Tables (`save_pretty_table`)
+
+Converts a pandas DataFrame into a styled PNG image that looks professional enough for a research paper or presentation. The styling includes:
+
+- **Steel Blue headers** with white, bold text for a clean, modern look.
+- **Zebra striping** (alternating row colors) for readability.
+- **Bold first column** to highlight category labels or model names.
+- **Dynamic sizing** that adjusts the table height based on the number of rows.
+- **High DPI export** (250 DPI) for sharp rendering at any size.
+
+This is used for model comparison tables, risk summary tables, and other structured outputs that need to be visually presentable without external formatting.
