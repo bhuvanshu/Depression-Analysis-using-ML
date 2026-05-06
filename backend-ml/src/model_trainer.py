@@ -20,6 +20,7 @@ from sklearn.metrics import (
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 import joblib
+import json
 from src.config import COLUMN_RENAMES
 from src.utils import finalize_plot, save_text_report, safe_filename, ensure_outdir, save_pretty_table
 
@@ -204,14 +205,68 @@ if __name__ == "__main__":
     # Generate grouped bar chart (F1-score vs ROC-AUC)
     plot_model_comparison_bar(comp_df, outdir)
 
-    # Save the best model (Gradient Boosting) for production use
-    model_save_path = outdir / "gradient_boosting" / "model.joblib"
-    joblib.dump(best_model, model_save_path)
-    print(f"Model saved to: {model_save_path}")
+    # ─── Save deployment artifacts ───
+    deploy_dir = outdir / "gradient_boosting"
+    ensure_outdir(deploy_dir)
 
-    # Also save the feature names used for training
-    feature_names_path = outdir / "gradient_boosting" / "feature_names.joblib"
-    joblib.dump(df.drop(columns=[target]).select_dtypes(include=[np.number]).columns.tolist(), feature_names_path)
+    # 1. Model
+    joblib.dump(best_model, deploy_dir / "model.joblib")
+    print(f"Model saved to: {deploy_dir / 'model.joblib'}")
+
+    # 2. Feature names (ordered list the model was trained on)
+    feature_names = df.drop(columns=[target]).select_dtypes(include=[np.number]).columns.tolist()
+    joblib.dump(feature_names, deploy_dir / "feature_names.joblib")
+
+    # 3. Compute risk thresholds (delegated to risk_classification — single source of truth)
+    from src.risk_classification import compute_risk_thresholds, build_risk_thresholds_dict
+
+    q1, q3, _ = compute_risk_thresholds(best_model, df, target)
+    print(f"Risk thresholds (percentile-based): Q1 = {q1:.4f}, Q3 = {q3:.4f}")
+
+    risk_thresholds = build_risk_thresholds_dict(q1, q3)
+    with open(deploy_dir / "risk_thresholds.json", "w", encoding="utf-8") as f:
+        json.dump(risk_thresholds, f, indent=2, ensure_ascii=False)
+    print(f"Risk thresholds saved to: {deploy_dir / 'risk_thresholds.json'}")
+
+    # 4. Deployment metadata (human-readable JSON)
+    metadata = {
+        "model_type": "GradientBoostingClassifier",
+        "n_features": len(feature_names),
+        "feature_names": feature_names,
+        "target": target,
+        "hyperparameters": {
+            "n_estimators": 200,
+            "learning_rate": 0.05,
+            "random_state": 42
+        },
+        "metrics": {
+            k: round(v, 4) for k, v in results[2].items() if k != "Model"
+        },
+        "risk_thresholds": risk_thresholds,
+        "form_field_mapping": {
+            "age": {"type": "number", "label": "Age", "min": 18, "max": 28},
+            "academic_pressure": {"type": "select", "label": "Academic Pressure", "options": [0,1,2,3,4,5]},
+            "cgpa": {"type": "number", "label": "CGPA", "min": 0, "max": 10, "step": 0.1},
+            "study_satisfaction": {"type": "select", "label": "Study Satisfaction", "options": [0,1,2,3,4,5]},
+            "work_study_hours": {"type": "number", "label": "Work/Study Hours per Day", "min": 0, "max": 12},
+            "financial_stress": {"type": "select", "label": "Financial Stress", "options": [0,1,2,3,4,5]},
+            "suicidal_thoughts": {"type": "boolean", "label": "Have you ever had suicidal thoughts?"},
+            "family_history": {"type": "boolean", "label": "Family history of mental illness?"},
+            "gender": {"type": "select", "label": "Gender", "options": ["Male", "Female", "Other"]},
+            "sleep_duration": {"type": "select", "label": "Sleep Duration", "options": [
+                "Less than 5 hours", "5-6 hours", "7-8 hours", "More than 8 hours"
+            ]},
+            "degree": {"type": "select", "label": "Degree / Education Level", "options": [
+                "School", "Undergraduate", "Postgraduate", "PhD"
+            ]}
+        }
+    }
+    with open(deploy_dir / "model_metadata.json", "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=2, ensure_ascii=False)
+    print(f"Metadata saved to: {deploy_dir / 'model_metadata.json'}")
 
     print("\n--- Model Comparison ---\n", comp_df)
     print(f"\nResults exported to: {outdir}")
+    print(f"\n✅ Deployment artifacts ready in: {deploy_dir}")
+
+

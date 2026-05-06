@@ -1,4 +1,4 @@
 Risk Level,Percentile,Probability Range,Recommended Action
-Low,Bottom 25%,0.00 – 0.34,"General wellness resources, awareness programs"
-Moderate,Middle 50%,0.34 – 0.94,"Counseling, stress management workshops"
-High,Top 25%,≥ 0.94,"Urgent psychological intervention, referral"
+Low,Bottom 25%,0.00 – 0.3461,Indicates general awareness level
+Moderate,Middle 50%,0.3461 – 0.9441,Suggests monitoring and supportive interventions
+High,Top 25%,> 0.9441,Requires priority attention and further evaluation

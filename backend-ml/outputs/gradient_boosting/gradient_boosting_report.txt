@@ -1,16 +1,16 @@
 Gradient Boosting Classifier
 -----------------
-Accuracy  : 0.8437
-Precision : 0.8606
-Recall    : 0.9087
-F1-score  : 0.8840
-ROC-AUC   : 0.9097
-PR-AUC    : 0.9462
+Accuracy  : 0.8431
+Precision : 0.8602
+Recall    : 0.9083
+F1-score  : 0.8836
+ROC-AUC   : 0.9091
+PR-AUC    : 0.9463
 
 Classification Report:
               precision    recall  f1-score   support
 
-           0       0.81      0.72      0.76      1289
+           0       0.80      0.72      0.76      1289
            1       0.86      0.91      0.88      2453
 
     accuracy                           0.84      3742

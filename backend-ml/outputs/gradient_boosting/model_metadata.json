@@ -1,0 +1,157 @@
+{
+  "model_type": "GradientBoostingClassifier",
+  "n_features": 20,
+  "feature_names": [
+    "age",
+    "academic pressure",
+    "cgpa",
+    "study satisfaction",
+    "work/study hours",
+    "financial stress",
+    "have you ever had suicidal thoughts ?",
+    "family history of mental illness",
+    "gender_male",
+    "gender_female",
+    "gender_other",
+    "sleep_5-6 hours",
+    "sleep_7-8 hours",
+    "sleep_less than 5 hours",
+    "sleep_more than 8 hours",
+    "sleep_others",
+    "degree_school",
+    "degree_undergrad",
+    "degree_postgrad",
+    "degree_phd"
+  ],
+  "target": "depression",
+  "hyperparameters": {
+    "n_estimators": 200,
+    "learning_rate": 0.05,
+    "random_state": 42
+  },
+  "metrics": {
+    "Accuracy": 0.8431,
+    "Precision": 0.8602,
+    "Recall": 0.9083,
+    "F1-score": 0.8836,
+    "ROC-AUC": 0.9091,
+    "PR-AUC": 0.9463
+  },
+  "risk_thresholds": {
+    "q1": 0.3461,
+    "q3": 0.9441,
+    "method": "percentile-based",
+    "justification": "Percentile-based thresholds are used to provide relative risk stratification without relying on arbitrary probability cutoffs, ensuring consistency across varying data distributions.",
+    "risk_levels": {
+      "Low": {
+        "range": "probability < Q1 (0.3461)",
+        "percentile": "Bottom 25%",
+        "action": "Indicates general awareness level"
+      },
+      "Moderate": {
+        "range": "Q1 (0.3461) ≤ probability ≤ Q3 (0.9441)",
+        "percentile": "Middle 50%",
+        "action": "Suggests monitoring and supportive interventions"
+      },
+      "High": {
+        "range": "probability > Q3 (0.9441)",
+        "percentile": "Top 25%",
+        "action": "Requires priority attention and further evaluation"
+      }
+    }
+  },
+  "form_field_mapping": {
+    "age": {
+      "type": "number",
+      "label": "Age",
+      "min": 18,
+      "max": 28
+    },
+    "academic_pressure": {
+      "type": "select",
+      "label": "Academic Pressure",
+      "options": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "cgpa": {
+      "type": "number",
+      "label": "CGPA",
+      "min": 0,
+      "max": 10,
+      "step": 0.1
+    },
+    "study_satisfaction": {
+      "type": "select",
+      "label": "Study Satisfaction",
+      "options": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "work_study_hours": {
+      "type": "number",
+      "label": "Work/Study Hours per Day",
+      "min": 0,
+      "max": 12
+    },
+    "financial_stress": {
+      "type": "select",
+      "label": "Financial Stress",
+      "options": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "suicidal_thoughts": {
+      "type": "boolean",
+      "label": "Have you ever had suicidal thoughts?"
+    },
+    "family_history": {
+      "type": "boolean",
+      "label": "Family history of mental illness?"
+    },
+    "gender": {
+      "type": "select",
+      "label": "Gender",
+      "options": [
+        "Male",
+        "Female",
+        "Other"
+      ]
+    },
+    "sleep_duration": {
+      "type": "select",
+      "label": "Sleep Duration",
+      "options": [
+        "Less than 5 hours",
+        "5-6 hours",
+        "7-8 hours",
+        "More than 8 hours"
+      ]
+    },
+    "degree": {
+      "type": "select",
+      "label": "Degree / Education Level",
+      "options": [
+        "School",
+        "Undergraduate",
+        "Postgraduate",
+        "PhD"
+      ]
+    }
+  }
+}
