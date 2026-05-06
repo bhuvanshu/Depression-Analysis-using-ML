@@ -15,8 +15,6 @@ df = pd.read_csv(INPUT_FILE)
 df.columns = df.columns.str.strip().str.lower()
 print("✅ Raw Shape:", df.shape)
 
-# NOTE: Degree column is kept for df_paper (Degree_Group mapping).
-# It will NOT be included in df_ml.
 
 # Data cleaning: duplicates and whitespace
 df = df.drop_duplicates()
