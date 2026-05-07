@@ -267,6 +267,6 @@ if __name__ == "__main__":
 
     print("\n--- Model Comparison ---\n", comp_df)
     print(f"\nResults exported to: {outdir}")
-    print(f"\n✅ Deployment artifacts ready in: {deploy_dir}")
+    print(f"\n[OK] Deployment artifacts ready in: {deploy_dir}")
 
 
