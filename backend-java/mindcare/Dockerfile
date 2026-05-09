@@ -1,14 +1,19 @@
-# Use official Eclipse Temurin image for Java 17
-FROM eclipse-temurin:17-jre-jammy
+# Build stage
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the generated JAR file to the container
-COPY target/*.jar app.jar
+COPY . .
 
-# Expose the port (Render sets PORT env variable)
+RUN mvn clean package -DskipTests
+
+# Runtime stage
+FROM eclipse-temurin:17-jre-jammy
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Run the jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
