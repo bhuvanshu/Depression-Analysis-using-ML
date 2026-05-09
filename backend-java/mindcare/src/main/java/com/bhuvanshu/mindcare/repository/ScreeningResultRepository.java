@@ -4,5 +4,7 @@ import com.bhuvanshu.mindcare.entity.ScreeningResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScreeningResultRepository
-        extends JpaRepository<ScreeningResult, Long> {
+                extends JpaRepository<ScreeningResult, Long> {
+
+        long countByRiskLevel(String riskLevel);
 }

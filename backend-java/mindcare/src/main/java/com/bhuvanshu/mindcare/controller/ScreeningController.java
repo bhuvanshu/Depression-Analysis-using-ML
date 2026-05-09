@@ -1,6 +1,7 @@
 package com.bhuvanshu.mindcare.controller;
 
 import com.bhuvanshu.mindcare.dto.ScreeningRequest;
+import com.bhuvanshu.mindcare.dto.ScreeningResultResponse;
 import com.bhuvanshu.mindcare.service.ScreeningService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class ScreeningController {
     public ResponseEntity<?> submitScreening(
             @RequestBody ScreeningRequest request) {
 
-        String response =
-                screeningService.submitScreening(request);
+        ScreeningResultResponse response = screeningService.submitScreening(
+                request);
 
         return ResponseEntity.ok(response);
     }

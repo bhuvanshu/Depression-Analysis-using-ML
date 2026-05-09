@@ -7,6 +7,8 @@ import lombok.Setter;
 @Setter
 public class ScreeningRequest {
 
+    private String enrollmentId;
+
     private Integer age;
 
     private Integer academic_pressure;

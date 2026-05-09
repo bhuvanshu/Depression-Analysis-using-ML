@@ -22,15 +22,13 @@ public class ScreeningResponse {
 
     private Integer studySatisfaction;
 
-    private Integer sleepDuration;
-
     private Integer workStudyHours;
+
+    private Float cgpa;
 
     private Boolean suicidalThoughts;
 
     private Boolean familyHistory;
-
-    private Float cgpa;
 
     private LocalDateTime submittedAt = LocalDateTime.now();
 
