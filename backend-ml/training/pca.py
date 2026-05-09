@@ -12,8 +12,8 @@ if str(root) not in sys.path:
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from src.utils import finalize_plot, save_text_report
-from src.config import TARGET_COL, COLUMN_RENAMES, LABEL_MAPS, DEGREE_GROUP_ORDINAL
+from training.utils import finalize_plot, save_text_report
+from training.config import TARGET_COL, COLUMN_RENAMES, LABEL_MAPS, DEGREE_GROUP_ORDINAL
       
 
 # -------------------------------------------------------------

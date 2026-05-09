@@ -40,8 +40,8 @@ root = Path(__file__).resolve().parents[1]
 if str(root) not in sys.path:
     sys.path.append(str(root))
 
-from src.config import RISK_JUSTIFICATION, RISK_ACTIONS
-from src.risk_classification import build_risk_thresholds_dict
+from training.config import RISK_JUSTIFICATION, RISK_ACTIONS
+from training.risk_classification import build_risk_thresholds_dict
 
 
 # ═══════════════════════════════════════════

@@ -10,8 +10,8 @@ root = Path(__file__).resolve().parents[1]
 if str(root) not in sys.path:
     sys.path.append(str(root))
 
-from src.utils import finalize_plot, ensure_outdir, save_pretty_table, save_text_report
-from src.config import RISK_JUSTIFICATION, RISK_ACTIONS
+from training.utils import finalize_plot, ensure_outdir, save_pretty_table, save_text_report
+from training.config import RISK_JUSTIFICATION, RISK_ACTIONS
 
 
 def compute_risk_thresholds(model, df, target="Depression"):
