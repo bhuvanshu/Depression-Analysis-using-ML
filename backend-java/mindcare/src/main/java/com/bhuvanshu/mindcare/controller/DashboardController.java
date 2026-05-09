@@ -31,4 +31,24 @@ public class DashboardController {
         return ResponseEntity.ok(
                 dashboardService.getAllStudents());
     }
+
+    // CHART DATA
+
+    @GetMapping("/charts")
+    public ResponseEntity<?> getCharts() {
+
+        return ResponseEntity.ok(
+                dashboardService
+                        .getRiskDistributionChart());
+    }
+
+    // HIGH RISK STUDENTS
+
+    @GetMapping("/high-risk")
+    public ResponseEntity<?> getHighRiskStudents() {
+
+        return ResponseEntity.ok(
+                dashboardService
+                        .getHighRiskStudents());
+    }
 }

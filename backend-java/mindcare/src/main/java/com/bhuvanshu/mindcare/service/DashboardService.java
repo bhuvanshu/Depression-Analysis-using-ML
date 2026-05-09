@@ -9,7 +9,10 @@ import com.bhuvanshu.mindcare.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DashboardService {
@@ -20,7 +23,7 @@ public class DashboardService {
     @Autowired
     private ScreeningResultRepository screeningResultRepository;
 
-    // SUMMARY API
+    // SUMMARY
 
     public Map<String, Object> getSummary() {
 
@@ -48,12 +51,91 @@ public class DashboardService {
         return summary;
     }
 
-    // STUDENT TABLE API
+    // STUDENT TABLE
 
     public List<DashboardStudentResponse> getAllStudents() {
 
         List<ScreeningResult> results = screeningResultRepository
                 .findAllByOrderByPredictedAtDesc();
+
+        List<DashboardStudentResponse> responseList = new ArrayList<>();
+
+        for (ScreeningResult result : results) {
+
+            Student student = result.getScreeningResponse()
+                    .getStudent();
+
+            DashboardStudentResponse dto = new DashboardStudentResponse();
+
+            dto.setEnrollmentId(
+                    student.getEnrollmentId());
+
+            dto.setStudentName(
+                    student.getName());
+
+            dto.setDepartment(
+                    student.getDepartment());
+
+            dto.setRiskLevel(
+                    result.getRiskLevel());
+
+            dto.setProbabilityScore(
+                    result.getProbabilityScore());
+
+            responseList.add(dto);
+        }
+
+        return responseList;
+    }
+
+    // CHART DATA
+
+    public List<Map<String, Object>> getRiskDistributionChart() {
+
+        List<Map<String, Object>> chartData = new ArrayList<>();
+
+        Map<String, Object> high = new HashMap<>();
+
+        high.put("label", "High");
+
+        high.put(
+                "count",
+                screeningResultRepository
+                        .countByRiskLevel("High"));
+
+        chartData.add(high);
+
+        Map<String, Object> moderate = new HashMap<>();
+
+        moderate.put("label", "Moderate");
+
+        moderate.put(
+                "count",
+                screeningResultRepository
+                        .countByRiskLevel("Moderate"));
+
+        chartData.add(moderate);
+
+        Map<String, Object> low = new HashMap<>();
+
+        low.put("label", "Low");
+
+        low.put(
+                "count",
+                screeningResultRepository
+                        .countByRiskLevel("Low"));
+
+        chartData.add(low);
+
+        return chartData;
+    }
+
+    // HIGH RISK STUDENTS
+
+    public List<DashboardStudentResponse> getHighRiskStudents() {
+
+        List<ScreeningResult> results = screeningResultRepository
+                .findByRiskLevel("High");
 
         List<DashboardStudentResponse> responseList = new ArrayList<>();
 
