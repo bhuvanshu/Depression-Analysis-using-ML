@@ -102,9 +102,18 @@ public class ScreeningService {
                 result.setRecommendation(
                                 prediction.getRecommended_action());
 
-                result.setProbabilityScore(
-                                prediction.getProbability()
-                                                .getDepressed());
+                if (prediction.getProbability() != null
+                                && prediction.getProbability()
+                                                .getDepressed() != null) {
+
+                        result.setProbabilityScore(
+                                        prediction.getProbability()
+                                                        .getDepressed());
+
+                } else {
+
+                        result.setProbabilityScore(0.0);
+                }
 
                 screeningResultRepository.save(result);
 
