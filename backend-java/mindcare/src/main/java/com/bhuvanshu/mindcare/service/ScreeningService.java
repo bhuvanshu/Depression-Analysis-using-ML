@@ -10,6 +10,7 @@ import com.bhuvanshu.mindcare.repository.ScreeningResultRepository;
 import com.bhuvanshu.mindcare.repository.StudentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +30,8 @@ public class ScreeningService {
         @Autowired
         private ScreeningResultRepository screeningResultRepository;
 
-        private final String ML_API = "http://localhost:5000/predict";
+        @Value("${ml.api.url}")
+        private String ML_API;
 
         public ScreeningResultResponse submitScreening(
                         ScreeningRequest request) {
