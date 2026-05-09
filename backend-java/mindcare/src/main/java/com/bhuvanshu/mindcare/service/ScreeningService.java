@@ -87,7 +87,15 @@ public class ScreeningService {
                                 entity,
                                 ScreeningResultResponse.class);
 
+                // GET RESPONSE
+
                 ScreeningResultResponse prediction = mlResponse.getBody();
+
+                if (prediction == null) {
+
+                        throw new RuntimeException(
+                                        "ML prediction response is null");
+                }
 
                 // SAVE PREDICTION RESULT
 
@@ -101,6 +109,8 @@ public class ScreeningService {
 
                 result.setRecommendation(
                                 prediction.getRecommended_action());
+
+                // SAFE PROBABILITY HANDLING
 
                 if (prediction.getProbability() != null
                                 && prediction.getProbability()
