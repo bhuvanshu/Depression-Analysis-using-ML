@@ -1,0 +1,97 @@
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.input-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input-label .required {
+  color: var(--accent-danger);
+  margin-left: 2px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  left: var(--space-4);
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.input-field {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.input-field.has-icon {
+  padding-left: calc(var(--space-4) + 24px);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.input-field:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.input-field:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+  color: var(--accent-primary);
+}
+
+.input-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-field.read-only {
+  background: var(--bg-secondary);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.input-hint {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.input-error {
+  font-size: var(--font-size-xs);
+  color: var(--accent-danger);
+}
+
+/* Select */
+.select-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-4) center;
+  padding-right: var(--space-10);
+}
+
+/* Textarea */
+.textarea-field {
+  min-height: 100px;
+  resize: vertical;
+}

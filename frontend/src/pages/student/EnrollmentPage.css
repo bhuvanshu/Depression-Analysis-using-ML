@@ -1,0 +1,172 @@
+.enrollment-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  position: relative;
+}
+
+.enrollment-container {
+  width: 100%;
+  max-width: 480px;
+  animation: fadeInUp 0.6s var(--ease-out) both;
+}
+
+.enrollment-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.enrollment-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-2xl);
+  background: linear-gradient(135deg, var(--accent-primary), #8B5CF6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-6);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+
+.enrollment-title {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-2);
+  background: linear-gradient(135deg, var(--text-primary), var(--text-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.enrollment-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.enrollment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.enrollment-form .input-field {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.enrollment-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  color: #F87171;
+  font-size: var(--font-size-sm);
+  animation: fadeIn 0.3s var(--ease-out);
+}
+
+/* Student Preview Card */
+.student-preview {
+  margin-top: var(--space-6);
+  animation: fadeInUp 0.5s var(--ease-out) both;
+}
+
+.student-preview-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.student-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #6366F1, #A78BFA);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.student-preview-name {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+
+.student-preview-id {
+  font-size: var(--font-size-sm);
+  color: var(--text-accent);
+  font-family: monospace;
+}
+
+.student-preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.student-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.student-preview-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.student-preview-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.enrollment-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.enrollment-divider::before,
+.enrollment-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.enrollment-footer {
+  text-align: center;
+  margin-top: var(--space-8);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.enrollment-footer a {
+  color: var(--accent-primary);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .enrollment-title {
+    font-size: var(--font-size-2xl);
+  }
+}
