@@ -1,28 +1,27 @@
 {
   "model_type": "GradientBoostingClassifier",
-  "n_features": 20,
-  "feature_names": [
+  "pipeline_type": "sklearn.pipeline.Pipeline (preprocessor + classifier)",
+  "accepts_raw_input": true,
+  "n_raw_features": 11,
+  "raw_feature_schema": [
     "age",
-    "academic pressure",
+    "academic_pressure",
     "cgpa",
-    "study satisfaction",
-    "work/study hours",
-    "financial stress",
-    "have you ever had suicidal thoughts ?",
-    "family history of mental illness",
-    "gender_male",
-    "gender_female",
-    "gender_other",
-    "sleep_5-6 hours",
-    "sleep_7-8 hours",
-    "sleep_less than 5 hours",
-    "sleep_more than 8 hours",
-    "sleep_others",
-    "degree_school",
-    "degree_undergrad",
-    "degree_postgrad",
-    "degree_phd"
+    "study_satisfaction",
+    "work_study_hours",
+    "financial_stress",
+    "suicidal_thoughts",
+    "family_history",
+    "gender",
+    "sleep_duration",
+    "degree"
   ],
+  "preprocessing": {
+    "gender": "OneHotEncoder → [Female, Male, Other]",
+    "sleep_duration": "OneHotEncoder → [5-6 hours, 7-8 hours, Less than 5 hours, More than 8 hours, Others]",
+    "degree": "OneHotEncoder → [School, Undergraduate, Postgraduate, Doctorate]",
+    "numeric_cols": "Passthrough (no scaling needed for GradientBoosting)"
+  },
   "target": "depression",
   "hyperparameters": {
     "n_estimators": 200,
@@ -34,27 +33,27 @@
     "Precision": 0.8602,
     "Recall": 0.9083,
     "F1-score": 0.8836,
-    "ROC-AUC": 0.9091,
-    "PR-AUC": 0.9463
+    "ROC-AUC": 0.909,
+    "PR-AUC": 0.9462
   },
   "risk_thresholds": {
-    "q1": 0.3461,
-    "q3": 0.9441,
+    "q1": 0.3467,
+    "q3": 0.9443,
     "method": "percentile-based",
     "justification": "Percentile-based thresholds are used to provide relative risk stratification without relying on arbitrary probability cutoffs, ensuring consistency across varying data distributions.",
     "risk_levels": {
       "Low": {
-        "range": "probability < Q1 (0.3461)",
+        "range": "probability < Q1 (0.3467)",
         "percentile": "Bottom 25%",
         "action": "Indicates general awareness level"
       },
       "Moderate": {
-        "range": "Q1 (0.3461) ≤ probability ≤ Q3 (0.9441)",
+        "range": "Q1 (0.3467) ≤ probability ≤ Q3 (0.9443)",
         "percentile": "Middle 50%",
         "action": "Suggests monitoring and supportive interventions"
       },
       "High": {
-        "range": "probability > Q3 (0.9441)",
+        "range": "probability > Q3 (0.9443)",
         "percentile": "Top 25%",
         "action": "Requires priority attention and further evaluation"
       }
@@ -150,8 +149,14 @@
         "School",
         "Undergraduate",
         "Postgraduate",
-        "PhD"
+        "Doctorate"
       ]
     }
+  },
+  "deployment_notes": {
+    "artifact": "pipeline.joblib",
+    "input_format": "DataFrame with 11 raw columns matching form_field_mapping keys",
+    "no_external_preprocessing_needed": true,
+    "legacy_model.joblib": "Still present for backward compatibility; requires manual preprocessing"
   }
 }

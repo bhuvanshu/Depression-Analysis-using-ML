@@ -1,21 +1,21 @@
 {
-  "q1": 0.3461,
-  "q3": 0.9441,
+  "q1": 0.3467,
+  "q3": 0.9443,
   "method": "percentile-based",
   "justification": "Percentile-based thresholds are used to provide relative risk stratification without relying on arbitrary probability cutoffs, ensuring consistency across varying data distributions.",
   "risk_levels": {
     "Low": {
-      "range": "probability < Q1 (0.3461)",
+      "range": "probability < Q1 (0.3467)",
       "percentile": "Bottom 25%",
       "action": "Indicates general awareness level"
     },
     "Moderate": {
-      "range": "Q1 (0.3461) ≤ probability ≤ Q3 (0.9441)",
+      "range": "Q1 (0.3467) ≤ probability ≤ Q3 (0.9443)",
       "percentile": "Middle 50%",
       "action": "Suggests monitoring and supportive interventions"
     },
     "High": {
-      "range": "probability > Q3 (0.9441)",
+      "range": "probability > Q3 (0.9443)",
       "percentile": "Top 25%",
       "action": "Requires priority attention and further evaluation"
     }
