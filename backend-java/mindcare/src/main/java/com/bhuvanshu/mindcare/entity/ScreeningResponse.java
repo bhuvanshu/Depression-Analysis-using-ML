@@ -1,8 +1,13 @@
 package com.bhuvanshu.mindcare.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "screening_responses")
 public class ScreeningResponse {
@@ -32,6 +37,4 @@ public class ScreeningResponse {
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
-
-    // Getters and Setters
 }

@@ -1,8 +1,13 @@
 package com.bhuvanshu.mindcare.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "colleges")
 public class College {
@@ -21,6 +26,4 @@ public class College {
     private String passwordHash;
 
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    // Getters and Setters
 }

@@ -2,16 +2,16 @@ Risk Stratification Framework
 ========================================
 
 Method: Percentile-based (Q1/Q3) thresholds
-Q1 (25th percentile): 0.3461
-Q3 (75th percentile): 0.9441
+Q1 (25th percentile): 0.3451
+Q3 (75th percentile): 0.9428
 
-Low Risk     (Bottom 25%):  probability < 0.3461
+Low Risk     (Bottom 25%):  probability < 0.3451
   → Indicates general awareness level
 
-Moderate Risk (Middle 50%): 0.3461 ≤ probability ≤ 0.9441
+Moderate Risk (Middle 50%): 0.3451 ≤ probability ≤ 0.9428
   → Suggests monitoring and supportive interventions
 
-High Risk    (Top 25%):     probability > 0.9441
+High Risk    (Top 25%):     probability > 0.9428
   → Requires priority attention and further evaluation
 
 Justification:

@@ -1,22 +1,31 @@
 package com.bhuvanshu.mindcare.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ScreeningRequest {
 
-    private Integer academicPressure;
+    private Integer age;
 
-    private Integer financialStress;
-
-    private Integer studySatisfaction;
-
-    private Integer sleepDuration;
-
-    private Integer workStudyHours;
-
-    private Boolean suicidalThoughts;
-
-    private Boolean familyHistory;
+    private Integer academic_pressure;
 
     private Float cgpa;
 
-    // Getters and Setters
+    private Integer study_satisfaction;
+
+    private Integer work_study_hours;
+
+    private Integer financial_stress;
+
+    private Boolean suicidal_thoughts;
+
+    private Boolean family_history;
+
+    private String gender;
+
+    private String sleep_duration;
+
+    private String degree;
 }

@@ -1,8 +1,13 @@
 package com.bhuvanshu.mindcare.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "students")
 public class Student {
@@ -30,6 +35,4 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "college_id")
     private College college;
-
-    // Getters and Setters
 }

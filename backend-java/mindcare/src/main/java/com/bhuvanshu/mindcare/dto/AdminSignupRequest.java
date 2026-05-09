@@ -1,5 +1,10 @@
 package com.bhuvanshu.mindcare.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class AdminSignupRequest {
 
     private String collegeName;
@@ -9,6 +14,4 @@ public class AdminSignupRequest {
     private String adminEmail;
 
     private String password;
-
-    // Getters and Setters
 }

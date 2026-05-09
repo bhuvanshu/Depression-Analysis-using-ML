@@ -37,23 +37,23 @@
     "PR-AUC": 0.9462
   },
   "risk_thresholds": {
-    "q1": 0.3467,
-    "q3": 0.9443,
+    "q1": 0.3451,
+    "q3": 0.9428,
     "method": "percentile-based",
     "justification": "Percentile-based thresholds are used to provide relative risk stratification without relying on arbitrary probability cutoffs, ensuring consistency across varying data distributions.",
     "risk_levels": {
       "Low": {
-        "range": "probability < Q1 (0.3467)",
+        "range": "probability < Q1 (0.3451)",
         "percentile": "Bottom 25%",
         "action": "Indicates general awareness level"
       },
       "Moderate": {
-        "range": "Q1 (0.3467) ≤ probability ≤ Q3 (0.9443)",
+        "range": "Q1 (0.3451) ≤ probability ≤ Q3 (0.9428)",
         "percentile": "Middle 50%",
         "action": "Suggests monitoring and supportive interventions"
       },
       "High": {
-        "range": "probability > Q3 (0.9443)",
+        "range": "probability > Q3 (0.9428)",
         "percentile": "Top 25%",
         "action": "Requires priority attention and further evaluation"
       }

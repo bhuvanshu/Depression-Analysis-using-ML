@@ -1,8 +1,13 @@
 package com.bhuvanshu.mindcare.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "screening_results")
 public class ScreeningResult {
@@ -22,6 +27,4 @@ public class ScreeningResult {
     @OneToOne
     @JoinColumn(name = "response_id")
     private ScreeningResponse screeningResponse;
-
-    // Getters and Setters
 }
