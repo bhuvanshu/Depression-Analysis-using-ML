@@ -1,12 +1,16 @@
 package com.bhuvanshu.mindcare.service;
 
+import com.bhuvanshu.mindcare.dto.AdminLoginRequest;
 import com.bhuvanshu.mindcare.dto.AdminSignupRequest;
 import com.bhuvanshu.mindcare.entity.Admin;
 import com.bhuvanshu.mindcare.entity.College;
 import com.bhuvanshu.mindcare.repository.AdminRepository;
 import com.bhuvanshu.mindcare.repository.CollegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AdminService {
@@ -17,6 +21,9 @@ public class AdminService {
     @Autowired
     private CollegeRepository collegeRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public String signup(AdminSignupRequest request) {
 
         boolean exists = collegeRepository
@@ -26,21 +33,41 @@ public class AdminService {
             return "Admin email already exists";
         }
 
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         College college = new College();
         college.setCollegeName(request.getCollegeName());
         college.setAdminEmail(request.getAdminEmail());
-        college.setPasswordHash(request.getPassword());
+        college.setPasswordHash(encodedPassword);
 
         collegeRepository.save(college);
 
         Admin admin = new Admin();
         admin.setAdminName(request.getAdminName());
         admin.setAdminEmail(request.getAdminEmail());
-        admin.setPasswordHash(request.getPassword());
+        admin.setPasswordHash(encodedPassword);
         admin.setCollege(college);
 
         adminRepository.save(admin);
 
         return "Admin signup successful";
+    }
+
+    public String login(AdminLoginRequest request) {
+
+        Optional<Admin> adminOpt = adminRepository
+                .findByAdminEmail(request.getAdminEmail());
+
+        if (adminOpt.isEmpty()) {
+            return "Invalid email or password";
+        }
+
+        Admin admin = adminOpt.get();
+
+        if (passwordEncoder.matches(request.getPassword(), admin.getPasswordHash())) {
+            return "Login successful";
+        } else {
+            return "Invalid email or password";
+        }
     }
 }
