@@ -13,122 +13,124 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
 
 @Service
 public class ScreeningService {
 
-        @Autowired
-        private RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-        @Autowired
-        private StudentRepository studentRepository;
+    @Autowired
+    private StudentRepository studentRepository;
 
-        @Autowired
-        private ScreeningResponseRepository screeningResponseRepository;
+    @Autowired
+    private ScreeningResponseRepository screeningResponseRepository;
 
-        @Autowired
-        private ScreeningResultRepository screeningResultRepository;
+    @Autowired
+    private ScreeningResultRepository screeningResultRepository;
 
-        @Value("${ml.api.url}")
-        private String ML_API;
+    @Value("${ml.api.url}")
+    private String ML_API_BASE_URL;
 
-        public ScreeningResultResponse submitScreening(
-                        ScreeningRequest request) {
+    public ScreeningResultResponse submitScreening(ScreeningRequest request) {
 
-                // FETCH STUDENT
+        // FETCH STUDENT
+        Student student = studentRepository
+                .findByEnrollmentId(request.getEnrollmentId())
+                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + request.getEnrollmentId()));
 
-                Student student = studentRepository
-                                .findByEnrollmentId(
-                                                request.getEnrollmentId())
-                                .orElseThrow(
-                                                () -> new RuntimeException(
-                                                                "Student not found"));
+        // SAVE QUESTIONNAIRE RESPONSE
+        ScreeningResponse responseEntity = new ScreeningResponse();
+        responseEntity.setStudent(student);
 
-                // SAVE QUESTIONNAIRE RESPONSE
+        responseEntity.setAcademicPressure(
+                request.getAcademic_pressure());
 
-                ScreeningResponse responseEntity = new ScreeningResponse();
+        responseEntity.setFinancialStress(
+                request.getFinancial_stress());
 
-                responseEntity.setStudent(student);
+        responseEntity.setStudySatisfaction(
+                request.getStudy_satisfaction());
 
-                responseEntity.setAcademicPressure(
-                                request.getAcademic_pressure());
+        responseEntity.setWorkStudyHours(
+                request.getWork_study_hours());
 
-                responseEntity.setFinancialStress(
-                                request.getFinancial_stress());
+        responseEntity.setCgpa(
+                request.getCgpa());
 
-                responseEntity.setStudySatisfaction(
-                                request.getStudy_satisfaction());
+        responseEntity.setFamilyHistory(
+                request.getFamily_history());
 
-                responseEntity.setWorkStudyHours(
-                                request.getWork_study_hours());
+        responseEntity.setSuicidalThoughts(
+                request.getSuicidal_thoughts());
 
-                responseEntity.setCgpa(
-                                request.getCgpa());
+        screeningResponseRepository.save(
+                responseEntity);
 
-                responseEntity.setFamilyHistory(
-                                request.getFamily_history());
-
-                responseEntity.setSuicidalThoughts(
-                                request.getSuicidal_thoughts());
-
-                screeningResponseRepository.save(
-                                responseEntity);
-
-                // CALL ML API
-
-                HttpHeaders headers = new HttpHeaders();
-
-                headers.setContentType(
-                                MediaType.APPLICATION_JSON);
-
-                HttpEntity<ScreeningRequest> entity = new HttpEntity<>(request, headers);
-
-                ResponseEntity<ScreeningResultResponse> mlResponse = restTemplate.postForEntity(
-                                ML_API,
-                                entity,
-                                ScreeningResultResponse.class);
-
-                // GET RESPONSE
-
-                ScreeningResultResponse prediction = mlResponse.getBody();
-
-                if (prediction == null) {
-
-                        throw new RuntimeException(
-                                        "ML prediction response is null");
-                }
-
-                // SAVE PREDICTION RESULT
-
-                ScreeningResult result = new ScreeningResult();
-
-                result.setScreeningResponse(
-                                responseEntity);
-
-                result.setRiskLevel(
-                                prediction.getRisk_level());
-
-                result.setRecommendation(
-                                prediction.getRecommended_action());
-
-                // SAFE PROBABILITY HANDLING
-
-                if (prediction.getProbability() != null
-                                && prediction.getProbability()
-                                                .getDepressed() != null) {
-
-                        result.setProbabilityScore(
-                                        prediction.getProbability()
-                                                        .getDepressed());
-
-                } else {
-
-                        result.setProbabilityScore(0.0);
-                }
-
-                screeningResultRepository.save(result);
-
-                return prediction;
+        // CALL ML API
+        String predictUrl = ML_API_BASE_URL;
+        if (predictUrl == null || predictUrl.trim().isEmpty()) {
+            throw new RuntimeException("ML_API_URL environment variable is not configured");
         }
+
+        // Ensure URL ends with /predict
+        if (!predictUrl.endsWith("/predict")) {
+            predictUrl = predictUrl.endsWith("/") ? predictUrl + "predict" : predictUrl + "/predict";
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ScreeningRequest> entity = new HttpEntity<>(request, headers);
+
+        ScreeningResultResponse prediction;
+        try {
+            ResponseEntity<ScreeningResultResponse> mlResponse = restTemplate.postForEntity(
+                    predictUrl,
+                    entity,
+                    ScreeningResultResponse.class);
+            prediction = mlResponse.getBody();
+        } catch (RestClientException e) {
+            throw new RuntimeException("Failed to reach ML API at " + predictUrl + ": " + e.getMessage(), e);
+        }
+
+        if (prediction == null) {
+            throw new RuntimeException("ML prediction response is empty");
+        }
+
+        // SAVE PREDICTION RESULT
+
+        ScreeningResult result = new ScreeningResult();
+        result.setScreeningResponse(responseEntity);
+        result.setPredictedAt(LocalDateTime.now());
+
+        // Null safety for database constraints
+        String riskLevel = prediction.getRisk_level();
+        result.setRiskLevel(riskLevel != null ? riskLevel : "Unknown");
+
+        String recommendation = prediction.getRecommended_action();
+        result.setRecommendation(recommendation != null ? recommendation : "No recommendation provided");
+
+        // SAFE PROBABILITY HANDLING
+
+        if (prediction.getProbability() != null
+                && prediction.getProbability()
+                        .getDepressed() != null) {
+
+            result.setProbabilityScore(
+                    prediction.getProbability()
+                            .getDepressed());
+
+        } else {
+
+            result.setProbabilityScore(0.0);
+        }
+
+        screeningResultRepository.save(result);
+
+        return prediction;
+    }
 }
