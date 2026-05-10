@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class ScreeningRequest {
 
+    @JsonProperty("enrollmentId")
     private String enrollmentId;
 
     private Integer age;
