@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, ArrowRight, AlertCircle, Brain } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
-import { findStudentByEnrollment } from '../../data/mockData';
+import { verifyStudent } from '../../services/api';
 import './EnrollmentPage.css';
 
 export default function EnrollmentPage() {
@@ -13,7 +13,7 @@ export default function EnrollmentPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
     if (!enrollmentId.trim()) {
       setError('Please enter your enrollment ID');
@@ -24,16 +24,14 @@ export default function EnrollmentPage() {
     setError('');
     setStudent(null);
 
-    // Simulate API lookup
-    setTimeout(() => {
-      const found = findStudentByEnrollment(enrollmentId.trim());
-      if (found) {
-        setStudent(found);
-      } else {
-        setError('No student found with this enrollment ID. Please check and try again.');
-      }
+    try {
+      const foundStudent = await verifyStudent(enrollmentId.trim());
+      setStudent(foundStudent);
+    } catch (err) {
+      setError(err.message || 'No student found with this enrollment ID. Please check and try again.');
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   const handleContinue = () => {
@@ -109,7 +107,7 @@ export default function EnrollmentPage() {
                   </div>
                   <div>
                     <div className="student-preview-name">{student.name}</div>
-                    <div className="student-preview-id">{student.enrollment_id}</div>
+                    <div className="student-preview-id">{student.enrollmentId}</div>
                   </div>
                 </div>
 
@@ -120,16 +118,13 @@ export default function EnrollmentPage() {
                   </div>
                   <div className="student-preview-item">
                     <span className="student-preview-label">Degree</span>
-                    <span className="student-preview-value">{student.degree_group}</span>
+                    <span className="student-preview-value">{student.degreeGroup}</span>
                   </div>
                   <div className="student-preview-item">
                     <span className="student-preview-label">Age</span>
                     <span className="student-preview-value">{student.age} years</span>
                   </div>
-                  <div className="student-preview-item">
-                    <span className="student-preview-label">CGPA</span>
-                    <span className="student-preview-value">{student.cgpa}</span>
-                  </div>
+                    {/* CGPA hidden as it might not be in response, or can be fetched later */}
                 </div>
 
                 <Button

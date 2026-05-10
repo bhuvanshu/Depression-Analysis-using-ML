@@ -1,36 +1,52 @@
-import { useState, useMemo } from 'react';
-import { Search, Filter, ChevronDown, Download, User, MoreVertical } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Search, Filter, ChevronDown, Download, User, MoreVertical, UserPlus } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import RiskBadge from '../../components/common/RiskBadge';
-import { MOCK_STUDENTS, MOCK_RESULTS, MOCK_RESPONSES } from '../../data/mockData';
+import AddStudentModal from './AddStudentModal';
+import { getDashboardStudents, getHighRiskStudents } from '../../services/api';
 import './StudentsPage.css';
 
 export default function StudentsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [riskFilter, setRiskFilter] = useState('All');
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Merge student + result data for table
-  const tableData = useMemo(() => {
-    return MOCK_STUDENTS.map(student => {
-      const response = MOCK_RESPONSES.find(r => r.student_id === student.student_id);
-      const result = response ? MOCK_RESULTS.find(r => r.response_id === response.response_id) : null;
-      return { ...student, response, result };
-    }).filter(s => s.result);
-  }, []);
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      let data;
+      if (riskFilter === 'High') {
+        data = await getHighRiskStudents();
+      } else {
+        data = await getDashboardStudents();
+        if (riskFilter !== 'All') {
+          data = data.filter(s => s.riskLevel === riskFilter);
+        }
+      }
+      setStudents(data || []);
+    } catch (err) {
+      console.error("Failed to fetch students", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, [riskFilter]);
 
   const filteredData = useMemo(() => {
-    return tableData.filter(s => {
-      const matchesSearch = !searchQuery.trim() || 
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.enrollment_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.department.toLowerCase().includes(searchQuery.toLowerCase());
-        
-      const matchesRisk = riskFilter === 'All' || s.result?.risk_level === riskFilter;
-      
-      return matchesSearch && matchesRisk;
-    });
-  }, [searchQuery, riskFilter, tableData]);
+    if (!searchQuery.trim()) return students;
+    const q = searchQuery.toLowerCase();
+    return students.filter(s =>
+      s.studentName?.toLowerCase().includes(q) ||
+      s.enrollmentId?.toLowerCase().includes(q) ||
+      s.department?.toLowerCase().includes(q)
+    );
+  }, [searchQuery, students]);
 
   const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
   const getScoreClass = (level) => level?.toLowerCase() || 'low';
@@ -44,8 +60,17 @@ export default function StudentsPage() {
         </div>
         <div className="page-actions">
           <Button variant="secondary" icon={Download}>Export List</Button>
+          <Button variant="primary" icon={UserPlus} onClick={() => setIsModalOpen(true)}>
+            Add Student
+          </Button>
         </div>
       </div>
+
+      <AddStudentModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={fetchStudents}
+      />
 
       <Card elevated className="students-table-container">
         {/* Table Toolbar */}
@@ -73,7 +98,7 @@ export default function StudentsPage() {
               >
                 <option value="All">All Levels</option>
                 <option value="High">High Risk</option>
-                <option value="Moderate">Moderate</option>
+                <option value="Moderate">Moderate Risk</option>
                 <option value="Low">Low Risk</option>
               </select>
             </div>
@@ -82,59 +107,62 @@ export default function StudentsPage() {
 
         {/* Data Table */}
         <div className="data-table-wrapper">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Enrollment ID</th>
-                <th>Department</th>
-                <th>Risk Level</th>
-                <th>Score</th>
-                <th>Date Screened</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((row) => (
-                <tr key={row.student_id}>
-                  <td>
-                    <div className="table-student-name">
-                      <div className="table-avatar">{getInitials(row.name)}</div>
-                      <div>
-                        <span className="table-name-text">{row.name}</span>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{row.degree}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td><span className="table-enrollment">{row.enrollment_id}</span></td>
-                  <td>{row.department}</td>
-                  <td><RiskBadge level={row.result?.risk_level} /></td>
-                  <td>
-                    <span className={`table-score score-${getScoreClass(row.result?.risk_level)}`}>
-                      {((row.result?.probability_score || 0) * 100).toFixed(0)}%
-                    </span>
-                  </td>
-                  <td>{row.response?.submitted_at ? new Date(row.response.submitted_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>
-                  <td>
-                    <Button variant="ghost" size="sm" icon={User}>View</Button>
-                  </td>
-                </tr>
-              ))}
-              {filteredData.length === 0 && (
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+              Loading student records...
+            </div>
+          ) : (
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <td colSpan="7" className="table-empty-state">
-                    No students found matching your criteria
-                  </td>
+                  <th>Student</th>
+                  <th>Enrollment ID</th>
+                  <th>Department</th>
+                  <th>Risk Level</th>
+                  <th>Score</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredData.map((row, i) => (
+                  <tr key={row.enrollmentId || i}>
+                    <td>
+                      <div className="table-student-name">
+                        <div className="table-avatar">{getInitials(row.studentName)}</div>
+                        <div>
+                          <span className="table-name-text">{row.studentName}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span className="table-enrollment">{row.enrollmentId}</span></td>
+                    <td>{row.department}</td>
+                    <td><RiskBadge level={row.riskLevel} /></td>
+                    <td>
+                      <span className={`table-score score-${getScoreClass(row.riskLevel)}`}>
+                        {((row.probabilityScore || 0) * 100).toFixed(0)}%
+                      </span>
+                    </td>
+                    <td>
+                      <Button variant="ghost" size="sm" icon={User}>View</Button>
+                    </td>
+                  </tr>
+                ))}
+                {filteredData.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="table-empty-state">
+                      No students found matching your criteria
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Pagination */}
         <div className="table-pagination">
           <span className="table-pagination-info">
-            Showing {filteredData.length} of {tableData.length} entries
+            Showing {filteredData.length} of {students.length} entries
           </span>
           <div className="table-pagination-controls">
             <Button variant="ghost" size="sm" disabled>Previous</Button>

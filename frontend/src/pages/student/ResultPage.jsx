@@ -28,12 +28,13 @@ export default function ResultPage() {
     );
   }
 
-  const { probability_score, risk_level } = result;
+  const { risk_level, probability, recommended_action } = result;
   const riskKey = risk_level;
   const riskConfig = RISK_RECOMMENDATIONS[riskKey];
   const riskClass = risk_level.toLowerCase();
-  const percentage = Math.round(probability_score * 100);
-  const gaugeRotation = `${(probability_score * 360) - 90}deg`;
+  const probabilityScore = probability?.depressed || 0;
+  const percentage = Math.round(probabilityScore * 100);
+  const gaugeRotation = `${(probabilityScore * 360) - 90}deg`;
 
   const riskIcons = {
     Low: ShieldCheck,

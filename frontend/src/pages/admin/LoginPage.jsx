@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, LogIn, Brain, BarChart3, Shield, Users } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { adminLogin } from '../../services/api';
 import './AuthPage.css';
 
 export default function LoginPage() {
@@ -16,22 +17,32 @@ export default function LoginPage() {
     setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.email || !form.password) {
       setError('Please fill in all fields');
       return;
     }
     setLoading(true);
-    // Mock auth — accept anything
-    setTimeout(() => {
+    
+    try {
+      await adminLogin({
+        adminEmail: form.email,
+        password: form.password
+      });
+
+      // Still setting a mock token in local storage so the frontend knows we are logged in
       localStorage.setItem('admin_auth', JSON.stringify({
         email: form.email,
         name: form.email.split('@')[0],
-        college: 'National Institute of Technology'
+        college: 'Your Institution'
       }));
       navigate('/admin/dashboard');
-    }, 1000);
+    } catch (err) {
+      setError(err.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

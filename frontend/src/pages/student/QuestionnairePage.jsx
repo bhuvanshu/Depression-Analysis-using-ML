@@ -4,7 +4,8 @@ import { ArrowLeft, ArrowRight, Send, Shield, Heart, BookOpen, Moon, Clock, User
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
-import { QUESTIONNAIRE_CONFIG, simulatePrediction } from '../../data/mockData';
+import { QUESTIONNAIRE_CONFIG } from '../../data/mockData';
+import { submitScreening } from '../../services/api';
 import './QuestionnairePage.css';
 
 export default function QuestionnairePage() {
@@ -54,12 +55,29 @@ export default function QuestionnairePage() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const result = await simulatePrediction({
-        ...formData,
-        cgpa: student.cgpa
-      });
+      const screeningPayload = {
+        enrollmentId: student.enrollmentId,
+        age: student.age,
+        gender: student.gender,
+        degree: student.degreeGroup,
+        // Optional/mocked values for now if not present in formData:
+        cgpa: 8.0, 
+        academic_pressure: formData.academic_pressure,
+        financial_stress: formData.financial_stress,
+        study_satisfaction: formData.study_satisfaction,
+        work_study_hours: formData.work_study_hours,
+        suicidal_thoughts: formData.suicidal_thoughts === 1,
+        family_history: formData.family_history === 1,
+        sleep_duration: formData.sleep_duration.toString()
+      };
+
+      const result = await submitScreening(screeningPayload);
+      
       navigate('/result', { state: { student, formData, result } });
-    } catch {
+    } catch (err) {
+      console.error(err);
+      alert('Failed to submit screening. ' + (err.message || ''));
+    } finally {
       setSubmitting(false);
     }
   };
@@ -177,7 +195,7 @@ export default function QuestionnairePage() {
           <div className="student-info-details">
             <div className="student-info-name">{student.name}</div>
             <div className="student-info-meta">
-              {student.enrollment_id} · {student.department} · CGPA: {student.cgpa}
+              {student.enrollmentId} · {student.department}
             </div>
           </div>
         </div>

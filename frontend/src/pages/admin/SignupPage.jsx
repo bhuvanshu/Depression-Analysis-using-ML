@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, UserPlus, Brain, Building2, User, BarChart3, Shield, Users } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { adminSignup } from '../../services/api';
 import './AuthPage.css';
 
 export default function SignupPage() {
@@ -22,7 +23,7 @@ export default function SignupPage() {
     setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.collegeName || !form.adminName || !form.email || !form.password || !form.confirmPassword) {
       setError('Please fill in all fields');
@@ -38,14 +39,26 @@ export default function SignupPage() {
     }
 
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await adminSignup({
+        collegeName: form.collegeName,
+        adminName: form.adminName,
+        adminEmail: form.email,
+        password: form.password
+      });
+      
+      // Store mock auth state for frontend routing (we haven't set up real JWTs yet)
       localStorage.setItem('admin_auth', JSON.stringify({
         email: form.email,
         name: form.adminName,
         college: form.collegeName
       }));
       navigate('/admin/dashboard');
-    }, 1200);
+    } catch (err) {
+      setError(err.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
