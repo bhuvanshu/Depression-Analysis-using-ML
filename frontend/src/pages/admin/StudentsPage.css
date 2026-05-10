@@ -1,0 +1,86 @@
+.students-page {
+  animation: fadeIn var(--duration-normal) var(--ease-out);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.page-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.students-table-container {
+  padding: 0; /* Override Card padding to flush table */
+  overflow: hidden;
+}
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--glass);
+}
+
+.toolbar-search {
+  flex: 1;
+  max-width: 320px;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filter-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.table-empty-state {
+  text-align: center;
+  padding: var(--space-8) !important;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  
+  .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+  
+  .toolbar-search {
+    max-width: none;
+  }
+}

@@ -1,0 +1,66 @@
+.card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.card-hoverable:hover {
+  border-color: var(--border-hover);
+  background: var(--glass-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-elevated {
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.card-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+.card-body {
+  color: var(--text-secondary);
+}
+
+.card-footer {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+/* Accent border variant */
+.card-accent {
+  border-left: 3px solid var(--accent-primary);
+}
+
+.card-accent-success {
+  border-left: 3px solid var(--accent-success);
+}
+
+.card-accent-warning {
+  border-left: 3px solid var(--accent-warning);
+}
+
+.card-accent-danger {
+  border-left: 3px solid var(--accent-danger);
+}
