@@ -91,16 +91,19 @@ def features():
 # ==================================
 
 if __name__ == "__main__":
+    import os
     parser = argparse.ArgumentParser(description="Depression Prediction API Server")
-    parser.add_argument("--port", type=int, default=5000, help="Port to run on")
     parser.add_argument("--host", type=str, default="0.0.0.0", help="Host to bind to")
     args = parser.parse_args()
 
+    # Get port from environment variable (Render sets this automatically) or fallback to 5000
+    port = int(os.environ.get("PORT", 5000))
+
     mode = "UNIFIED PIPELINE" if predictor.use_pipeline else "LEGACY MODEL"
     print(f"\n[STARTING] Depression Prediction API ({mode})")
-    print(f"   http://{args.host}:{args.port}")
+    print(f"   http://{args.host}:{port}")
     print(f"   POST /predict  - Submit prediction request")
     print(f"   GET  /health   - Health check")
     print(f"   GET  /features - Input field metadata\n")
 
-    app.run(host=args.host, port=args.port, debug=True)
+    app.run(host=args.host, port=port, debug=False)
