@@ -9,4 +9,6 @@ public interface StudentRepository
         extends JpaRepository<Student, Long> {
 
     Optional<Student> findByEnrollmentId(String enrollmentId);
+
+    boolean existsByEnrollmentId(String enrollmentId);
 }
