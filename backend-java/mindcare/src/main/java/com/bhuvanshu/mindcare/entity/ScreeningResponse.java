@@ -24,6 +24,8 @@ public class ScreeningResponse {
 
     private Integer workStudyHours;
 
+    private String sleepDuration;
+
     private Float cgpa;
 
     private Boolean suicidalThoughts;

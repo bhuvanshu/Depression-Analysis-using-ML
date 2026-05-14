@@ -1,6 +1,7 @@
 package com.bhuvanshu.mindcare.service;
 
 import com.bhuvanshu.mindcare.dto.DashboardStudentResponse;
+import com.bhuvanshu.mindcare.entity.ScreeningResponse;
 import com.bhuvanshu.mindcare.entity.ScreeningResult;
 import com.bhuvanshu.mindcare.entity.Student;
 import com.bhuvanshu.mindcare.repository.ScreeningResultRepository;
@@ -61,28 +62,7 @@ public class DashboardService {
         List<DashboardStudentResponse> responseList = new ArrayList<>();
 
         for (ScreeningResult result : results) {
-
-            Student student = result.getScreeningResponse()
-                    .getStudent();
-
-            DashboardStudentResponse dto = new DashboardStudentResponse();
-
-            dto.setEnrollmentId(
-                    student.getEnrollmentId());
-
-            dto.setStudentName(
-                    student.getName());
-
-            dto.setDepartment(
-                    student.getDepartment());
-
-            dto.setRiskLevel(
-                    result.getRiskLevel());
-
-            dto.setProbabilityScore(
-                    result.getProbabilityScore());
-
-            responseList.add(dto);
+            responseList.add(mapToDto(result));
         }
 
         return responseList;
@@ -140,30 +120,42 @@ public class DashboardService {
         List<DashboardStudentResponse> responseList = new ArrayList<>();
 
         for (ScreeningResult result : results) {
-
-            Student student = result.getScreeningResponse()
-                    .getStudent();
-
-            DashboardStudentResponse dto = new DashboardStudentResponse();
-
-            dto.setEnrollmentId(
-                    student.getEnrollmentId());
-
-            dto.setStudentName(
-                    student.getName());
-
-            dto.setDepartment(
-                    student.getDepartment());
-
-            dto.setRiskLevel(
-                    result.getRiskLevel());
-
-            dto.setProbabilityScore(
-                    result.getProbabilityScore());
-
-            responseList.add(dto);
+            responseList.add(mapToDto(result));
         }
 
         return responseList;
     }
-}
+
+    // SHARED MAPPING HELPER
+
+    private DashboardStudentResponse mapToDto(ScreeningResult result) {
+
+        ScreeningResponse screening = result.getScreeningResponse();
+        Student student = screening.getStudent();
+
+        DashboardStudentResponse dto = new DashboardStudentResponse();
+
+        // Identity fields
+        dto.setEnrollmentId(student.getEnrollmentId());
+        dto.setStudentName(student.getName());
+        dto.setDepartment(student.getDepartment());
+
+        // Risk fields
+        dto.setRiskLevel(result.getRiskLevel());
+        dto.setProbabilityScore(result.getProbabilityScore());
+
+        // Questionnaire metrics from ScreeningResponse
+        dto.setAcademicPressure(screening.getAcademicPressure());
+        dto.setFinancialStress(screening.getFinancialStress());
+        dto.setStudySatisfaction(screening.getStudySatisfaction());
+        dto.setSuicidalThoughts(screening.getSuicidalThoughts());
+        dto.setFamilyHistory(screening.getFamilyHistory());
+        dto.setStudyHours(screening.getWorkStudyHours());
+        dto.setSleepDuration(screening.getSleepDuration());
+
+        // Screening date from prediction timestamp
+        dto.setScreeningDate(result.getPredictedAt());
+
+        return dto;
+    }
+}

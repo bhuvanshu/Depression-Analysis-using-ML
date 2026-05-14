@@ -1,6 +1,7 @@
 package com.bhuvanshu.mindcare.controller;
 
 import com.bhuvanshu.mindcare.dto.AdminLoginRequest;
+import com.bhuvanshu.mindcare.dto.AdminLoginResponse;
 import com.bhuvanshu.mindcare.dto.AdminSignupRequest;
 import com.bhuvanshu.mindcare.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +26,15 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<?> login(
             @RequestBody AdminLoginRequest request) {
 
-        String response = adminService.login(request);
+        AdminLoginResponse response = adminService.login(request);
 
-        if (response.equals("Login successful")) {
+        if (response != null) {
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(401).body(response);
+            return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
 }

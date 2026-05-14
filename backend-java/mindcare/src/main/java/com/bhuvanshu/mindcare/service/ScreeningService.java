@@ -62,6 +62,9 @@ public class ScreeningService {
         responseEntity.setCgpa(
                 request.getCgpa());
 
+        responseEntity.setSleepDuration(
+                request.getSleep_duration());
+
         responseEntity.setFamilyHistory(
                 request.getFamily_history());
 

@@ -1,6 +1,7 @@
 package com.bhuvanshu.mindcare.service;
 
 import com.bhuvanshu.mindcare.dto.AdminLoginRequest;
+import com.bhuvanshu.mindcare.dto.AdminLoginResponse;
 import com.bhuvanshu.mindcare.dto.AdminSignupRequest;
 import com.bhuvanshu.mindcare.entity.Admin;
 import com.bhuvanshu.mindcare.entity.College;
@@ -53,21 +54,33 @@ public class AdminService {
         return "Admin signup successful";
     }
 
-    public String login(AdminLoginRequest request) {
+    public AdminLoginResponse login(AdminLoginRequest request) {
 
         Optional<Admin> adminOpt = adminRepository
                 .findByAdminEmail(request.getAdminEmail());
 
         if (adminOpt.isEmpty()) {
-            return "Invalid email or password";
+            return null;
         }
 
         Admin admin = adminOpt.get();
 
         if (passwordEncoder.matches(request.getPassword(), admin.getPasswordHash())) {
-            return "Login successful";
+
+            AdminLoginResponse response = new AdminLoginResponse();
+
+            response.setAdminName(admin.getAdminName());
+            response.setAdminEmail(admin.getAdminEmail());
+
+            College college = admin.getCollege();
+            if (college != null) {
+                response.setCollegeName(college.getCollegeName());
+            }
+
+            return response;
+
         } else {
-            return "Invalid email or password";
+            return null;
         }
     }
 }
