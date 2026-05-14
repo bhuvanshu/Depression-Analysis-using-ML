@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, LogIn, Brain, BarChart3, Shield, Users } from 'lucide-react';
+import { Mail, Lock, LogIn, Brain, BarChart3, Shield, Users, ArrowLeft } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { adminLogin } from '../../services/api';
@@ -26,16 +26,16 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      await adminLogin({
+      const response = await adminLogin({
         adminEmail: form.email,
         password: form.password
       });
 
-      // Still setting a mock token in local storage so the frontend knows we are logged in
+      // Store the actual admin data from the response
       localStorage.setItem('admin_auth', JSON.stringify({
-        email: form.email,
-        name: form.email.split('@')[0],
-        college: 'Your Institution'
+        email: response.adminEmail || form.email,
+        name: response.adminName || form.email.split('@')[0],
+        college: response.collegeName || 'Your Institution'
       }));
       navigate('/admin/dashboard');
     } catch (err) {
@@ -77,7 +77,12 @@ export default function LoginPage() {
 
       {/* Form Side */}
       <div className="auth-form-side">
+        <Link to="/" className="auth-back-link">
+          <ArrowLeft size={20} />
+          Back to Questionnaire
+        </Link>
         <div className="auth-form-container">
+          
           <div className="auth-form-header">
             <h2>Welcome Back</h2>
             <p>Sign in to access your admin dashboard</p>

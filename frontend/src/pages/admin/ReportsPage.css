@@ -1,20 +1,6 @@
+/* ReportsPage.css */
 .reports-page {
-  animation: fadeIn var(--duration-normal) var(--ease-out);
-}
-
-.reports-toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--border);
-}
-
-.report-date-range {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  font-weight: 500;
+  padding-bottom: var(--space-8);
 }
 
 .reports-grid {
@@ -28,61 +14,67 @@
   padding: var(--space-6);
 }
 
-.report-card-title {
+.report-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.report-card-header h3 {
   font-size: var(--font-size-lg);
   font-weight: 600;
-  margin-bottom: var(--space-2);
 }
 
-.report-card-desc {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-  margin-bottom: var(--space-6);
-}
-
-.report-insights {
-  padding: var(--space-6);
-  margin-bottom: var(--space-8);
-  background: linear-gradient(145deg, rgba(30,41,59,0.7), rgba(15,23,42,0.9));
-  border: 1px solid rgba(99,102,241,0.2);
-}
-
-.insights-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.insights-list li {
+.report-chart-container {
+  height: 300px;
   position: relative;
-  padding-left: var(--space-6);
+}
+
+.insight-text {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
+  margin-bottom: var(--space-5);
   line-height: 1.6;
 }
 
-.insights-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-primary);
+.intelligence-summary {
+  padding: var(--space-6);
+  background: var(--bg-secondary);
 }
 
-.insights-list li strong {
-  color: var(--text-primary);
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  color: var(--accent-primary);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.summary-item label {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.summary-item span {
+  font-size: var(--font-size-lg);
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
-  .reports-grid {
+  .summary-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 }

@@ -59,6 +59,8 @@
 
 .modal-body {
   padding: 1.5rem;
+  max-height: calc(80vh - 80px);
+  overflow-y: auto;
 }
 
 @keyframes scaleUp {

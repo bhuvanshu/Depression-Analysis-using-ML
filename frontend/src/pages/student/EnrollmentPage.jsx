@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ArrowRight, AlertCircle, Brain } from 'lucide-react';
+import { Search, ArrowRight, AlertCircle, Brain, Check } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import { verifyStudent } from '../../services/api';
@@ -51,9 +51,9 @@ export default function EnrollmentPage() {
           <div className="enrollment-logo">
             <Brain size={36} color="white" />
           </div>
-          <h1 className="enrollment-title">Mental Health Screening</h1>
+          <h1 className="enrollment-title">Mind Care</h1>
           <p className="enrollment-subtitle">
-            Confidential depression risk assessment for students
+            AI-assisted student mental wellness screening platform
           </p>
         </div>
 
@@ -124,7 +124,6 @@ export default function EnrollmentPage() {
                     <span className="student-preview-label">Age</span>
                     <span className="student-preview-value">{student.age} years</span>
                   </div>
-                    {/* CGPA hidden as it might not be in response, or can be fetched later */}
                 </div>
 
                 <Button
@@ -140,6 +139,25 @@ export default function EnrollmentPage() {
             </>
           )}
         </Card>
+
+        <div className="trust-features">
+          <div className="trust-feature">
+            <Check size={16} className="trust-icon" />
+            <span>Secure</span>
+          </div>
+          <div className="trust-feature">
+            <Check size={16} className="trust-icon" />
+            <span>Confidential</span>
+          </div>
+          <div className="trust-feature">
+            <Check size={16} className="trust-icon" />
+            <span>AI-assisted</span>
+          </div>
+        </div>
+
+        <div className="privacy-notice">
+          <p>Your responses are confidential and used only for wellness assessment.</p>
+        </div>
 
         <p className="enrollment-footer">
           Are you an admin? <a href="/admin/login">Login here</a>

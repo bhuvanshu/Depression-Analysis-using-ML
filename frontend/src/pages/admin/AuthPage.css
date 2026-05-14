@@ -92,12 +92,32 @@
   justify-content: center;
   padding: var(--space-8);
   background: var(--bg-primary);
+  position: relative;
 }
 
 .auth-form-container {
   width: 100%;
   max-width: 400px;
   animation: fadeInUp 0.6s var(--ease-out) both;
+}
+
+.auth-back-link {
+  position: absolute;
+  top: var(--space-8);
+  left: var(--space-8);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: all var(--duration-normal) var(--ease-out);
+  z-index: 10;
+}
+
+.auth-back-link:hover {
+  color: var(--accent-primary);
+  transform: translateX(-4px);
 }
 
 .auth-form-header {

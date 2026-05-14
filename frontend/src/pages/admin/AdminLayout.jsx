@@ -38,7 +38,7 @@ export default function AdminLayout() {
               <Brain size={20} color="white" />
             </div>
             <div>
-              <div className="sidebar-logo-text">MindScreen</div>
+              <div className="sidebar-logo-text">Mind Care</div>
               <div className="sidebar-logo-sub">Admin Panel</div>
             </div>
           </div>

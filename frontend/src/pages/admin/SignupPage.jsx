@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, UserPlus, Brain, Building2, User, BarChart3, Shield, Users } from 'lucide-react';
+import { Mail, Lock, UserPlus, Brain, Building2, User, BarChart3, Shield, Users, ArrowLeft } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import { adminSignup } from '../../services/api';
@@ -93,7 +93,12 @@ export default function SignupPage() {
 
       {/* Form Side */}
       <div className="auth-form-side">
+        <Link to="/" className="auth-back-link">
+          <ArrowLeft size={20} />
+          Back to Questionnaire
+        </Link>
         <div className="auth-form-container">
+          
           <div className="auth-form-header">
             <h2>Create Account</h2>
             <p>Register your institution to get started</p>

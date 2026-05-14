@@ -203,7 +203,13 @@ export default function QuestionnairePage() {
         {/* Header */}
         <div className="questionnaire-header">
           <h1>Screening Questionnaire</h1>
-          <p>Please answer honestly. All responses are confidential and used solely for support purposes.</p>
+          <div className="sensitive-notice" style={{ textAlign: 'left', margin: '0 auto', maxWidth: '100%' }}>
+            <Shield size={16} />
+            <span>
+              The following questions are part of a standardized screening process.
+              Your responses are kept strictly confidential and are used only to connect you with appropriate support.
+            </span>
+          </div>
         </div>
 
         {/* Form */}
@@ -232,14 +238,6 @@ export default function QuestionnairePage() {
             <div className="form-section delay-2">
               <div className="form-section-title">
                 <Heart size={14} /> Health & History
-              </div>
-
-              <div className="sensitive-notice">
-                <Shield size={16} />
-                <span>
-                  The following questions are part of a standardized screening process.
-                  Your responses are kept strictly confidential and are used only to connect you with appropriate support.
-                </span>
               </div>
 
               {renderToggle('suicidal_thoughts', QUESTIONNAIRE_CONFIG.suicidal_thoughts)}
