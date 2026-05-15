@@ -1,9 +1,11 @@
 package com.bhuvanshu.mindcare.service;
 
 import com.bhuvanshu.mindcare.dto.DashboardStudentResponse;
+import com.bhuvanshu.mindcare.entity.College;
 import com.bhuvanshu.mindcare.entity.ScreeningResponse;
 import com.bhuvanshu.mindcare.entity.ScreeningResult;
 import com.bhuvanshu.mindcare.entity.Student;
+import com.bhuvanshu.mindcare.repository.CollegeRepository;
 import com.bhuvanshu.mindcare.repository.ScreeningResultRepository;
 import com.bhuvanshu.mindcare.repository.StudentRepository;
 
@@ -24,40 +26,76 @@ public class DashboardService {
     @Autowired
     private ScreeningResultRepository screeningResultRepository;
 
+    @Autowired
+    private CollegeRepository collegeRepository;
+
     // SUMMARY
 
-    public Map<String, Object> getSummary() {
+    public Map<String, Object> getSummary(String collegeName) {
 
         Map<String, Object> summary = new HashMap<>();
 
-        summary.put(
-                "totalStudents",
-                studentRepository.count());
+        College college = resolveCollege(collegeName);
 
-        summary.put(
-                "highRisk",
-                screeningResultRepository
-                        .countByRiskLevel("High"));
+        if (college != null) {
+            summary.put(
+                    "totalStudents",
+                    studentRepository.countByCollege(college));
 
-        summary.put(
-                "moderateRisk",
-                screeningResultRepository
-                        .countByRiskLevel("Moderate"));
+            summary.put(
+                    "highRisk",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "High"));
 
-        summary.put(
-                "lowRisk",
-                screeningResultRepository
-                        .countByRiskLevel("Low"));
+            summary.put(
+                    "moderateRisk",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "Moderate"));
+
+            summary.put(
+                    "lowRisk",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "Low"));
+        } else {
+            // Fallback: no college filter (backward compatibility)
+            summary.put(
+                    "totalStudents",
+                    studentRepository.count());
+
+            summary.put(
+                    "highRisk",
+                    screeningResultRepository
+                            .countByRiskLevel("High"));
+
+            summary.put(
+                    "moderateRisk",
+                    screeningResultRepository
+                            .countByRiskLevel("Moderate"));
+
+            summary.put(
+                    "lowRisk",
+                    screeningResultRepository
+                            .countByRiskLevel("Low"));
+        }
 
         return summary;
     }
 
     // STUDENT TABLE
 
-    public List<DashboardStudentResponse> getAllStudents() {
+    public List<DashboardStudentResponse> getAllStudents(String collegeName) {
 
-        List<ScreeningResult> results = screeningResultRepository
-                .findAllByOrderByPredictedAtDesc();
+        College college = resolveCollege(collegeName);
+
+        List<ScreeningResult> results;
+
+        if (college != null) {
+            results = screeningResultRepository
+                    .findAllByCollegeOrderByPredictedAtDesc(college);
+        } else {
+            results = screeningResultRepository
+                    .findAllByOrderByPredictedAtDesc();
+        }
 
         List<DashboardStudentResponse> responseList = new ArrayList<>();
 
@@ -70,41 +108,49 @@ public class DashboardService {
 
     // CHART DATA
 
-    public List<Map<String, Object>> getRiskDistributionChart() {
+    public List<Map<String, Object>> getRiskDistributionChart(String collegeName) {
+
+        College college = resolveCollege(collegeName);
 
         List<Map<String, Object>> chartData = new ArrayList<>();
 
         Map<String, Object> high = new HashMap<>();
-
         high.put("label", "High");
 
-        high.put(
-                "count",
-                screeningResultRepository
-                        .countByRiskLevel("High"));
-
-        chartData.add(high);
-
         Map<String, Object> moderate = new HashMap<>();
-
         moderate.put("label", "Moderate");
 
-        moderate.put(
-                "count",
-                screeningResultRepository
-                        .countByRiskLevel("Moderate"));
-
-        chartData.add(moderate);
-
         Map<String, Object> low = new HashMap<>();
-
         low.put("label", "Low");
 
-        low.put(
-                "count",
-                screeningResultRepository
-                        .countByRiskLevel("Low"));
+        if (college != null) {
+            high.put("count",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "High"));
 
+            moderate.put("count",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "Moderate"));
+
+            low.put("count",
+                    screeningResultRepository
+                            .countByCollegeAndRiskLevel(college, "Low"));
+        } else {
+            high.put("count",
+                    screeningResultRepository
+                            .countByRiskLevel("High"));
+
+            moderate.put("count",
+                    screeningResultRepository
+                            .countByRiskLevel("Moderate"));
+
+            low.put("count",
+                    screeningResultRepository
+                            .countByRiskLevel("Low"));
+        }
+
+        chartData.add(high);
+        chartData.add(moderate);
         chartData.add(low);
 
         return chartData;
@@ -112,10 +158,19 @@ public class DashboardService {
 
     // HIGH RISK STUDENTS
 
-    public List<DashboardStudentResponse> getHighRiskStudents() {
+    public List<DashboardStudentResponse> getHighRiskStudents(String collegeName) {
 
-        List<ScreeningResult> results = screeningResultRepository
-                .findByRiskLevel("High");
+        College college = resolveCollege(collegeName);
+
+        List<ScreeningResult> results;
+
+        if (college != null) {
+            results = screeningResultRepository
+                    .findByCollegeAndRiskLevel(college, "High");
+        } else {
+            results = screeningResultRepository
+                    .findByRiskLevel("High");
+        }
 
         List<DashboardStudentResponse> responseList = new ArrayList<>();
 
@@ -158,4 +213,15 @@ public class DashboardService {
 
         return dto;
     }
-}
+
+    /**
+     * Resolves a College entity from the collegeName.
+     * Returns null if collegeName is blank (graceful fallback).
+     */
+    private College resolveCollege(String collegeName) {
+        if (collegeName == null || collegeName.trim().isEmpty()) {
+            return null;
+        }
+        return collegeRepository.findByCollegeName(collegeName).orElse(null);
+    }
+}

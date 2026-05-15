@@ -17,38 +17,42 @@ public class DashboardController {
     // SUMMARY
 
     @GetMapping("/summary")
-    public ResponseEntity<?> getSummary() {
+    public ResponseEntity<?> getSummary(
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
 
         return ResponseEntity.ok(
-                dashboardService.getSummary());
+                dashboardService.getSummary(collegeName));
     }
 
     // STUDENT TABLE
 
     @GetMapping("/students")
-    public ResponseEntity<?> getStudents() {
+    public ResponseEntity<?> getStudents(
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
 
         return ResponseEntity.ok(
-                dashboardService.getAllStudents());
+                dashboardService.getAllStudents(collegeName));
     }
 
     // CHART DATA
 
     @GetMapping("/charts")
-    public ResponseEntity<?> getCharts() {
+    public ResponseEntity<?> getCharts(
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
 
         return ResponseEntity.ok(
                 dashboardService
-                        .getRiskDistributionChart());
+                        .getRiskDistributionChart(collegeName));
     }
 
     // HIGH RISK STUDENTS
 
     @GetMapping("/high-risk")
-    public ResponseEntity<?> getHighRiskStudents() {
+    public ResponseEntity<?> getHighRiskStudents(
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
 
         return ResponseEntity.ok(
                 dashboardService
-                        .getHighRiskStudents());
+                        .getHighRiskStudents(collegeName));
     }
 }

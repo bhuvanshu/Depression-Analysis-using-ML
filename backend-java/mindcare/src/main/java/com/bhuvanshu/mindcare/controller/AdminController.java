@@ -4,6 +4,7 @@ import com.bhuvanshu.mindcare.dto.AdminLoginRequest;
 import com.bhuvanshu.mindcare.dto.AdminLoginResponse;
 import com.bhuvanshu.mindcare.dto.AdminSignupRequest;
 import com.bhuvanshu.mindcare.service.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class AdminController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(
-            @RequestBody AdminSignupRequest request) {
+            @Valid @RequestBody AdminSignupRequest request) {
 
         String response = adminService.signup(request);
 

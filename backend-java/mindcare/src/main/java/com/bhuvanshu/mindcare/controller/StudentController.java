@@ -38,9 +38,11 @@ public class StudentController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addStudent(@RequestBody StudentAddRequest request) {
+    public ResponseEntity<?> addStudent(
+            @RequestBody StudentAddRequest request,
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
         try {
-            StudentResponse response = studentService.addStudent(request);
+            StudentResponse response = studentService.addStudent(request, collegeName);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -51,9 +53,11 @@ public class StudentController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<?> bulkAddStudents(@RequestBody List<StudentAddRequest> requests) {
+    public ResponseEntity<?> bulkAddStudents(
+            @RequestBody List<StudentAddRequest> requests,
+            @RequestHeader(value = "X-College-Name", required = false) String collegeName) {
         try {
-            BulkAddResponse response = studentService.bulkAddStudents(requests);
+            BulkAddResponse response = studentService.bulkAddStudents(requests, collegeName);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
