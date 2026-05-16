@@ -3,7 +3,7 @@ import { Home, RotateCcw, CheckCircle, ShieldCheck, AlertTriangle, AlertOctagon,
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import RiskBadge from '../../components/common/RiskBadge';
-import { RISK_RECOMMENDATIONS } from '../../data/mockData';
+import { RISK_RECOMMENDATIONS } from '../../data/uiConfig';
 import './ResultPage.css';
 
 export default function ResultPage() {

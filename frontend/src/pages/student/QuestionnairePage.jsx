@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Send, Shield, Heart, BookOpen, Moon, Clock, User
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
-import { QUESTIONNAIRE_CONFIG } from '../../data/mockData';
+import { QUESTIONNAIRE_CONFIG } from '../../data/uiConfig';
 import { submitScreening } from '../../services/api';
 import './QuestionnairePage.css';
 
@@ -21,6 +21,7 @@ export default function QuestionnairePage() {
     work_study_hours: 2,
     suicidal_thoughts: 0,
     family_history: 0,
+    cgpa: '',
     other_factors: ''
   });
 
@@ -60,8 +61,7 @@ export default function QuestionnairePage() {
         age: student.age,
         gender: student.gender,
         degree: student.degreeGroup,
-        // Optional/mocked values for now if not present in formData:
-        cgpa: 8.0, 
+        cgpa: parseFloat(formData.cgpa) || 0.0, 
         academic_pressure: formData.academic_pressure,
         financial_stress: formData.financial_stress,
         study_satisfaction: formData.study_satisfaction,
@@ -161,6 +161,26 @@ export default function QuestionnairePage() {
     </div>
   );
 
+const renderInput = (key, config) => {
+    // Fallback to empty object if config is undefined to prevent crash
+    const activeConfig = config || {};
+    return (
+      <div key={key} style={{ marginBottom: 'var(--space-4)' }}>
+        <Input
+          type={activeConfig.type || 'number'}
+          label={activeConfig.label || 'Current CGPA'}
+          placeholder={activeConfig.placeholder || 'e.g. 8.5'}
+          value={formData[key]}
+          min={activeConfig.min || 0}
+          max={activeConfig.max || 10}
+          step="0.01"
+          onChange={(e) => setFormData(prev => ({ ...prev, [key]: e.target.value }))}
+          icon={BookOpen}
+        />
+        {activeConfig.description && <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '-0.5rem', marginLeft: '2.5rem' }}>{activeConfig.description}</p>}
+      </div>
+    );
+  };
   return (
     <div className="questionnaire-page">
       <div className="bg-pattern" />
@@ -220,6 +240,7 @@ export default function QuestionnairePage() {
               <div className="form-section-title">
                 <BookOpen size={14} /> Academic & Financial
               </div>
+              {renderInput('cgpa', QUESTIONNAIRE_CONFIG.cgpa)}
               {renderSlider('academic_pressure', QUESTIONNAIRE_CONFIG.academic_pressure)}
               {renderSlider('financial_stress', QUESTIONNAIRE_CONFIG.financial_stress)}
               {renderSlider('study_satisfaction', QUESTIONNAIRE_CONFIG.study_satisfaction)}

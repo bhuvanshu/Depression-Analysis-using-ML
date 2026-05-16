@@ -66,7 +66,7 @@ export default function EnrollmentPage() {
                 <input
                   type="text"
                   className="input-field has-icon"
-                  placeholder="e.g. BT21CSE001"
+                  placeholder="e.g. SRHU230015"
                   value={enrollmentId}
                   onChange={(e) => {
                     setEnrollmentId(e.target.value.toUpperCase());

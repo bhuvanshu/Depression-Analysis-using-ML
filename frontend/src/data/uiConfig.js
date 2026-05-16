@@ -2,6 +2,7 @@
 
 
 export const QUESTIONNAIRE_CONFIG = {
+ _version : '1.0.1',
   academic_pressure: {
     label: "Academic Pressure",
     description: "How much academic pressure do you experience?",
