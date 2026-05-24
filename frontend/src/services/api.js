@@ -2,13 +2,31 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 /**
+ * Reads the logged-in admin's college name from localStorage
+ * and returns headers that must accompany every API request.
+ */
+function getAuthHeaders() {
+  const headers = {};
+  try {
+    const auth = JSON.parse(localStorage.getItem('admin_auth'));
+    if (auth?.college) {
+      headers['X-College-Name'] = auth.college;
+    }
+  } catch (_) {
+    // ignore parse errors
+  }
+  return headers;
+}
+
+/**
  * Helper function for fetch calls
  */
 async function apiCall(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
-  
+
   const headers = {
     'Content-Type': 'application/json',
+    ...getAuthHeaders(),
     ...options.headers,
   };
 
@@ -20,11 +38,11 @@ async function apiCall(endpoint, options = {}) {
   try {
     const response = await fetch(url, config);
     const contentType = response.headers.get('content-type');
-    
+
     // For 200 OK responses that are plain text (like signup success message)
     if (response.ok && contentType && !contentType.includes('application/json')) {
-       const text = await response.text();
-       return text;
+      const text = await response.text();
+      return text;
     }
 
     let data = null;
@@ -52,13 +70,13 @@ async function apiCall(endpoint, options = {}) {
 // STUDENT FLOW
 // ==============================================
 
-export const verifyStudent = (enrollmentId) => 
+export const verifyStudent = (enrollmentId) =>
   apiCall('/student/verify', {
     method: 'POST',
     body: JSON.stringify({ enrollmentId }),
   });
 
-export const submitScreening = (screeningData) => 
+export const submitScreening = (screeningData) =>
   apiCall('/screening/submit', {
     method: 'POST',
     body: JSON.stringify(screeningData),
@@ -68,13 +86,13 @@ export const submitScreening = (screeningData) =>
 // ADMIN FLOW
 // ==============================================
 
-export const adminSignup = (signupData) => 
+export const adminSignup = (signupData) =>
   apiCall('/admin/signup', {
     method: 'POST',
     body: JSON.stringify(signupData),
   });
 
-export const adminLogin = (loginData) => 
+export const adminLogin = (loginData) =>
   apiCall('/admin/login', {
     method: 'POST',
     body: JSON.stringify(loginData),
@@ -84,16 +102,16 @@ export const adminLogin = (loginData) =>
 // DASHBOARD & REPORTS
 // ==============================================
 
-export const getDashboardSummary = () => 
+export const getDashboardSummary = () =>
   apiCall('/dashboard/summary', { method: 'GET' });
 
-export const getDashboardStudents = () => 
+export const getDashboardStudents = () =>
   apiCall('/dashboard/students', { method: 'GET' });
 
-export const getDashboardCharts = () => 
+export const getDashboardCharts = () =>
   apiCall('/dashboard/charts', { method: 'GET' });
 
-export const getHighRiskStudents = () => 
+export const getHighRiskStudents = () =>
   apiCall('/dashboard/high-risk', { method: 'GET' });
 
 // ==============================================

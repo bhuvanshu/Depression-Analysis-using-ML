@@ -35,7 +35,9 @@ public class DashboardStudentResponse {
 
     private String sleepDuration;
 
+    private Float cgpa;
+
     // Screening timestamp
 
     private LocalDateTime screeningDate;
-}
+}

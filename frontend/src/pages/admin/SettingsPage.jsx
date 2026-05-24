@@ -4,7 +4,7 @@ import './SettingsPage.css';
 
 export default function SettingsPage() {
   const admin = JSON.parse(localStorage.getItem('admin_auth') || '{}');
-  const collegeName = localStorage.getItem('collegeName') || 'Institutional Partner';
+  const collegeName = admin.college || 'Institutional Partner';
 
   const systemStats = [
     { label: 'ML API Connection', status: 'Connected', icon: Cpu, color: 'var(--accent-success)' },

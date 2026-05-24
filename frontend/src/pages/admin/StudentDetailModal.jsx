@@ -45,6 +45,7 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
   const questionnaireFields = [
     { label: 'Academic Pressure', key: 'academicPressure', max: 5 },
     { label: 'Study Satisfaction', key: 'studySatisfaction', max: 5 },
+    { label: 'CGPA', key: 'cgpa' },
     { label: 'Sleep Duration', key: 'sleepDuration', suffix: ' hrs' },
     { label: 'Dietary Habits', key: 'dietaryHabits', max: 5 },
     { label: 'Suicidal Thoughts', key: 'suicidalThoughts', type: 'yesno' },
