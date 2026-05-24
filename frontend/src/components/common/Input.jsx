@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import './Input.css';
 
 export default function Input({
@@ -16,7 +18,11 @@ export default function Input({
   id,
   ...props
 }) {
+  const [showPassword, setShowPassword] = useState(false);
   const inputId = id || `input-${label?.replace(/\s+/g, '-').toLowerCase()}`;
+
+  const isPassword = type === 'password';
+  const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
   if (type === 'select') {
     return (
@@ -80,8 +86,8 @@ export default function Input({
         {Icon && <Icon size={18} className="input-icon" />}
         <input
           id={inputId}
-          type={type}
-          className={`input-field ${Icon ? 'has-icon' : ''} ${readOnly ? 'read-only' : ''}`}
+          type={inputType}
+          className={`input-field ${Icon ? 'has-icon' : ''} ${readOnly ? 'read-only' : ''} ${isPassword ? 'has-password-toggle' : ''}`}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
@@ -90,6 +96,17 @@ export default function Input({
           required={required}
           {...props}
         />
+        {isPassword && (
+          <button
+            type="button"
+            className="password-toggle-btn"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        )}
       </div>
       {error && <span className="input-error">{error}</span>}
       {hint && !error && <span className="input-hint">{hint}</span>}

@@ -95,3 +95,26 @@
   min-height: 100px;
   resize: vertical;
 }
+
+/* Password Viewer */
+.input-field.has-password-toggle {
+  padding-right: calc(var(--space-4) + 24px);
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: var(--space-4);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-primary);
+}

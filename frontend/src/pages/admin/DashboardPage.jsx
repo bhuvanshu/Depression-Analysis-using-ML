@@ -145,45 +145,6 @@ export default function DashboardPage() {
       }]
     };
   }, [students]);
-
-  // ── C. Department-wise Risk Bar ──
-  const deptChartData = useMemo(() => {
-    const deptMap = {};
-    students.forEach(s => {
-      const d = s.department || 'Unknown';
-      if (!deptMap[d]) deptMap[d] = { high: 0, moderate: 0, low: 0 };
-      
-      if (s.riskLevel === 'High') deptMap[d].high++;
-      else if (s.riskLevel === 'Moderate') deptMap[d].moderate++;
-      else deptMap[d].low++;
-    });
-
-    const labels = Object.keys(deptMap);
-    return {
-      labels: labels.map(d => d.length > 12 ? d.slice(0, 12) + '…' : d),
-      datasets: [
-        {
-          label: 'High Risk',
-          data: labels.map(d => deptMap[d].high),
-          backgroundColor: 'rgba(239, 68, 68, 0.7)',
-          borderRadius: 4
-        },
-        {
-          label: 'Moderate',
-          data: labels.map(d => deptMap[d].moderate),
-          backgroundColor: 'rgba(245, 158, 11, 0.7)',
-          borderRadius: 4
-        },
-        {
-          label: 'Low Risk',
-          data: labels.map(d => deptMap[d].low),
-          backgroundColor: 'rgba(34, 197, 94, 0.7)',
-          borderRadius: 4
-        }
-      ]
-    };
-  }, [students]);
-
   // ── D. Recent Screening Activity Feed ──
   const recentActivity = useMemo(() => {
     // Show most recent 8 screenings
@@ -384,39 +345,6 @@ export default function DashboardPage() {
                     plugins: {
                       ...chartDefaults.plugins,
                       legend: { display: false }
-                    }
-                  }}
-                />
-              </div>
-            </Card>
-          </div>
-
-          {/* ═══ Charts Row 2: Department Bar (Full Width) ═══ */}
-          <div className="charts-grid charts-grid-full">
-            {/* C. Department-wise Risk Bar */}
-            <Card elevated className="chart-card chart-card-full animate-fade-in-up delay-4">
-              <div className="chart-header">
-                <div>
-                  <div className="chart-title">Department-wise Risk Breakdown</div>
-                  <div className="chart-subtitle">Risk distribution across departments</div>
-                </div>
-              </div>
-              <div className="chart-container">
-                <Bar
-                  data={deptChartData}
-                  options={{
-                    ...chartDefaults,
-                    scales: {
-                      x: {
-                        stacked: true,
-                        grid: { display: false },
-                        ticks: { color: '#64748B', font: { size: 11 } }
-                      },
-                      y: {
-                        stacked: true,
-                        grid: { color: 'rgba(255,255,255,0.04)' },
-                        ticks: { color: '#64748B', stepSize: 1 }
-                      }
                     }
                   }}
                 />

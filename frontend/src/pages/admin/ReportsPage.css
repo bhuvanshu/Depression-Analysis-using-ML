@@ -72,6 +72,10 @@
   color: var(--text-primary);
 }
 
+.report-card-full {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 768px) {
   .summary-grid {
     grid-template-columns: 1fr;
