@@ -73,6 +73,22 @@ public class AdminService {
             response.setAdminEmail(admin.getAdminEmail());
 
             College college = admin.getCollege();
+            if (college == null) {
+                // Auto-heal logic: try to find a college associated with the admin's email
+                college = collegeRepository.findByAdminEmail(admin.getAdminEmail()).orElse(null);
+                if (college == null) {
+                    // Create a new college for this admin
+                    college = new College();
+                    String generatedCollegeName = admin.getAdminName() != null ? admin.getAdminName() + "'s College" : "My College";
+                    college.setCollegeName(generatedCollegeName);
+                    college.setAdminEmail(admin.getAdminEmail());
+                    college.setPasswordHash(admin.getPasswordHash());
+                    college = collegeRepository.save(college);
+                }
+                admin.setCollege(college);
+                adminRepository.save(admin);
+            }
+
             if (college != null) {
                 response.setCollegeName(college.getCollegeName());
             }

@@ -46,11 +46,25 @@ public class StudentService {
             throw new IllegalArgumentException("Enrollment ID cannot be empty");
         }
 
-        if (studentRepository.existsByEnrollmentId(request.getEnrollmentId())) {
-            throw new IllegalArgumentException("Student with this Enrollment ID already exists");
-        }
-
         College college = resolveCollege(collegeName);
+
+        Optional<Student> existingStudentOpt = studentRepository.findByEnrollmentId(request.getEnrollmentId());
+        if (existingStudentOpt.isPresent()) {
+            Student existingStudent = existingStudentOpt.get();
+            // If the student exists but has a NULL college, claim/update college ownership
+            if (existingStudent.getCollege() == null && college != null) {
+                existingStudent.setCollege(college);
+                if (request.getName() != null) existingStudent.setName(request.getName());
+                if (request.getAge() != null) existingStudent.setAge(request.getAge());
+                if (request.getGender() != null) existingStudent.setGender(request.getGender());
+                if (request.getDepartment() != null) existingStudent.setDepartment(request.getDepartment());
+                if (request.getDegreeGroup() != null) existingStudent.setDegreeGroup(request.getDegreeGroup());
+                Student savedStudent = studentRepository.save(existingStudent);
+                return mapToResponse(savedStudent);
+            } else {
+                throw new IllegalArgumentException("Student with this Enrollment ID already exists");
+            }
+        }
 
         Student student = new Student();
         student.setEnrollmentId(request.getEnrollmentId());
@@ -83,17 +97,30 @@ public class StudentService {
                 continue;
             }
 
-            if (studentRepository.existsByEnrollmentId(request.getEnrollmentId())) {
-                skipped++;
-                continue;
-            }
-
             // Also check for duplicates within the current batch to avoid constraints violation
             boolean isDuplicateInBatch = studentsToSave.stream()
                     .anyMatch(s -> s.getEnrollmentId().equals(request.getEnrollmentId()));
             
             if (isDuplicateInBatch) {
                 skipped++;
+                continue;
+            }
+
+            Optional<Student> existingStudentOpt = studentRepository.findByEnrollmentId(request.getEnrollmentId());
+            if (existingStudentOpt.isPresent()) {
+                Student existingStudent = existingStudentOpt.get();
+                // If the student exists but has a NULL college, claim/update college ownership
+                if (existingStudent.getCollege() == null && college != null) {
+                    existingStudent.setCollege(college);
+                    if (request.getName() != null) existingStudent.setName(request.getName());
+                    if (request.getAge() != null) existingStudent.setAge(request.getAge());
+                    if (request.getGender() != null) existingStudent.setGender(request.getGender());
+                    if (request.getDepartment() != null) existingStudent.setDepartment(request.getDepartment());
+                    if (request.getDegreeGroup() != null) existingStudent.setDegreeGroup(request.getDegreeGroup());
+                    studentsToSave.add(existingStudent);
+                } else {
+                    skipped++;
+                }
                 continue;
             }
 
@@ -126,7 +153,8 @@ public class StudentService {
         if (collegeName == null || collegeName.trim().isEmpty()) {
             return null;
         }
-        return collegeRepository.findByCollegeName(collegeName).orElse(null);
+        List<College> colleges = collegeRepository.findByCollegeName(collegeName);
+        return (colleges != null && !colleges.isEmpty()) ? colleges.get(0) : null;
     }
 
     private StudentResponse mapToResponse(Student student) {

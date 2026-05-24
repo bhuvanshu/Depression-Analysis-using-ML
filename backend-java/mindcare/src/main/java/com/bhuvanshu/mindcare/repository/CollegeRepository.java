@@ -3,6 +3,7 @@ package com.bhuvanshu.mindcare.repository;
 import com.bhuvanshu.mindcare.entity.College;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CollegeRepository
@@ -10,5 +11,7 @@ public interface CollegeRepository
 
     boolean existsByAdminEmail(String adminEmail);
 
-    Optional<College> findByCollegeName(String collegeName);
+    List<College> findByCollegeName(String collegeName);
+
+    Optional<College> findByAdminEmail(String adminEmail);
 }

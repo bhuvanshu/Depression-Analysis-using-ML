@@ -9,6 +9,8 @@ import com.bhuvanshu.mindcare.repository.CollegeRepository;
 import com.bhuvanshu.mindcare.repository.ScreeningResultRepository;
 import com.bhuvanshu.mindcare.repository.StudentRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import java.util.Map;
 
 @Service
 public class DashboardService {
+
+        private static final Logger logger = LoggerFactory.getLogger(DashboardService.class);
 
         @Autowired
         private StudentRepository studentRepository;
@@ -100,7 +104,10 @@ public class DashboardService {
                 List<DashboardStudentResponse> responseList = new ArrayList<>();
 
                 for (ScreeningResult result : results) {
-                        responseList.add(mapToDto(result));
+                        DashboardStudentResponse dto = mapToDto(result);
+                        if (dto != null) {
+                                responseList.add(dto);
+                        }
                 }
 
                 return responseList;
@@ -175,7 +182,10 @@ public class DashboardService {
                 List<DashboardStudentResponse> responseList = new ArrayList<>();
 
                 for (ScreeningResult result : results) {
-                        responseList.add(mapToDto(result));
+                        DashboardStudentResponse dto = mapToDto(result);
+                        if (dto != null) {
+                                responseList.add(dto);
+                        }
                 }
 
                 return responseList;
@@ -185,8 +195,24 @@ public class DashboardService {
 
         private DashboardStudentResponse mapToDto(ScreeningResult result) {
 
+                // Null-safety: skip orphaned or incomplete records
+                if (result == null) {
+                        return null;
+                }
+
                 ScreeningResponse screening = result.getScreeningResponse();
+                if (screening == null) {
+                        logger.warn("ScreeningResult id={} has no linked ScreeningResponse, skipping.",
+                                        result.getResultId());
+                        return null;
+                }
+
                 Student student = screening.getStudent();
+                if (student == null) {
+                        logger.warn("ScreeningResponse id={} has no linked Student, skipping.",
+                                        screening.getResponseId());
+                        return null;
+                }
 
                 DashboardStudentResponse dto = new DashboardStudentResponse();
 
@@ -223,6 +249,11 @@ public class DashboardService {
                 if (collegeName == null || collegeName.trim().isEmpty()) {
                         return null;
                 }
-                return collegeRepository.findByCollegeName(collegeName).orElse(null);
+                List<College> colleges = collegeRepository.findByCollegeName(collegeName);
+                College college = (colleges != null && !colleges.isEmpty()) ? colleges.get(0) : null;
+                if (college == null) {
+                        logger.warn("College not found for name '{}', falling back to unfiltered data.", collegeName);
+                }
+                return college;
         }
 }
