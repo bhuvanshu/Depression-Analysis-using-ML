@@ -25,4 +25,10 @@ public class ScreeningResultResponse {
     private String riskPercentile;
 
     private String status;
+
+    @JsonProperty("severity_interpretation")
+    private SeverityInterpretation severityInterpretation;
+
+    @JsonProperty("institutional_priority")
+    private InstitutionalPriority institutionalPriority;
 }

@@ -114,6 +114,12 @@ public class ScreeningService {
         String riskLevel = prediction.getRiskLevel();
         result.setRiskLevel(riskLevel != null ? riskLevel : "Unknown");
 
+        if (prediction.getSeverityInterpretation() != null && prediction.getSeverityInterpretation().getLevel() != null) {
+            result.setSeverityLevel(prediction.getSeverityInterpretation().getLevel());
+        } else {
+            result.setSeverityLevel("Unknown");
+        }
+
         String recommendation = prediction.getRecommendedAction();
         result.setRecommendation(recommendation != null ? recommendation : "No recommendation provided");
 

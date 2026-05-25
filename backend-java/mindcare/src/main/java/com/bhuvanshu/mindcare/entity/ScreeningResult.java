@@ -20,7 +20,10 @@ public class ScreeningResult {
     private Double probabilityScore;
 
     @Column(nullable = false)
-    private String riskLevel;
+    private String riskLevel; // Institutional priority (legacy name)
+
+    @Column
+    private String severityLevel; // Absolute severity
 
     @Column(length = 500)
     private String recommendation;
