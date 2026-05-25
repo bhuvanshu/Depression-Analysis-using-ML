@@ -23,7 +23,7 @@ COLUMN_RENAMES = {
 # Feature Lists
 CORE_FEATURES = [
     "Gender", "Age", "Academic Pressure", "CGPA", 
-    "Study Satisfaction", "Sleep Duration", "Dietary Habits", 
+    "Study Satisfaction", "Sleep Duration",
     "Suicidal Thoughts", "Work/Study Hours", "Financial Stress", 
     "Family History", "Degree Group"
 ]

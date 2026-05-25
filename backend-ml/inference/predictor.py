@@ -64,6 +64,16 @@ class DepressionPredictor:
             "degree": str(data.get("degree", "Undergraduate")).strip(),
         }
 
+        # Normalize sleep_duration: frontend sends numeric ("1"-"4"), model expects text labels
+        sleep_normalize = {
+            "1": "Less than 5 hours", "<5 hours": "Less than 5 hours",
+            "2": "5-6 hours",
+            "3": "7-8 hours",
+            "4": "More than 8 hours", ">8 hours": "More than 8 hours",
+        }
+        sleep_val = row["sleep_duration"].lower()
+        row["sleep_duration"] = sleep_normalize.get(sleep_val, row["sleep_duration"])
+
         degree_val = row["degree"].lower()
         degree_normalize = {
             "school": "School", "class 12": "School",
