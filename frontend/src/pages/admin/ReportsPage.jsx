@@ -120,19 +120,19 @@ export default function ReportsPage() {
       labels: labels.map(d => d.length > 12 ? d.slice(0, 12) + '…' : d),
       datasets: [
         {
-          label: 'High Risk',
+          label: 'High Priority',
           data: labels.map(d => deptMap[d].high),
           backgroundColor: 'rgba(239, 68, 68, 0.7)',
           borderRadius: 4
         },
         {
-          label: 'Moderate',
+          label: 'Moderate Priority',
           data: labels.map(d => deptMap[d].moderate),
           backgroundColor: 'rgba(245, 158, 11, 0.7)',
           borderRadius: 4
         },
         {
-          label: 'Low Risk',
+          label: 'Low Priority',
           data: labels.map(d => deptMap[d].low),
           backgroundColor: 'rgba(34, 197, 94, 0.7)',
           borderRadius: 4
@@ -181,7 +181,7 @@ export default function ReportsPage() {
     });
 
     return {
-      labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+      labels: ['Low Priority', 'Moderate Priority', 'High Priority'],
       datasets: [{
         label: 'Student Count',
         data: [low, moderate, high],
@@ -283,7 +283,7 @@ export default function ReportsPage() {
         <Card elevated className="report-card">
           <div className="report-card-header">
             <TrendingUp size={18} style={{ color: 'var(--accent-danger)' }} />
-            <h3>Risk Distribution Breakdown</h3>
+            <h3>Priority Distribution Breakdown</h3>
           </div>
           <div className="report-chart-container">
             <Bar
@@ -338,7 +338,7 @@ export default function ReportsPage() {
         <Card elevated className="report-card report-card-full">
           <div className="report-card-header">
             <BarChart3 size={18} style={{ color: 'var(--accent-primary)' }} />
-            <h3>Department-wise Risk Breakdown</h3>
+            <h3>Department-wise Priority Breakdown</h3>
           </div>
           <div className="report-chart-container">
             <Bar

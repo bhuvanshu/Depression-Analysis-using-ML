@@ -13,7 +13,7 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import RiskBadge from '../../components/common/RiskBadge';
 import { getDashboardSummary, getDashboardStudents } from '../../services/api';
-import { getInitials } from '../../utils/helpers';
+import { getInitials, getSeverityInterpretation, getInstitutionalPriority } from '../../utils/helpers';
 import { chartDefaults } from '../../config/chartDefaults';
 import './DashboardPage.css';
 
@@ -68,9 +68,9 @@ export default function DashboardPage() {
 
 
 
-  // ── A. Risk Distribution Donut ──
+  // ── A. Priority Distribution Donut ──
   const riskChartData = {
-    labels: ['Low Risk', 'Moderate Risk', 'High Risk'],
+    labels: ['Low Priority', 'Moderate Priority', 'High Priority'],
     datasets: [{
       data: [summary.lowRisk, summary.moderateRisk, summary.highRisk],
       backgroundColor: ['rgba(34,197,94,0.8)', 'rgba(245,158,11,0.8)', 'rgba(239,68,68,0.8)'],
@@ -174,7 +174,7 @@ export default function DashboardPage() {
             {students.filter(s => s.riskLevel === 'High').length === 0 ? (
               <div className="alerts-empty">
                 <UserCheck size={24} />
-                <p>No high-risk alerts at this time.</p>
+                <p>No high-priority alerts at this time.</p>
               </div>
             ) : (
               students.filter(s => s.riskLevel === 'High').map((s, i) => (
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                 <AlertTriangle size={22} />
               </div>
               <div className="stat-info">
-                <div className="stat-label">High Risk</div>
+                <div className="stat-label">High Priority</div>
                 <div className="stat-value">{summary.highRisk}</div>
                 <div className="stat-change stat-change-down">
                   <TrendingDown size={12} /> Needs immediate attention
@@ -258,11 +258,11 @@ export default function DashboardPage() {
 
           {/* ═══ Charts Row 1: Donut + Line ═══ */}
           <div className="charts-grid">
-            {/* A. Risk Distribution Donut */}
+            {/* A. Priority Distribution Donut */}
             <Card elevated className="chart-card animate-fade-in-up delay-2">
               <div className="chart-header">
                 <div>
-                  <div className="chart-title">Risk Distribution</div>
+                  <div className="chart-title">Priority Distribution</div>
                   <div className="chart-subtitle">Current screened students</div>
                 </div>
               </div>
@@ -343,9 +343,10 @@ export default function DashboardPage() {
                       {getInitials(s.studentName)}
                     </div>
                     <div className="activity-feed-content">
-                      <div className="activity-feed-name">
+                      <div className="activity-feed-name" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
                         {s.studentName}
-                        <RiskBadge level={s.riskLevel} />
+                        <RiskBadge label={getSeverityInterpretation(s.probabilityScore).level} color={getSeverityInterpretation(s.probabilityScore).color} />
+                        <RiskBadge label={`Priority: ${getInstitutionalPriority(s.riskLevel).tier}`} color={getInstitutionalPriority(s.riskLevel).color} />
                       </div>
                       <div className="activity-feed-meta">
                         {s.enrollmentId} · {s.department} · Score: {((s.probabilityScore || 0) * 100).toFixed(0)}%

@@ -9,7 +9,7 @@ import RiskBadge from '../../components/common/RiskBadge';
 import AddStudentModal from './AddStudentModal';
 import StudentDetailModal from './StudentDetailModal';
 import { getDashboardStudents } from '../../services/api';
-import { getInitials } from '../../utils/helpers';
+import { getInitials, getSeverityInterpretation, getInstitutionalPriority } from '../../utils/helpers';
 import './StudentsPage.css';
 
 export default function StudentsPage() {
@@ -106,7 +106,7 @@ export default function StudentsPage() {
                 <AlertTriangle size={18} />
               </div>
               <div>
-                <h3>High Risk Students — Immediate Attention Required</h3>
+                <h3>High Priority Students — Immediate Attention Required</h3>
                 <p>{highRiskStudents.length} student{highRiskStudents.length > 1 ? 's' : ''} flagged for follow-up</p>
               </div>
             </div>
@@ -154,16 +154,16 @@ export default function StudentsPage() {
           <div className="toolbar-filters">
             <div className="filter-group">
               <Filter size={14} className="filter-icon" />
-              <span className="filter-label">Risk:</span>
+              <span className="filter-label">Priority:</span>
               <select
                 className="input-field filter-select"
                 value={riskFilter}
                 onChange={(e) => setRiskFilter(e.target.value)}
               >
-                <option value="All">All Levels</option>
-                <option value="High">High Risk</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Low">Low Risk</option>
+                <option value="All">All Priorities</option>
+                <option value="High">High Priority</option>
+                <option value="Moderate">Moderate Priority</option>
+                <option value="Low">Low Priority</option>
               </select>
             </div>
             <div className="filter-group">
@@ -194,7 +194,7 @@ export default function StudentsPage() {
                   <th>Student</th>
                   <th>Enrollment ID</th>
                   <th>Department</th>
-                  <th>Risk Level</th>
+                  <th>Severity / Priority</th>
                   <th>Probability Score</th>
                   <th>Screening Date</th>
                   <th>Actions</th>
@@ -216,7 +216,12 @@ export default function StudentsPage() {
                     </td>
                     <td><span className="table-enrollment">{row.enrollmentId}</span></td>
                     <td>{row.department}</td>
-                    <td><RiskBadge level={row.riskLevel} /></td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.25rem', flexDirection: 'column', alignItems: 'flex-start' }}>
+                        <RiskBadge label={getSeverityInterpretation(row.probabilityScore).level} color={getSeverityInterpretation(row.probabilityScore).color} />
+                        <RiskBadge label={`Priority: ${getInstitutionalPriority(row.riskLevel).tier}`} color={getInstitutionalPriority(row.riskLevel).color} />
+                      </div>
+                    </td>
                     <td>
                       <span className={`table-score score-${getScoreClass(row.riskLevel)}`}>
                         {((row.probabilityScore || 0) * 100).toFixed(1)}%

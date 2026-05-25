@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/common/Modal';
 import RiskBadge from '../../components/common/RiskBadge';
+import { getSeverityInterpretation, getInstitutionalPriority } from '../../utils/helpers';
 import './StudentDetailModal.css';
 
 export default function StudentDetailModal({ isOpen, student, onClose }) {
@@ -13,6 +14,8 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
   const score = ((student.probabilityScore || 0) * 100).toFixed(1);
   const riskLevel = student.riskLevel || 'Low';
   const riskClass = riskLevel.toLowerCase();
+  const severity = getSeverityInterpretation(student.probabilityScore || 0);
+  const priority = getInstitutionalPriority(student.riskLevel || 'Low');
 
   // Generate recommendation based on risk level
   const getRecommendation = (level) => {
@@ -69,7 +72,10 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
               <span><Building2 size={13} /> {student.department}</span>
             </div>
           </div>
-          <RiskBadge level={riskLevel} size="lg" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', alignItems: 'flex-end' }}>
+            <RiskBadge label={severity.level} color={severity.color} size="lg" />
+            <RiskBadge label={`Priority: ${priority.tier}`} color={priority.color} size="lg" />
+          </div>
         </div>
 
         {/* ── Risk Assessment ── */}
@@ -80,17 +86,21 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
           <div className="risk-assessment-grid">
             <div className="risk-metric">
               <div className="risk-metric-label">Probability Score</div>
-              <div className={`risk-metric-value score-${riskClass}`}>{score}%</div>
+              <div className="risk-metric-value" style={{ color: severity.color }}>{score}%</div>
               <div className="risk-meter">
                 <div
-                  className={`risk-meter-fill risk-meter-${riskClass}`}
-                  style={{ width: `${score}%` }}
+                  className="risk-meter-fill"
+                  style={{ width: `${score}%`, backgroundColor: severity.color }}
                 />
               </div>
             </div>
             <div className="risk-metric">
-              <div className="risk-metric-label">Risk Category</div>
-              <div className={`risk-metric-value score-${riskClass}`}>{riskLevel}</div>
+              <div className="risk-metric-label">Severity Level</div>
+              <div className="risk-metric-value" style={{ color: severity.color }}>{severity.level}</div>
+            </div>
+            <div className="risk-metric">
+              <div className="risk-metric-label">Institutional Priority</div>
+              <div className="risk-metric-value" style={{ color: priority.color }}>{priority.tier} Tier</div>
             </div>
             {student.screeningDate && (
               <div className="risk-metric">

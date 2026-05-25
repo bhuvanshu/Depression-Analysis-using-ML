@@ -4,6 +4,7 @@ import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import RiskBadge from '../../components/common/RiskBadge';
 import { RISK_RECOMMENDATIONS } from '../../data/uiConfig';
+import { getSeverityInterpretation } from '../../utils/helpers';
 import './ResultPage.css';
 
 export default function ResultPage() {
@@ -35,6 +36,7 @@ export default function ResultPage() {
   const probabilityScore = probability?.depressed || 0;
   const percentage = Math.round(probabilityScore * 100);
   const gaugeRotation = `${(probabilityScore * 360) - 90}deg`;
+  const severity = getSeverityInterpretation(probabilityScore);
 
   const riskIcons = {
     Low: ShieldCheck,
@@ -84,14 +86,14 @@ export default function ResultPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            {RiskIcon && <RiskIcon size={24} className={`risk-${riskClass}`} />}
-            <span className={`score-risk-level risk-${riskClass}`}>{riskConfig.title}</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
+            {RiskIcon && <RiskIcon size={24} style={{ color: severity.color }} />}
+            <span className="score-risk-level" style={{ color: severity.color, fontWeight: '700' }}>
+               {severity.level}
+            </span>
           </div>
 
-          <RiskBadge level={risk_level} size="lg" />
-
-          <p className="score-message">{riskConfig.message}</p>
+          <p className="score-message">{severity.meaning}</p>
         </Card>
 
         {/* Recommendations */}
