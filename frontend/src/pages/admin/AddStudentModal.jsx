@@ -11,6 +11,19 @@ export default function AddStudentModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const handleDownloadTemplate = () => {
+    const headers = 'name,enrollmentId,age,gender,department,degreeGroup';
+    const sampleRow = 'John Doe,BT21CSE001,20,Male,Computer Science,Undergraduate';
+    const csvContent = `${headers}\n${sampleRow}`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'student_upload_template.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  };
   
   // Single Entry State
   const [formData, setFormData] = useState({
@@ -267,7 +280,7 @@ export default function AddStudentModal({ isOpen, onClose, onSuccess }) {
 
                 <div className="bulk-info">
                   <p><AlertCircle size={14} /> Make sure your CSV has headers: <strong>name, enrollmentId, age, gender, department, degreeGroup</strong></p>
-                  <Button variant="ghost" size="sm" icon={Download}>Download Template</Button>
+                  <Button variant="ghost" size="sm" icon={Download} onClick={handleDownloadTemplate}>Download Template</Button>
                 </div>
 
                 {error && <div className="error-message"><AlertCircle size={16} />{error}</div>}

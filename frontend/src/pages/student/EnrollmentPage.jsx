@@ -4,6 +4,7 @@ import { Search, ArrowRight, AlertCircle, Brain, Check } from 'lucide-react';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import { verifyStudent } from '../../services/api';
+import { getInitials } from '../../utils/helpers';
 import './EnrollmentPage.css';
 
 export default function EnrollmentPage() {
@@ -38,9 +39,7 @@ export default function EnrollmentPage() {
     navigate('/questionnaire', { state: { student } });
   };
 
-  const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
+
 
   return (
     <div className="enrollment-page">

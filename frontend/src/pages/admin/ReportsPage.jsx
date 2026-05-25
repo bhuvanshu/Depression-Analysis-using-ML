@@ -4,10 +4,10 @@ import {
   LineElement, BarElement, Title, Tooltip, Legend, Filler, ArcElement
 } from 'chart.js';
 import { Bar, Line, Pie } from 'react-chartjs-2';
-import { Download, FileText, TrendingUp, Brain, Info, Database, BarChart3, Activity } from 'lucide-react';
+import { TrendingUp, Brain, Info, BarChart3, Activity } from 'lucide-react';
 import Card from '../../components/common/Card';
-import Button from '../../components/common/Button';
 import { getDashboardStudents } from '../../services/api';
+import { chartDefaults } from '../../config/chartDefaults';
 import './ReportsPage.css';
 
 ChartJS.register(
@@ -15,24 +15,62 @@ ChartJS.register(
   BarElement, Title, Tooltip, Legend, Filler, ArcElement
 );
 
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: { color: '#94A3B8', font: { family: 'Inter', size: 12 }, padding: 16 }
-    },
-    tooltip: {
-      backgroundColor: '#1E293B',
-      titleColor: '#F1F5F9',
-      bodyColor: '#94A3B8',
-      borderColor: 'rgba(255,255,255,0.06)',
-      borderWidth: 1,
-      cornerRadius: 8,
-      padding: 12
-    }
-  }
-};
+
+function IntelligenceSummary({ students }) {
+  const summary = useMemo(() => {
+    if (!students.length) return { stressor: 'N/A', stressorAvg: '0', topDept: 'N/A', participation: '0' };
+
+    const count = students.length;
+    const sums = { 'Academic Pressure': 0, 'Financial Stress': 0 };
+    const deptRisk = {};
+
+    students.forEach(s => {
+      sums['Academic Pressure'] += (s.academicPressure || 0);
+      sums['Financial Stress'] += (s.financialStress || 0);
+
+      const d = s.department || 'Unknown';
+      if (!deptRisk[d]) deptRisk[d] = 0;
+      if (s.riskLevel === 'High') deptRisk[d]++;
+    });
+
+    // Primary stressor
+    const stressorEntries = Object.entries(sums).map(([k, v]) => [k, v / count]);
+    stressorEntries.sort((a, b) => b[1] - a[1]);
+    const [stressor, stressorAvg] = stressorEntries[0];
+
+    // Top risk department
+    const deptEntries = Object.entries(deptRisk).filter(([, v]) => v > 0);
+    deptEntries.sort((a, b) => b[1] - a[1]);
+    const topDept = deptEntries.length > 0 ? deptEntries[0][0] : 'None';
+
+    return { stressor, stressorAvg: stressorAvg.toFixed(1), topDept, participation: count };
+  }, [students]);
+
+  return (
+    <Card elevated className="intelligence-summary">
+      <div className="summary-header">
+        <Info size={20} />
+        <h3>System Intelligence Summary</h3>
+      </div>
+      <div className="summary-grid">
+        <div className="summary-item">
+          <label>Primary Stressor</label>
+          <span>{summary.stressor} (Avg {summary.stressorAvg})</span>
+        </div>
+        <div className="summary-item">
+          <label>Top Risk Department</label>
+          <span style={{ color: summary.topDept !== 'None' ? 'var(--accent-danger)' : 'inherit' }}>
+            {summary.topDept}
+          </span>
+        </div>
+        <div className="summary-item">
+          <label>Students Screened</label>
+          <span>{summary.participation} students</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 export default function ReportsPage() {
   const [students, setStudents] = useState([]);
@@ -196,10 +234,6 @@ export default function ReportsPage() {
           <h1 className="page-title">Intelligence Reports</h1>
           <p className="page-subtitle">Analytical & Export Layer — Institutional Data Patterns</p>
         </div>
-        <div className="page-actions">
-          <Button variant="secondary" icon={FileText}>Export CSV</Button>
-          <Button variant="primary" icon={Download}>Export PDF</Button>
-        </div>
       </div>
 
       <div className="reports-grid">
@@ -329,26 +363,7 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      <Card elevated className="intelligence-summary">
-        <div className="summary-header">
-          <Info size={20} />
-          <h3>System Intelligence Summary</h3>
-        </div>
-        <div className="summary-grid">
-          <div className="summary-item">
-            <label>Primary Stressor</label>
-            <span>Academic Pressure (Avg 4.2)</span>
-          </div>
-          <div className="summary-item">
-            <label>Top Risk Department</label>
-            <span style={{ color: 'var(--accent-danger)' }}>Computer Science</span>
-          </div>
-          <div className="summary-item">
-            <label>Participation Rate</label>
-            <span>82.4% institutional coverage</span>
-          </div>
-        </div>
-      </Card>
+      <IntelligenceSummary students={students} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Database, ShieldCheck, Cpu, Clock, HardDrive, Mail, Building, Info } from 'lucide-react';
 import Card from '../../components/common/Card';
 import './SettingsPage.css';
@@ -6,11 +7,38 @@ export default function SettingsPage() {
   const admin = JSON.parse(localStorage.getItem('admin_auth') || '{}');
   const collegeName = admin.college || 'Institutional Partner';
 
-  const systemStats = [
-    { label: 'ML API Connection', status: 'Connected', icon: Cpu, color: 'var(--accent-success)' },
-    { label: 'Database Status', status: 'Healthy', icon: Database, color: 'var(--accent-success)' },
+  const [systemStats, setSystemStats] = useState([
+    { label: 'ML API Connection', status: 'Checking…', icon: Cpu, color: 'var(--text-muted)' },
+    { label: 'Database Status', status: 'Checking…', icon: Database, color: 'var(--text-muted)' },
     { label: 'System Security', status: 'Active', icon: ShieldCheck, color: 'var(--accent-primary)' },
-  ];
+  ]);
+
+  useEffect(() => {
+    const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+    // Check ML API
+    fetch(`${BASE_URL}/dashboard/summary`, { method: 'GET' })
+      .then(res => {
+        setSystemStats(prev => prev.map(s =>
+          s.label === 'ML API Connection'
+            ? { ...s, status: res.ok ? 'Connected' : 'Error', color: res.ok ? 'var(--accent-success)' : 'var(--accent-danger)' }
+            : s
+        ));
+        // If the API responds, DB is reachable through it
+        setSystemStats(prev => prev.map(s =>
+          s.label === 'Database Status'
+            ? { ...s, status: res.ok ? 'Healthy' : 'Unreachable', color: res.ok ? 'var(--accent-success)' : 'var(--accent-danger)' }
+            : s
+        ));
+      })
+      .catch(() => {
+        setSystemStats(prev => prev.map(s =>
+          s.label === 'ML API Connection' || s.label === 'Database Status'
+            ? { ...s, status: 'Offline', color: 'var(--accent-danger)' }
+            : s
+        ));
+      });
+  }, []);
 
   return (
     <div className="settings-page animate-fade-in">
@@ -51,7 +79,9 @@ export default function SettingsPage() {
                   <stat.icon size={18} style={{ color: stat.color }} />
                   <span>{stat.label}</span>
                 </div>
-                <div className="status-badge">Live ✅</div>
+                <div className="status-badge" style={{ color: stat.color }}>
+                  {stat.status === 'Connected' || stat.status === 'Healthy' || stat.status === 'Active' ? 'Live ✅' : `${stat.status} ⚠️`}
+                </div>
               </div>
             ))}
           </div>

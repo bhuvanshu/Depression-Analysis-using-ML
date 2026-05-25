@@ -1,4 +1,3 @@
-// Use environment variable for the base URL, fallback to localhost for development
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
 /**
@@ -107,9 +106,6 @@ export const getDashboardSummary = () =>
 
 export const getDashboardStudents = () =>
   apiCall('/dashboard/students', { method: 'GET' });
-
-export const getDashboardCharts = () =>
-  apiCall('/dashboard/charts', { method: 'GET' });
 
 export const getHighRiskStudents = () =>
   apiCall('/dashboard/high-risk', { method: 'GET' });

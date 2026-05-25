@@ -6,6 +6,7 @@ import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
 import { QUESTIONNAIRE_CONFIG } from '../../data/uiConfig';
 import { submitScreening } from '../../services/api';
+import { getInitials } from '../../utils/helpers';
 import './QuestionnairePage.css';
 
 export default function QuestionnairePage() {
@@ -21,8 +22,7 @@ export default function QuestionnairePage() {
     work_study_hours: 2,
     suicidal_thoughts: 0,
     family_history: 0,
-    cgpa: '',
-    other_factors: ''
+    cgpa: ''
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -82,7 +82,7 @@ export default function QuestionnairePage() {
     }
   };
 
-  const getInitials = (name) => name.split(' ').map(n => n[0]).join('');
+
 
   const sectionIcons = {
     academic_pressure: BookOpen,
@@ -265,16 +265,6 @@ const renderInput = (key, config) => {
               {renderToggle('family_history', QUESTIONNAIRE_CONFIG.family_history)}
             </div>
 
-            {/* Additional */}
-            <div className="form-section delay-3">
-              <Input
-                type="textarea"
-                label="Other Factors (Optional)"
-                placeholder="Any other factors you'd like to mention — relationship stress, health issues, etc."
-                value={formData.other_factors}
-                onChange={(e) => setFormData(prev => ({ ...prev, other_factors: e.target.value }))}
-              />
-            </div>
 
             {/* Actions */}
             <div className="questionnaire-actions">

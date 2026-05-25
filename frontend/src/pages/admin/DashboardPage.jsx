@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   Users, Bell, TrendingUp, TrendingDown, UserCheck, AlertTriangle,
-  Activity, X, ShieldAlert, BarChart3, Clock, CheckCircle2
+  Activity, X, ShieldAlert, Clock, CheckCircle2
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -13,6 +13,8 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import RiskBadge from '../../components/common/RiskBadge';
 import { getDashboardSummary, getDashboardStudents } from '../../services/api';
+import { getInitials } from '../../utils/helpers';
+import { chartDefaults } from '../../config/chartDefaults';
 import './DashboardPage.css';
 
 ChartJS.register(
@@ -20,24 +22,7 @@ ChartJS.register(
   PointElement, LineElement, Tooltip, Legend, Filler
 );
 
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      labels: { color: '#94A3B8', font: { family: 'Inter', size: 12 }, padding: 16 }
-    },
-    tooltip: {
-      backgroundColor: '#1E293B',
-      titleColor: '#F1F5F9',
-      bodyColor: '#94A3B8',
-      borderColor: 'rgba(255,255,255,0.06)',
-      borderWidth: 1,
-      cornerRadius: 8,
-      padding: 12
-    }
-  }
-};
+
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
@@ -81,7 +66,7 @@ export default function DashboardPage() {
     ? ((screenedCount / summary.totalStudents) * 100).toFixed(1)
     : '0.0';
 
-  const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+
 
   // ── A. Risk Distribution Donut ──
   const riskChartData = {
@@ -100,7 +85,6 @@ export default function DashboardPage() {
     // Group screenings by date
     const dateMap = {};
     students.forEach(s => {
-      // Use screeningDate if available, otherwise simulate recent dates
       const dateStr = s.screeningDate
         ? new Date(s.screeningDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
         : null;
@@ -108,22 +92,6 @@ export default function DashboardPage() {
         dateMap[dateStr] = (dateMap[dateStr] || 0) + 1;
       }
     });
-
-    // If no dates available, generate a simulated 7-day spread for visual
-    if (Object.keys(dateMap).length === 0 && students.length > 0) {
-      const today = new Date();
-      const perDay = Math.ceil(students.length / 7);
-      let remaining = students.length;
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const label = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-        const count = i === 0 ? remaining : Math.min(perDay + Math.floor(Math.random() * 3), remaining);
-        dateMap[label] = count;
-        remaining -= count;
-        if (remaining <= 0) break;
-      }
-    }
 
     const labels = Object.keys(dateMap);
     const data = Object.values(dateMap);
@@ -158,7 +126,7 @@ export default function DashboardPage() {
   }, [students]);
 
   // Generate relative time labels for activity feed
-  const getRelativeTime = (dateStr, index) => {
+  const getRelativeTime = (dateStr) => {
     if (dateStr) {
       const diff = Date.now() - new Date(dateStr).getTime();
       const mins = Math.floor(diff / 60000);
@@ -168,9 +136,7 @@ export default function DashboardPage() {
       const days = Math.floor(hrs / 24);
       return `${days}d ago`;
     }
-    // Simulated time for entries without dates
-    const times = ['5 min ago', '12 min ago', '28 min ago', '1h ago', '2h ago', '4h ago', '6h ago', '1d ago'];
-    return times[index] || 'recently';
+    return 'No date';
   };
 
   return (
@@ -387,7 +353,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="activity-feed-time">
                       <Clock size={12} />
-                      {getRelativeTime(s.screeningDate, i)}
+                      {getRelativeTime(s.screeningDate)}
                     </div>
                   </div>
                 ))

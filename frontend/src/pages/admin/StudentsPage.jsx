@@ -8,7 +8,8 @@ import Button from '../../components/common/Button';
 import RiskBadge from '../../components/common/RiskBadge';
 import AddStudentModal from './AddStudentModal';
 import StudentDetailModal from './StudentDetailModal';
-import { getDashboardStudents, getHighRiskStudents } from '../../services/api';
+import { getDashboardStudents } from '../../services/api';
+import { getInitials } from '../../utils/helpers';
 import './StudentsPage.css';
 
 export default function StudentsPage() {
@@ -78,7 +79,7 @@ export default function StudentsPage() {
     return data;
   }, [searchQuery, riskFilter, deptFilter, students]);
 
-  const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+
   const getScoreClass = (level) => level?.toLowerCase() || 'low';
 
   return (

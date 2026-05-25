@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Brain, LayoutDashboard, Users, FileBarChart, Settings, LogOut, Menu, X } from 'lucide-react';
+import { getInitials } from '../../utils/helpers';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
@@ -14,7 +15,7 @@ export default function AdminLayout() {
     navigate('/admin/login');
   };
 
-  const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+
 
   const navItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },

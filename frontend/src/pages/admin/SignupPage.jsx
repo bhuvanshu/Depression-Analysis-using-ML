@@ -81,7 +81,7 @@ export default function SignupPage() {
             </div>
             <div className="auth-feature">
               <div className="auth-feature-icon"><Shield size={18} /></div>
-              Confidential, HIPAA-compliant data handling
+              Confidential, secure data handling
             </div>
             <div className="auth-feature">
               <div className="auth-feature-icon"><Users size={18} /></div>
