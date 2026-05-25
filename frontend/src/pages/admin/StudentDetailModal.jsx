@@ -14,7 +14,7 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
   const score = ((student.probabilityScore || 0) * 100).toFixed(1);
   const riskLevel = student.riskLevel || 'Low';
   const riskClass = riskLevel.toLowerCase();
-  const severity = getSeverityInterpretation(student.probabilityScore || 0);
+  const severity = student.severityLevel ? { level: student.severityLevel, color: getSeverityInterpretation(student.probabilityScore || 0).color } : getSeverityInterpretation(student.probabilityScore || 0);
   const priority = getInstitutionalPriority(student.riskLevel || 'Low');
 
   // Generate recommendation based on risk level
@@ -50,7 +50,6 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
     { label: 'Study Satisfaction', key: 'studySatisfaction', max: 5 },
     { label: 'CGPA', key: 'cgpa' },
     { label: 'Sleep Duration', key: 'sleepDuration', suffix: ' hrs' },
-    { label: 'Dietary Habits', key: 'dietaryHabits', max: 5 },
     { label: 'Suicidal Thoughts', key: 'suicidalThoughts', type: 'yesno' },
     { label: 'Study Hours', key: 'studyHours', suffix: ' hrs/day' },
     { label: 'Financial Stress', key: 'financialStress', max: 5 },

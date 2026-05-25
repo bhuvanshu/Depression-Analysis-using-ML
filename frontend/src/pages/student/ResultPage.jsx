@@ -29,14 +29,14 @@ export default function ResultPage() {
     );
   }
 
-  const { risk_level, probability, recommended_action } = result;
-  const riskKey = risk_level;
+  const { risk_level, institutional_priority, severity_interpretation, probability, recommended_action } = result;
+  const riskKey = institutional_priority?.tier || risk_level || 'Low';
   const riskConfig = RISK_RECOMMENDATIONS[riskKey];
-  const riskClass = risk_level.toLowerCase();
+  const riskClass = riskKey.toLowerCase();
   const probabilityScore = probability?.depressed || 0;
   const percentage = Math.round(probabilityScore * 100);
   const gaugeRotation = `${(probabilityScore * 360) - 90}deg`;
-  const severity = getSeverityInterpretation(probabilityScore);
+  const severity = severity_interpretation || getSeverityInterpretation(probabilityScore);
 
   const riskIcons = {
     Low: ShieldCheck,
@@ -118,7 +118,7 @@ export default function ResultPage() {
         </Card>
 
         {/* Helpline — shown for Moderate & High */}
-        {(risk_level === 'High' || risk_level === 'Moderate') && (
+        {(riskKey === 'High' || riskKey === 'Moderate') && (
           <div className="helpline-banner">
             <div className="helpline-title">
               <Phone size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />

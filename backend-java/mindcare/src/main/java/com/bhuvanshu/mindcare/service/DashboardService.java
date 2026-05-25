@@ -222,6 +222,7 @@ public class DashboardService {
 
                 // Risk fields
                 dto.setRiskLevel(result.getRiskLevel());
+                dto.setSeverityLevel(result.getSeverityLevel());
                 dto.setProbabilityScore(result.getProbabilityScore());
 
                 // Questionnaire metrics from ScreeningResponse

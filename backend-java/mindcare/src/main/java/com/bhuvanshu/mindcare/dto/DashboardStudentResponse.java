@@ -17,6 +17,8 @@ public class DashboardStudentResponse {
 
     private String riskLevel;
 
+    private String severityLevel;
+
     private Double probabilityScore;
 
     // Questionnaire metrics
