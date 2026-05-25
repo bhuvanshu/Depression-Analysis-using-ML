@@ -11,5 +11,5 @@ public class Probability {
     private Double depressed;
 
     @JsonProperty("not_depressed")
-    private Double not_depressed;
+    private Double notDepressed;
 }

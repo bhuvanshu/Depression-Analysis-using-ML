@@ -39,9 +39,9 @@ public class SecurityConfig {
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173"
-        ));
+        // TODO: Lock down to specific domains before production release
+        // e.g., List.of("https://your-frontend.onrender.com", "http://localhost:5173")
+        configuration.setAllowedOriginPatterns(List.of("*"));
 
         configuration.setAllowedMethods(List.of(
                 "GET",

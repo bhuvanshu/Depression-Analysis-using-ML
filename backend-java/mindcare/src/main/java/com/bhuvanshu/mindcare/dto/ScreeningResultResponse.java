@@ -11,18 +11,18 @@ public class ScreeningResultResponse {
     private Integer prediction;
 
     @JsonProperty("prediction_label")
-    private String prediction_label;
+    private String predictionLabel;
 
     private Probability probability;
 
     @JsonProperty("risk_level")
-    private String risk_level;
+    private String riskLevel;
 
     @JsonProperty("recommended_action")
-    private String recommended_action;
+    private String recommendedAction;
 
     @JsonProperty("risk_percentile")
-    private String risk_percentile;
+    private String riskPercentile;
 
     private String status;
 }

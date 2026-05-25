@@ -48,28 +48,28 @@ public class ScreeningService {
         responseEntity.setStudent(student);
 
         responseEntity.setAcademicPressure(
-                request.getAcademic_pressure());
+                request.getAcademicPressure());
 
         responseEntity.setFinancialStress(
-                request.getFinancial_stress());
+                request.getFinancialStress());
 
         responseEntity.setStudySatisfaction(
-                request.getStudy_satisfaction());
+                request.getStudySatisfaction());
 
         responseEntity.setWorkStudyHours(
-                request.getWork_study_hours());
+                request.getWorkStudyHours());
 
         responseEntity.setCgpa(
                 request.getCgpa());
 
         responseEntity.setSleepDuration(
-                request.getSleep_duration());
+                request.getSleepDuration());
 
         responseEntity.setFamilyHistory(
-                request.getFamily_history());
+                request.getFamilyHistory());
 
         responseEntity.setSuicidalThoughts(
-                request.getSuicidal_thoughts());
+                request.getSuicidalThoughts());
 
         screeningResponseRepository.save(
                 responseEntity);
@@ -111,10 +111,10 @@ public class ScreeningService {
         result.setPredictedAt(LocalDateTime.now());
 
         // Null safety for database constraints
-        String riskLevel = prediction.getRisk_level();
+        String riskLevel = prediction.getRiskLevel();
         result.setRiskLevel(riskLevel != null ? riskLevel : "Unknown");
 
-        String recommendation = prediction.getRecommended_action();
+        String recommendation = prediction.getRecommendedAction();
         result.setRecommendation(recommendation != null ? recommendation : "No recommendation provided");
 
         // SAFE PROBABILITY HANDLING

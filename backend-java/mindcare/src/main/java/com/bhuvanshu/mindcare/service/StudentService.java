@@ -6,7 +6,6 @@ import com.bhuvanshu.mindcare.dto.StudentResponse;
 import com.bhuvanshu.mindcare.dto.StudentVerifyRequest;
 import com.bhuvanshu.mindcare.entity.College;
 import com.bhuvanshu.mindcare.entity.Student;
-import com.bhuvanshu.mindcare.repository.CollegeRepository;
 import com.bhuvanshu.mindcare.repository.StudentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,7 @@ public class StudentService {
     private StudentRepository studentRepository;
 
     @Autowired
-    private CollegeRepository collegeRepository;
-
+    private CollegeService collegeService;
     public StudentResponse verifyStudent(
             StudentVerifyRequest request) {
 
@@ -46,7 +44,7 @@ public class StudentService {
             throw new IllegalArgumentException("Enrollment ID cannot be empty");
         }
 
-        College college = resolveCollege(collegeName);
+        College college = collegeService.resolveCollege(collegeName);
 
         Optional<Student> existingStudentOpt = studentRepository.findByEnrollmentId(request.getEnrollmentId());
         if (existingStudentOpt.isPresent()) {
@@ -85,7 +83,7 @@ public class StudentService {
             return new BulkAddResponse(0, 0, "No students provided for upload");
         }
 
-        College college = resolveCollege(collegeName);
+        College college = collegeService.resolveCollege(collegeName);
 
         int uploaded = 0;
         int skipped = 0;
@@ -145,17 +143,6 @@ public class StudentService {
         return new BulkAddResponse(uploaded, skipped, "Bulk upload completed successfully");
     }
 
-    /**
-     * Resolves a College entity from the collegeName.
-     * Returns null if collegeName is blank (graceful fallback for backward compatibility).
-     */
-    private College resolveCollege(String collegeName) {
-        if (collegeName == null || collegeName.trim().isEmpty()) {
-            return null;
-        }
-        List<College> colleges = collegeRepository.findByCollegeName(collegeName);
-        return (colleges != null && !colleges.isEmpty()) ? colleges.get(0) : null;
-    }
 
     private StudentResponse mapToResponse(Student student) {
         StudentResponse response = new StudentResponse();

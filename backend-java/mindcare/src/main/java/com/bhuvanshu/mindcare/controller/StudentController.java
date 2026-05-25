@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/student")
-@CrossOrigin("*")
 public class StudentController {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);

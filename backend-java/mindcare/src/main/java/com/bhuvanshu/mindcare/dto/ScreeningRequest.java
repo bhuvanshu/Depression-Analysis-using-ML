@@ -13,29 +13,29 @@ public class ScreeningRequest {
     private Integer age;
 
     @JsonProperty("academic_pressure")
-    private Integer academic_pressure;
+    private Integer academicPressure;
 
     private Float cgpa;
 
     @JsonProperty("study_satisfaction")
-    private Integer study_satisfaction;
+    private Integer studySatisfaction;
 
     @JsonProperty("work_study_hours")
-    private Integer work_study_hours;
+    private Integer workStudyHours;
 
     @JsonProperty("financial_stress")
-    private Integer financial_stress;
+    private Integer financialStress;
 
     @JsonProperty("suicidal_thoughts")
-    private Boolean suicidal_thoughts;
+    private Boolean suicidalThoughts;
 
     @JsonProperty("family_history")
-    private Boolean family_history;
+    private Boolean familyHistory;
 
     private String gender;
 
     @JsonProperty("sleep_duration")
-    private String sleep_duration;
+    private String sleepDuration;
 
     private String degree;
-}
+}

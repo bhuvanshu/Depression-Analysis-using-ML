@@ -2,17 +2,20 @@
 Risk assessment and recommendation logic.
 """
 
-RISK_JUSTIFICATION = (
-    "Percentile-based thresholds are used to provide relative risk "
-    "stratification without relying on arbitrary probability cutoffs, "
-    "ensuring consistency across varying data distributions."
-)
-
-RISK_ACTIONS = {
-    "Low":      "Indicates general awareness level",
-    "Moderate": "Suggests monitoring and supportive interventions",
-    "High":     "Requires priority attention and further evaluation"
-}
+try:
+    from training.config import RISK_JUSTIFICATION, RISK_ACTIONS
+except ImportError:
+    # Fallback if training module is not on the path
+    RISK_JUSTIFICATION = (
+        "Percentile-based thresholds are used to provide relative risk "
+        "stratification without relying on arbitrary probability cutoffs, "
+        "ensuring consistency across varying data distributions."
+    )
+    RISK_ACTIONS = {
+        "Low":      "Indicates general awareness level",
+        "Moderate": "Suggests monitoring and supportive interventions",
+        "High":     "Requires priority attention and further evaluation"
+    }
 
 def get_risk_level(prob: float, q1: float, q3: float) -> dict:
     """Maps a single probability to a risk level using percentile-based thresholds."""

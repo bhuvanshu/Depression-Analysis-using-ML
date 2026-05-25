@@ -31,7 +31,7 @@ public class AdminService {
                 .existsByAdminEmail(request.getAdminEmail());
 
         if (exists) {
-            return "Admin email already exists";
+            throw new IllegalArgumentException("Admin email already exists");
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());

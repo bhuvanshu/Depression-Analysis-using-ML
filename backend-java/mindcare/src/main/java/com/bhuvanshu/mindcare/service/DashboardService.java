@@ -5,7 +5,6 @@ import com.bhuvanshu.mindcare.entity.College;
 import com.bhuvanshu.mindcare.entity.ScreeningResponse;
 import com.bhuvanshu.mindcare.entity.ScreeningResult;
 import com.bhuvanshu.mindcare.entity.Student;
-import com.bhuvanshu.mindcare.repository.CollegeRepository;
 import com.bhuvanshu.mindcare.repository.ScreeningResultRepository;
 import com.bhuvanshu.mindcare.repository.StudentRepository;
 
@@ -31,7 +30,7 @@ public class DashboardService {
         private ScreeningResultRepository screeningResultRepository;
 
         @Autowired
-        private CollegeRepository collegeRepository;
+        private CollegeService collegeService;
 
         // SUMMARY
 
@@ -39,7 +38,7 @@ public class DashboardService {
 
                 Map<String, Object> summary = new HashMap<>();
 
-                College college = resolveCollege(collegeName);
+                College college = collegeService.resolveCollege(collegeName);
 
                 if (college != null) {
                         summary.put(
@@ -89,7 +88,7 @@ public class DashboardService {
 
         public List<DashboardStudentResponse> getAllStudents(String collegeName) {
 
-                College college = resolveCollege(collegeName);
+                College college = collegeService.resolveCollege(collegeName);
 
                 List<ScreeningResult> results;
 
@@ -117,7 +116,7 @@ public class DashboardService {
 
         public List<Map<String, Object>> getRiskDistributionChart(String collegeName) {
 
-                College college = resolveCollege(collegeName);
+                College college = collegeService.resolveCollege(collegeName);
 
                 List<Map<String, Object>> chartData = new ArrayList<>();
 
@@ -167,7 +166,7 @@ public class DashboardService {
 
         public List<DashboardStudentResponse> getHighRiskStudents(String collegeName) {
 
-                College college = resolveCollege(collegeName);
+                College college = collegeService.resolveCollege(collegeName);
 
                 List<ScreeningResult> results;
 
@@ -241,19 +240,5 @@ public class DashboardService {
                 return dto;
         }
 
-        /**
-         * Resolves a College entity from the collegeName.
-         * Returns null if collegeName is blank (graceful fallback).
-         */
-        private College resolveCollege(String collegeName) {
-                if (collegeName == null || collegeName.trim().isEmpty()) {
-                        return null;
-                }
-                List<College> colleges = collegeRepository.findByCollegeName(collegeName);
-                College college = (colleges != null && !colleges.isEmpty()) ? colleges.get(0) : null;
-                if (college == null) {
-                        logger.warn("College not found for name '{}', falling back to unfiltered data.", collegeName);
-                }
-                return college;
-        }
+
 }

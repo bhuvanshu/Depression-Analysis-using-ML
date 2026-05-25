@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/screening")
-@CrossOrigin("*")
 public class ScreeningController {
 
     @Autowired

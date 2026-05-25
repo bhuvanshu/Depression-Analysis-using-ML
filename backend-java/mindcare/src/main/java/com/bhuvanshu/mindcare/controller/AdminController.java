@@ -11,19 +11,20 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin("*")
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(
+    public ResponseEntity<?> signup(
             @Valid @RequestBody AdminSignupRequest request) {
-
-        String response = adminService.signup(request);
-
-        return ResponseEntity.ok(response);
+        try {
+            String response = adminService.signup(request);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
