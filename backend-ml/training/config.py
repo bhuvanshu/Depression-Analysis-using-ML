@@ -79,15 +79,56 @@ DEGREE_GROUP_ORDINAL = {
     "Other": 2  # treat same as Undergraduate
 }
 
-# ── Risk Framework Constants (single source of truth) ──
-RISK_JUSTIFICATION = (
-    "Percentile-based thresholds are used to provide relative risk "
-    "stratification without relying on arbitrary probability cutoffs, "
-    "ensuring consistency across varying data distributions."
+# ── Hybrid Risk Interpretation Framework (single source of truth) ──
+
+# AXIS 1: Severity Interpretation — absolute probability thresholds
+# These are independent of Q1/Q3 and represent pattern-similarity strength.
+SEVERITY_THRESHOLDS = {
+    "high_risk": 0.85,
+    "elevated": 0.60,
+    "mild": 0.35,
+}
+
+SEVERITY_LABELS = {
+    "High Risk Tendency": {
+        "range": "> 0.85",
+        "meaning": "High probability of similarity to depressive-class patterns",
+        "color": "#dc2626",
+    },
+    "Elevated Tendency": {
+        "range": "0.60 – 0.85",
+        "meaning": "Moderate-to-high similarity to depressive-class patterns",
+        "color": "#ea580c",
+    },
+    "Mild Tendency": {
+        "range": "0.35 – 0.60",
+        "meaning": "Some similarity to depressive-class patterns detected",
+        "color": "#f59e0b",
+    },
+    "Minimal Tendency": {
+        "range": "< 0.35",
+        "meaning": "Low similarity to depressive-class patterns",
+        "color": "#22c55e",
+    },
+}
+
+# AXIS 2: Institutional Priority — percentile-based Q1/Q3 ranking
+# These use the same Q1/Q3 logic as before but with explicit naming.
+INSTITUTIONAL_ACTIONS = {
+    "High":     "Requires priority attention and further evaluation",
+    "Moderate": "Suggests monitoring and supportive interventions",
+    "Low":      "Indicates general awareness level",
+}
+
+# Framework documentation
+RISK_FRAMEWORK_JUSTIFICATION = (
+    "This system uses a hybrid dual-axis interpretation: "
+    "(1) Severity Interpretation uses fixed probability thresholds to assess "
+    "how strongly a student's responses match depressive-class patterns, independent of other students. "
+    "(2) Institutional Priority uses percentile-based Q1/Q3 thresholds to rank students "
+    "relative to the institutional population for resource allocation and prioritization."
 )
 
-RISK_ACTIONS = {
-    "Low":      "Indicates general awareness level",
-    "Moderate": "Suggests monitoring and supportive interventions",
-    "High":     "Requires priority attention and further evaluation"
-}
+# Backward-compatible aliases (used by training/risk_analysis.py batch scripts)
+RISK_JUSTIFICATION = RISK_FRAMEWORK_JUSTIFICATION
+RISK_ACTIONS = INSTITUTIONAL_ACTIONS

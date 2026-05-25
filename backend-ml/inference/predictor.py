@@ -7,7 +7,7 @@ import pandas as pd
 from pathlib import Path
 import sys
 
-from .risk import get_risk_level
+from .risk import get_hybrid_risk
 
 class DepressionPredictor:
     def __init__(self, root_dir: Path):
@@ -131,7 +131,9 @@ class DepressionPredictor:
         probabilities = self.pipeline.predict_proba(X)[0].tolist()
         depression_prob = probabilities[1]
 
-        risk = get_risk_level(depression_prob, self.risk_q1, self.risk_q3)
+        risk = get_hybrid_risk(depression_prob, self.risk_q1, self.risk_q3)
+        severity = risk["severity"]
+        priority = risk["priority"]
 
         return {
             "prediction": prediction_val,
@@ -140,10 +142,17 @@ class DepressionPredictor:
                 "not_depressed": round(probabilities[0], 4),
                 "depressed": round(probabilities[1], 4)
             },
-            "risk_level": risk["level"],
-            "risk_color": risk["color"],
-            "risk_percentile": risk["percentile"],
-            "recommended_action": risk["action"],
+
+            # Dual-axis interpretation (primary — frontend should use these)
+            "severity_interpretation": severity,
+            "institutional_priority": priority,
+
+            # Backward-compatible fields (internal — Java backend consumes these)
+            "risk_level": priority["tier"],
+            "risk_color": priority["color"],
+            "risk_percentile": priority["percentile_group"],
+            "recommended_action": priority["action"],
+
             "input_features_used": X.to_dict(orient="records")[0],
             "pipeline_mode": "unified" if self.use_pipeline else "legacy"
         }

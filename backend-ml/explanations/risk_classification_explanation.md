@@ -1,58 +1,74 @@
-# Risk Classification Explanation (`risk_classification.py`)
+# Risk Classification Explanation (`risk_analysis.py`)
 
-The risk classification module assigns every student a risk level (Low, Moderate, or High) based on the trained model's predicted probability of depression. It is designed as the single source of truth for all risk-related logic in the project.
+The risk classification module implements a **hybrid dual-axis interpretation system** that assigns every student two independent assessments based on the trained model's predicted probability. It is the single source of truth for all risk-related logic in the project.
 
-## Why This Module Exists
+> **Important language distinction**: The ML model predicts **probability of similarity to depressive-class patterns**, NOT clinical severity. All labels and descriptions in this system use pattern-similarity language deliberately.
 
-Risk classification touches three parts of the system: batch analysis (running over the entire dataset), model training (saving thresholds during deployment), and the prediction API (classifying individual predictions in real time). Without a centralized module, the same threshold computation and risk level logic would be duplicated across all three — leading to inconsistencies if any copy is updated independently. This module prevents that by exposing reusable functions that the other scripts import.
+## Why a Hybrid System?
+
+The original system used only percentile-based Q1/Q3 thresholds to classify students. This created a conceptual problem: a student with a probability of 0.92 (very high pattern similarity) could be classified as "Moderate Risk" simply because 75% of other students also scored high. The percentile system answered "how does this student compare to others?" but failed to answer "how strong is this student's pattern similarity?"
+
+The hybrid system solves this by producing **two independent assessments**:
+
+| Axis | Question it Answers | Method |
+|------|-------------------|--------|
+| **Severity Interpretation** | "How strongly do this student's responses match depressive-class patterns?" | Fixed absolute probability thresholds |
+| **Institutional Priority** | "How should the institution prioritize this student relative to peers?" | Percentile-based Q1/Q3 ranking |
 
 ## Core Functions
 
+### `get_severity_interpretation(prob)`
+Maps a probability to a severity level using **fixed thresholds** that do not depend on Q1/Q3 or the distribution of other students:
+
+- **High Risk Tendency** (probability > 0.85): High probability of similarity to depressive-class patterns
+- **Elevated Tendency** (0.60 – 0.85): Moderate-to-high similarity to depressive-class patterns
+- **Mild Tendency** (0.35 – 0.60): Some similarity to depressive-class patterns detected
+- **Minimal Tendency** (< 0.35): Low similarity to depressive-class patterns
+
+### `get_institutional_priority(prob, q1, q3)`
+Maps a probability to an institutional priority tier using **percentile thresholds**:
+
+- **High Priority** (probability > Q3): Top 25% of the distribution. Action: priority attention and further evaluation.
+- **Moderate Priority** (Q1 ≤ probability ≤ Q3): Middle 50%. Action: monitoring and supportive interventions.
+- **Low Priority** (probability < Q1): Bottom 25%. Action: general awareness level.
+
+### `get_hybrid_risk(prob, q1, q3)`
+Orchestrator function that returns both axes in a single call. This is the function used by the Flask prediction API.
+
 ### `compute_risk_thresholds(model, df, target)`
-Takes the trained model and the full dataset, generates depression probabilities for every student, and computes the 25th percentile (Q1) and 75th percentile (Q3) of that distribution. These two values become the boundaries between Low, Moderate, and High risk. Returns `(q1, q3, probabilities)`.
-
-### `get_risk_level(prob, q1, q3)`
-Maps a single probability value to a risk category. This is the function used by the Flask API when processing individual predictions:
-- **Low** (probability < Q1): Bottom 25% of the distribution. Action: general awareness level.
-- **Moderate** (Q1 ≤ probability ≤ Q3): Middle 50%. Action: monitoring and supportive interventions.
-- **High** (probability > Q3): Top 25%. Action: priority attention and further evaluation.
-
-Returns a dictionary with the level name, display color, percentile label, and recommended action.
+Takes the trained model and the full dataset, generates depression probabilities for every student, and computes the 25th percentile (Q1) and 75th percentile (Q3). These values define the institutional priority boundaries.
 
 ### `build_risk_thresholds_dict(q1, q3)`
-Constructs a standardized JSON-serializable dictionary with the threshold values, method description, justification text, and detailed risk level definitions. Used by both `model_trainer.py` and this module itself when saving `risk_thresholds.json`.
+Constructs a JSON-serializable dictionary documenting both frameworks — severity thresholds (fixed) and institutional priority thresholds (Q1/Q3). Used by `model_trainer.py` and when saving `risk_thresholds.json`.
 
 ### `generate_risk_framework(model, df, target, outdir)`
-The batch pipeline function. Computes thresholds, labels every student as Low/Moderate/High, adds Risk_Score and Risk_Level columns to the dataset, and saves the result as `risk_assessment_output.csv` along with `risk_thresholds.json`.
+Batch pipeline function. Computes thresholds, labels every student, saves results. Uses institutional priority labels (Low/Moderate/High) for batch classification since this is the comparative ranking axis.
 
 ## Visualizations
 
 ### Risk Distribution Bar Chart
-A color-coded bar chart (green/yellow/red) showing how many students fall into each risk category.
+Color-coded bar chart (green/yellow/red) showing institutional priority distribution.
 
 ### Risk Score Density Plot
-A histogram with KDE overlay showing the full distribution of predicted probabilities. Vertical dashed lines mark the Q1 and Q3 thresholds, making it visually clear where the boundaries fall.
+Histogram with KDE overlay showing the full probability distribution. Vertical dashed lines mark Q1 and Q3 thresholds.
 
-### Risk Summary Table
-A styled PNG table with counts and percentages for each category.
+### Institutional Priority Action Table
+Formatted table mapping each priority tier to its percentile range, probability range, and recommended action.
 
-### Risk Action Table
-A formatted table mapping each risk level to its percentile range, probability range, and recommended action. Saved as both CSV and PNG.
+### Severity Interpretation Table
+Formatted table mapping each severity level to its fixed probability range and pattern-similarity meaning.
 
 ### Justification Report
-A text file documenting the method (percentile-based Q1/Q3), the computed threshold values, the risk level definitions, and the rationale for using this approach.
-
-## How It Runs
-
-When run standalone, the script loads the pre-trained model from `outputs/gradient_boosting/model.joblib` rather than training a new one. This ensures the risk analysis uses the exact same model that will serve predictions in production. If no saved model exists yet (e.g., first-time setup), it falls back to training a fresh model and prints a warning.
-
-```bash
-python backend-ml/src/risk_classification.py
-```
+Text file documenting both axes: fixed severity thresholds and percentile-based institutional priority, with the rationale for the hybrid approach.
 
 ## Where Constants Come From
 
-The action descriptions and justification text are imported from `config.py` (`RISK_ACTIONS` and `RISK_JUSTIFICATION`). This means if the wording needs to change, it only needs to be updated in one place and will propagate to every report, table, API response, and saved JSON file automatically.
+All constants are imported from `config.py`:
+- `SEVERITY_THRESHOLDS` and `SEVERITY_LABELS` — fixed probability cutoffs and their meanings
+- `INSTITUTIONAL_ACTIONS` — recommended actions per priority tier
+- `RISK_FRAMEWORK_JUSTIFICATION` — documentation of the hybrid approach
+
+Backward-compatible aliases `RISK_ACTIONS` and `RISK_JUSTIFICATION` are also available for batch scripts.
 
 ## Outputs
 
@@ -61,11 +77,13 @@ All results are saved to `backend-ml/outputs/risk_classification/`:
 | File | Description |
 |---|---|
 | `risk_assessment_output.csv` | Full dataset with Risk_Score and Risk_Level columns |
-| `risk_thresholds.json` | Q1/Q3 values and risk level definitions |
-| `risk_distribution.png` | Bar chart of risk category counts |
-| `risk_score_distribution.png` | Probability density with threshold markers |
-| `risk_summary.csv` | Category counts and percentages |
+| `risk_thresholds.json` | Both severity and institutional framework definitions |
+| `risk_distribution.png` | Bar chart of institutional priority counts |
+| `risk_score_distribution.png` | Probability density with Q1/Q3 markers |
+| `risk_summary.csv` | Priority tier counts and percentages |
 | `risk_summary_table.png` | Styled summary table image |
-| `risk_action_table.csv` | Action mappings in CSV format |
-| `risk_action_table.png` | Styled action table image |
-| `risk_framework_justification.txt` | Full methodology and rationale documentation |
+| `risk_action_table.csv` | Institutional priority action mappings |
+| `risk_action_table.png` | Styled institutional priority table image |
+| `severity_interpretation_table.csv` | Severity level definitions |
+| `severity_interpretation_table.png` | Styled severity table image |
+| `risk_framework_justification.txt` | Full hybrid framework documentation |

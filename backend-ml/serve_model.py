@@ -23,7 +23,7 @@ import sys
 # -- Internal imports --
 from inference.predictor import DepressionPredictor
 from inference.schema import get_features_schema
-from inference.risk import RISK_JUSTIFICATION
+from inference.risk import RISK_FRAMEWORK_JUSTIFICATION, SEVERITY_LABELS, INSTITUTIONAL_ACTIONS
 
 # -- Paths --
 root = Path(__file__).resolve().parent
@@ -70,11 +70,21 @@ def health():
         "accepts_raw_input": predictor.use_pipeline,
         "n_features": predictor.n_features,
         "model_metrics": predictor.metadata.get("metrics", {}),
-        "risk_framework": {
-            "method": "percentile-based",
-            "q1": predictor.risk_q1,
-            "q3": predictor.risk_q3,
-            "justification": RISK_JUSTIFICATION
+        "interpretation_framework": {
+            "type": "hybrid_dual_axis",
+            "justification": RISK_FRAMEWORK_JUSTIFICATION,
+            "severity_axis": {
+                "method": "fixed_probability_thresholds",
+                "description": "Measures similarity to depressive-class patterns (absolute)",
+                "levels": {k: v["range"] for k, v in SEVERITY_LABELS.items()}
+            },
+            "institutional_axis": {
+                "method": "percentile_based_q1_q3",
+                "description": "Ranks students relative to institutional population (comparative)",
+                "q1": predictor.risk_q1,
+                "q3": predictor.risk_q3,
+                "tiers": INSTITUTIONAL_ACTIONS
+            }
         }
     })
 

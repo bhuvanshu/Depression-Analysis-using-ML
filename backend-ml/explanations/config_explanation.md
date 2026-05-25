@@ -39,12 +39,22 @@ For analyses that require numeric data (like correlation matrices and PCA), the 
 - School → 1, Undergraduate → 2, Postgraduate → 3, Doctorate → 4.
 - The `"Other"` category is treated the same as Undergraduate (value 2), since it typically represents edge cases with similar characteristics.
 
-### 6. Risk Framework Constants
+### 6. Hybrid Risk Interpretation Framework
 
-These constants define the language used in the risk classification system. They are stored here so that every module — the batch risk classifier, the model trainer, and the prediction API — uses exactly the same wording:
+These constants define the dual-axis interpretation system used across the entire project. They are stored here so that every module — the batch risk classifier, the model trainer, and the prediction API — uses exactly the same definitions:
 
-- **`RISK_JUSTIFICATION`**: A clear explanation of why percentile-based thresholds are used. This text appears in generated reports, the API health endpoint, and saved JSON metadata.
-- **`RISK_ACTIONS`**: The recommended actions for each risk level (Low, Moderate, High). These are deliberately worded as screening-oriented suggestions rather than clinical diagnoses, since the system is designed for awareness, not medical advice.
+**Axis 1: Severity Interpretation (absolute)**
+- **`SEVERITY_THRESHOLDS`**: Fixed probability cutoffs (0.35, 0.60, 0.85) that determine severity levels independent of other students' scores.
+- **`SEVERITY_LABELS`**: The four severity levels (Minimal Tendency, Mild Tendency, Elevated Tendency, High Risk Tendency) with their probability ranges, meanings, and display colors. All descriptions use pattern-similarity language ("probability of similarity to depressive-class patterns"), never clinical language.
+
+**Axis 2: Institutional Priority (comparative)**
+- **`INSTITUTIONAL_ACTIONS`**: Recommended actions for each priority tier (Low, Moderate, High). These are deliberately worded as screening-oriented suggestions rather than clinical diagnoses, since the system is designed for awareness, not medical advice.
+
+**Documentation:**
+- **`RISK_FRAMEWORK_JUSTIFICATION`**: Explains why the system uses both axes — severity for absolute assessment, institutional priority for comparative resource allocation.
+
+**Backward compatibility:**
+- `RISK_JUSTIFICATION` and `RISK_ACTIONS` are aliases pointing to `RISK_FRAMEWORK_JUSTIFICATION` and `INSTITUTIONAL_ACTIONS` respectively, ensuring batch training scripts continue to work without modification.
 
 ## Why This Matters
 

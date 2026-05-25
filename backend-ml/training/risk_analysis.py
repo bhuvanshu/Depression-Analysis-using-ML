@@ -11,7 +11,11 @@ if str(root) not in sys.path:
     sys.path.append(str(root))
 
 from training.utils import finalize_plot, ensure_outdir, save_pretty_table, save_text_report
-from training.config import RISK_JUSTIFICATION, RISK_ACTIONS
+from training.config import (
+    RISK_JUSTIFICATION, RISK_ACTIONS,
+    SEVERITY_THRESHOLDS, SEVERITY_LABELS,
+    INSTITUTIONAL_ACTIONS, RISK_FRAMEWORK_JUSTIFICATION,
+)
 
 
 def compute_risk_thresholds(model, df, target="Depression"):
@@ -47,19 +51,34 @@ def get_risk_level(prob: float, q1: float, q3: float) -> dict:
 
 
 def build_risk_thresholds_dict(q1, q3):
-    """Builds the standard risk thresholds dict for JSON serialization."""
+    """Builds the standard risk thresholds dict for JSON serialization.
+
+    Includes both severity interpretation and institutional priority documentation.
+    """
     return {
         "q1": round(q1, 4),
         "q3": round(q3, 4),
-        "method": "percentile-based",
-        "justification": RISK_JUSTIFICATION,
-        "risk_levels": {
-            "Low":      {"range": f"probability < Q1 ({q1:.4f})",  "percentile": "Bottom 25%",
-                         "action": RISK_ACTIONS["Low"]},
-            "Moderate": {"range": f"Q1 ({q1:.4f}) \u2264 probability \u2264 Q3 ({q3:.4f})", "percentile": "Middle 50%",
-                         "action": RISK_ACTIONS["Moderate"]},
-            "High":     {"range": f"probability > Q3 ({q3:.4f})", "percentile": "Top 25%",
-                         "action": RISK_ACTIONS["High"]}
+        "framework": "hybrid_dual_axis",
+        "justification": RISK_FRAMEWORK_JUSTIFICATION,
+        "severity_interpretation": {
+            "method": "fixed_probability_thresholds",
+            "description": "Measures similarity to depressive-class patterns (absolute)",
+            "levels": {
+                name: {"range": info["range"], "meaning": info["meaning"]}
+                for name, info in SEVERITY_LABELS.items()
+            }
+        },
+        "institutional_priority": {
+            "method": "percentile_based_q1_q3",
+            "description": "Ranks students relative to institutional population (comparative)",
+            "tiers": {
+                "Low":      {"range": f"probability < Q1 ({q1:.4f})",  "percentile": "Bottom 25%",
+                             "action": INSTITUTIONAL_ACTIONS["Low"]},
+                "Moderate": {"range": f"Q1 ({q1:.4f}) \u2264 probability \u2264 Q3 ({q3:.4f})", "percentile": "Middle 50%",
+                             "action": INSTITUTIONAL_ACTIONS["Moderate"]},
+                "High":     {"range": f"probability > Q3 ({q3:.4f})", "percentile": "Top 25%",
+                             "action": INSTITUTIONAL_ACTIONS["High"]}
+            }
         }
     }
 
@@ -130,36 +149,60 @@ def save_risk_visuals(risk_df, q1, q3, outdir):
 
 def save_risk_actions(q1, q3, outdir):
     """Maps probability ranges to screening-oriented actions (non-clinical wording)."""
-    actions = pd.DataFrame({
-        "Risk Level": ["Low", "Moderate", "High"],
+    # Institutional Priority table (percentile-based)
+    inst_actions = pd.DataFrame({
+        "Priority Tier": ["Low", "Moderate", "High"],
         "Percentile": ["Bottom 25%", "Middle 50%", "Top 25%"],
         "Probability Range": [f"0.00 \u2013 {q1:.4f}", f"{q1:.4f} \u2013 {q3:.4f}", f"> {q3:.4f}"],
         "Recommended Action": [
-            RISK_ACTIONS["Low"],
-            RISK_ACTIONS["Moderate"],
-            RISK_ACTIONS["High"]
+            INSTITUTIONAL_ACTIONS["Low"],
+            INSTITUTIONAL_ACTIONS["Moderate"],
+            INSTITUTIONAL_ACTIONS["High"]
         ]
     })
 
-    actions.to_csv(outdir / "risk_action_table.csv", index=False)
-    save_pretty_table(actions, outdir / "risk_action_table.png",
-                      "Risk Stratification Framework (Percentile-Based)")
+    inst_actions.to_csv(outdir / "risk_action_table.csv", index=False)
+    save_pretty_table(inst_actions, outdir / "risk_action_table.png",
+                      "Institutional Priority Framework (Percentile-Based)")
+
+    # Severity Interpretation table (fixed thresholds)
+    sev_rows = []
+    for name, info in SEVERITY_LABELS.items():
+        sev_rows.append({
+            "Severity Level": name,
+            "Probability Range": info["range"],
+            "Meaning": info["meaning"],
+        })
+    sev_df = pd.DataFrame(sev_rows)
+    sev_df.to_csv(outdir / "severity_interpretation_table.csv", index=False)
+    save_pretty_table(sev_df, outdir / "severity_interpretation_table.png",
+                      "Severity Interpretation Framework (Fixed Thresholds)")
 
     # Save justification text
     justification_text = (
-        f"Risk Stratification Framework\n"
-        f"{'=' * 40}\n\n"
-        f"Method: Percentile-based (Q1/Q3) thresholds\n"
+        f"Hybrid Risk Interpretation Framework\n"
+        f"{'=' * 45}\n\n"
+        f"This system uses a dual-axis interpretation.\n"
+        f"The ML model predicts probability of similarity to depressive-class patterns.\n\n"
+        f"AXIS 1: Severity Interpretation (Fixed Thresholds)\n"
+        f"{'-' * 45}\n"
+    )
+    for name, info in SEVERITY_LABELS.items():
+        justification_text += f"  {name}: {info['range']}\n    \u2192 {info['meaning']}\n\n"
+
+    justification_text += (
+        f"AXIS 2: Institutional Priority (Percentile-Based Q1/Q3)\n"
+        f"{'-' * 45}\n"
         f"Q1 (25th percentile): {q1:.4f}\n"
         f"Q3 (75th percentile): {q3:.4f}\n\n"
-        f"Low Risk     (Bottom 25%):  probability < {q1:.4f}\n"
-        f"  \u2192 {RISK_ACTIONS['Low']}\n\n"
-        f"Moderate Risk (Middle 50%): {q1:.4f} \u2264 probability \u2264 {q3:.4f}\n"
-        f"  \u2192 {RISK_ACTIONS['Moderate']}\n\n"
-        f"High Risk    (Top 25%):     probability > {q3:.4f}\n"
-        f"  \u2192 {RISK_ACTIONS['High']}\n\n"
+        f"Low Priority     (Bottom 25%):  probability < {q1:.4f}\n"
+        f"  \u2192 {INSTITUTIONAL_ACTIONS['Low']}\n\n"
+        f"Moderate Priority (Middle 50%): {q1:.4f} \u2264 probability \u2264 {q3:.4f}\n"
+        f"  \u2192 {INSTITUTIONAL_ACTIONS['Moderate']}\n\n"
+        f"High Priority    (Top 25%):     probability > {q3:.4f}\n"
+        f"  \u2192 {INSTITUTIONAL_ACTIONS['High']}\n\n"
         f"Justification:\n"
-        f"{RISK_JUSTIFICATION}\n"
+        f"{RISK_FRAMEWORK_JUSTIFICATION}\n"
     )
     save_text_report(outdir / "risk_framework_justification.txt", justification_text)
 

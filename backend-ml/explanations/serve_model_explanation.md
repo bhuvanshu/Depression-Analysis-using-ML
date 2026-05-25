@@ -6,58 +6,69 @@ The serve_model script is a Flask web server that exposes the trained Gradient B
 
 ### Startup
 
-When the server starts, it loads three artifacts saved during model training:
+When the server starts, it loads artifacts saved during model training:
 
-- **`model.joblib`**: The trained Gradient Boosting classifier.
-- **`feature_names.joblib`**: The exact ordered list of features the model expects.
+- **`pipeline.joblib`**: The production pipeline containing preprocessing + trained classifier.
 - **`model_metadata.json`**: Model information, performance metrics, risk thresholds, and frontend form field definitions.
 
-The risk thresholds (Q1 and Q3) are extracted from the metadata and stored in memory. If any artifact fails to load, the server exits immediately with a clear error message.
+The risk thresholds (Q1 and Q3) are extracted from the metadata and stored in memory for the institutional priority axis. If any artifact fails to load, the server exits immediately with a clear error message.
 
 ### Feature Vector Construction
 
-The API accepts user-friendly field names (like `age`, `gender`, `sleep_duration`) from a form, but the model expects a 20-column one-hot encoded vector. The `build_feature_vector()` function handles this translation:
+The API accepts user-friendly field names (like `age`, `gender`, `sleep_duration`) from a form. The production pipeline handles all preprocessing internally (one-hot encoding, feature ordering). For legacy model.joblib deployments, a manual `build_feature_vector_legacy()` function handles the translation.
 
-- **Scalar features** (age, CGPA, academic pressure, etc.) are passed through directly.
-- **Gender** is converted from a single string ("Male", "Female", "Other") into three binary columns (`gender_male`, `gender_female`, `gender_other`).
-- **Sleep Duration** is converted from a string ("5-6 hours", "Less than 5 hours", etc.) into five binary columns.
-- **Degree** is converted from a string ("School", "Undergraduate", "Postgraduate", "PhD") into four binary columns.
+### Hybrid Risk Interpretation
 
-Any model features that aren't present in the input are filled with 0, and the columns are reordered to match the exact training order.
+When classifying a prediction, the API calls `get_hybrid_risk()` imported from `inference/risk.py`. This returns **two independent assessments**:
 
-### Risk Classification
+1. **Severity Interpretation** — based on fixed probability thresholds, measures how strongly the student's responses match depressive-class patterns (absolute assessment, independent of other students)
+2. **Institutional Priority** — based on percentile Q1/Q3 thresholds, ranks the student relative to the institutional population for resource allocation (comparative ranking)
 
-When classifying a prediction, the API calls `get_risk_level()` imported from `risk_classification.py`. This is the same function used by the batch risk analysis, ensuring the API and offline analysis always produce identical risk labels for the same probability.
-
-The justification text displayed in the health endpoint is imported from `config.py` (`RISK_JUSTIFICATION`), maintaining consistency with all other outputs.
+> **Important**: The ML model predicts probability of similarity to depressive-class patterns, NOT clinical severity. All API response labels reflect this distinction.
 
 ## API Endpoints
 
 ### `POST /predict`
 Accepts a JSON body with student data and returns:
-- The binary prediction (0 or 1) and its label ("Not Depressed" / "Depressed")
-- Probability scores for both classes
-- Risk level (Low / Moderate / High) with color code and percentile bracket
-- A recommended action based on the risk level
-- The exact feature vector used for prediction (useful for debugging)
+
+**Primary fields** (frontend should use these):
+- `severity_interpretation` — object with `level`, `score`, `meaning`, `color`
+- `institutional_priority` — object with `tier`, `percentile_group`, `action`, `color`
+
+**Backward-compatible fields** (Java backend consumes these internally):
+- `risk_level` — maps to institutional priority tier (High/Moderate/Low)
+- `risk_percentile` — maps to institutional priority percentile group
+- `recommended_action` — maps to institutional priority action
+- `risk_color` — color code for institutional priority
+
+**Always present:**
+- `prediction` — binary (0 or 1) and `prediction_label` ("Depressed"/"Not Depressed")
+- `probability` — scores for both classes
+- `input_features_used` — exact feature vector used (debugging)
+- `pipeline_mode` — "unified" or "legacy"
 
 ### `GET /health`
-Returns server status, model type, number of features, performance metrics, and the risk framework configuration (method, thresholds, justification).
+Returns server status, model type, number of features, performance metrics, and the complete interpretation framework configuration documenting both severity and institutional axes.
 
 ### `GET /features`
-Returns the expected input fields with metadata (types, labels, options, min/max values). This endpoint can be used by a frontend to dynamically generate a form that matches the model's requirements.
+Returns the expected input fields with metadata (types, labels, options, min/max values).
 
 ## Design Decisions
 
-**No local risk logic.** Previous versions of this file contained a local copy of the risk level classification function and hardcoded action strings. These have been removed. The server now imports `get_risk_level` from `risk_classification.py` and `RISK_JUSTIFICATION` from `config.py`, so all risk-related behavior is defined in exactly one place.
+**Hybrid interpretation.** The API returns both severity (absolute) and institutional priority (comparative) for every prediction. This eliminates the conceptual confusion where a 0.92 probability could be labeled "Moderate" simply because other students also scored high.
 
-**Threshold loading.** The Q1/Q3 thresholds are loaded from `model_metadata.json` at startup rather than recomputed. This ensures the API uses the exact same thresholds that were computed during training.
+**Backward compatibility.** The `risk_level`, `recommended_action`, and `risk_percentile` fields are still present and map to the institutional priority axis. The Java backend continues to work without changes.
+
+**No local risk logic.** All risk interpretation functions are imported from `inference/risk.py`, which in turn imports constants from `training/config.py`. Risk logic is defined in exactly one place.
+
+**Threshold loading.** The Q1/Q3 thresholds are loaded from `model_metadata.json` at startup rather than recomputed. This ensures the API uses the exact same thresholds computed during training.
 
 ## How to Run
 
 ```bash
 python serve_model.py              # default: port 5000
 python serve_model.py --port 8080  # custom port
+gunicorn serve_model:app           # production (Render)
 ```
 
 The server binds to `0.0.0.0` by default, making it accessible from other machines on the network.
