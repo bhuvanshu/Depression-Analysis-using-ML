@@ -224,6 +224,7 @@ public class DashboardService {
                 dto.setRiskLevel(result.getRiskLevel());
                 dto.setSeverityLevel(result.getSeverityLevel());
                 dto.setProbabilityScore(result.getProbabilityScore());
+                dto.setRecommendation(result.getRecommendation());
 
                 // Questionnaire metrics from ScreeningResponse
                 dto.setAcademicPressure(screening.getAcademicPressure());

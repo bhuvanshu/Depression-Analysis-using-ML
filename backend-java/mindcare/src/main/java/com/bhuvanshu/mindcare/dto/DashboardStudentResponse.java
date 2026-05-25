@@ -21,6 +21,8 @@ public class DashboardStudentResponse {
 
     private Double probabilityScore;
 
+    private String recommendation;
+
     // Questionnaire metrics
 
     private Integer academicPressure;
