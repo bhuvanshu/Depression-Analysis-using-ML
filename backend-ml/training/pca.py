@@ -295,7 +295,7 @@ def run_pca_pipeline(df: pd.DataFrame, outdir: Path, target="Depression"):
 
 def main():
     # Configuration
-    data_path = root / "data" / "df_paper.csv"
+    data_path = root / "data" / "processed" / "df_paper.csv"
     out_dir = root / "outputs"
     
     if not data_path.exists():

@@ -1,23 +1,3 @@
-"""
-Production Pipeline Builder
-────────────────────────────
-Builds a unified sklearn Pipeline that encapsulates ALL preprocessing
-(one-hot encoding for gender/sleep/degree, passthrough for numerics)
-and the GradientBoostingClassifier into ONE deployable artifact.
-
-The resulting `pipeline.joblib` accepts raw frontend-style input and
-produces predictions without any external preprocessing code.
-
-Usage:
-    python -m src.build_pipeline
-
-Preserves:
-    - Same model type (GradientBoostingClassifier)
-    - Same hyperparameters (n_estimators=200, learning_rate=0.05, random_state=42)
-    - Same training data and split (random_state=42, stratify, test_size=0.2)
-    - Same evaluation methodology
-"""
-
 import sys
 import json
 import numpy as np
@@ -86,13 +66,23 @@ def build_raw_dataframe_from_csv(csv_path: Path, target: str = "depression"):
     and apply the same cleaning + degree grouping, but keep the categorical
     columns as strings (for the Pipeline's OneHotEncoder to handle).
     """
-    raw_path = csv_path.parent / "student_depression_dataset kaggle.csv"
+    raw_path = csv_path.parent / "raw" / "original_dataset.csv"
     if not raw_path.exists():
         # Fallback: reconstruct from df_ml.csv (reverse one-hot encoding)
         return _reconstruct_from_ml_csv(csv_path, target)
 
     df = pd.read_csv(raw_path)
     df.columns = df.columns.str.strip().str.lower()
+
+    # ── Feature Selection ──────────────────────────────────────────
+   
+    UNUSED_COLUMNS = [
+        "id", "city", "profession",
+        "work pressure", "job satisfaction", "dietary habits",
+    ]
+    df = df.drop(columns=UNUSED_COLUMNS, errors="ignore")
+    print(f"      Dropped unused columns: {UNUSED_COLUMNS}")
+    print(f"      Shape after feature selection: {df.shape}")
 
     # Deduplicate
     df = df.drop_duplicates()
@@ -270,7 +260,7 @@ def build_production_pipeline():
 
     Returns the pipeline, metrics dict, and risk thresholds.
     """
-    data_path = root / "data" / "df_ml.csv"
+    data_path = root / "data" / "processed" / "df_ml.csv"
     if not data_path.exists():
         sys.exit(f"Dataset not found: {data_path}")
 

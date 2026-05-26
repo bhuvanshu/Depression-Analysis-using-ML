@@ -210,7 +210,7 @@ def save_risk_actions(q1, q3, outdir):
 if __name__ == "__main__":
     import joblib
 
-    data_path = root / "data" / "df_ml.csv"
+    data_path = root / "data" / "processed" / "df_ml.csv"
     model_path = root / "outputs" / "gradient_boosting" / "model.joblib"
 
     if not data_path.exists():

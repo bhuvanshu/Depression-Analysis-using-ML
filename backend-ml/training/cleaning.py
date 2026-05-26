@@ -5,15 +5,29 @@ from pathlib import Path
 
 # Set up paths (relative to this script's location, not the working directory)
 root = Path(__file__).resolve().parents[1]  # backend-ml/
-INPUT_FILE = root / "data" / "student_depression_dataset kaggle.csv"
-OUTDIR = root / "data"
+INPUT_FILE = root / "data" / "raw" / "original_dataset.csv"
+OUTDIR = root / "data" / "processed"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 TARGET_COL = "depression"
+
+# ── Feature Selection ──────────────────────────────────────────
+UNUSED_COLUMNS = [
+    "id",
+    "city",
+    "profession",
+    "work pressure",
+    "job satisfaction",
+    "dietary habits",
+]
 
 # Load and clean column names
 df = pd.read_csv(INPUT_FILE)
 df.columns = df.columns.str.strip().str.lower()
-print("✅ Raw Shape:", df.shape)
+print("✅ Raw Shape (original):", df.shape)
+
+# Drop unused columns (safe — errors="ignore" handles missing cols)
+df = df.drop(columns=UNUSED_COLUMNS, errors="ignore")
+print("✅ After Feature Selection:", df.shape)
 
 
 # Data cleaning: duplicates and whitespace

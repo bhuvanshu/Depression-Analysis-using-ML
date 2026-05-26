@@ -17,7 +17,7 @@ from config import TARGET_COL, STYLE_SETTINGS, LABEL_MAPS, COLUMN_RENAMES, DEGRE
 # ===============================
 # CONFIGURATION
 # ===============================
-DATA_PATH = Path("backend-ml/data/df_paper.csv")
+DATA_PATH = Path("backend-ml/data/processed/df_paper.csv")
 EDA_OUTDIR = Path("backend-ml/outputs/eda")
 CORR_OUTDIR = Path("backend-ml/outputs/correlation")
 
