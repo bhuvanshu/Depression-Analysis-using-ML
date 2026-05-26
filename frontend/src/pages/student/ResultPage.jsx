@@ -102,6 +102,20 @@ export default function ResultPage() {
             <Lightbulb size={18} style={{ color: 'var(--accent-warning)' }} />
             Recommended Actions
           </div>
+          
+          {recommended_action && (
+            <div className="ml-action-triage" style={{ 
+              marginBottom: '1rem', 
+              padding: '0.85rem', 
+              background: 'rgba(255, 255, 255, 0.03)', 
+              borderRadius: '6px', 
+              borderLeft: `4px solid ${severity.color}` 
+            }}>
+              <strong style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>AI Triage Directive:</strong>
+              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{recommended_action}</p>
+            </div>
+          )}
+          
           <ul className="recommendations-list">
             {riskConfig.actions.map((action, i) => (
               <li key={i}>

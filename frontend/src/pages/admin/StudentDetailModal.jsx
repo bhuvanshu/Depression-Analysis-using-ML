@@ -119,7 +119,7 @@ export default function StudentDetailModal({ isOpen, student, onClose }) {
           <RecIcon size={18} />
           <div>
             <strong>Recommendation</strong>
-            <p>{recommendation.text}</p>
+            <p>{student.recommendation || recommendation.text}</p>
           </div>
         </div>
 
