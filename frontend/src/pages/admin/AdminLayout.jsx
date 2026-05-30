@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Brain, LayoutDashboard, Users, FileBarChart, Settings, LogOut, Menu, X } from 'lucide-react';
 import { getInitials } from '../../utils/helpers';
+import ThemeToggle from '../../components/common/ThemeToggle';
 import './AdminLayout.css';
 
 export default function AdminLayout() {
@@ -60,6 +61,9 @@ export default function AdminLayout() {
         </nav>
 
         <div className="sidebar-footer">
+          <div className="sidebar-theme-toggle" style={{ marginBottom: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
+            <ThemeToggle />
+          </div>
           <div className="sidebar-user">
             <div className="sidebar-user-avatar">
               {getInitials(admin.name || 'Admin')}

@@ -14,7 +14,8 @@ import Button from '../../components/common/Button';
 import RiskBadge from '../../components/common/RiskBadge';
 import { getDashboardSummary, getDashboardStudents } from '../../services/api';
 import { getInitials, getSeverityInterpretation, getInstitutionalPriority } from '../../utils/helpers';
-import { chartDefaults } from '../../config/chartDefaults';
+import { getChartOptions } from '../../config/chartDefaults';
+import { useTheme } from '../../context/ThemeContext';
 import './DashboardPage.css';
 
 ChartJS.register(
@@ -25,6 +26,7 @@ ChartJS.register(
 
 
 export default function DashboardPage() {
+  const { theme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [showAlerts, setShowAlerts] = useState(false);
   
@@ -270,11 +272,11 @@ export default function DashboardPage() {
                 <Doughnut
                   data={riskChartData}
                   options={{
-                    ...chartDefaults,
+                    ...getChartOptions(theme, 'radial'),
                     cutout: '65%',
                     plugins: {
-                      ...chartDefaults.plugins,
-                      legend: { ...chartDefaults.plugins.legend, position: 'bottom' }
+                      ...getChartOptions(theme, 'radial').plugins,
+                      legend: { ...getChartOptions(theme, 'radial').plugins.legend, position: 'bottom' }
                     }
                   }}
                 />
@@ -293,23 +295,24 @@ export default function DashboardPage() {
                 <Line
                   data={trendChartData}
                   options={{
-                    ...chartDefaults,
+                    ...getChartOptions(theme, 'linear'),
                     scales: {
                       x: {
+                        ...getChartOptions(theme, 'linear').scales.x,
                         grid: { display: false },
-                        ticks: { color: '#64748B', font: { size: 10 } }
+                        ticks: { ...getChartOptions(theme, 'linear').scales.x.ticks, font: { size: 10 } }
                       },
                       y: {
+                        ...getChartOptions(theme, 'linear').scales.y,
                         beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.04)' },
                         ticks: { 
-                          color: '#64748B',
+                          ...getChartOptions(theme, 'linear').scales.y.ticks,
                           stepSize: 1
                         }
                       }
                     },
                     plugins: {
-                      ...chartDefaults.plugins,
+                      ...getChartOptions(theme, 'linear').plugins,
                       legend: { display: false }
                     }
                   }}

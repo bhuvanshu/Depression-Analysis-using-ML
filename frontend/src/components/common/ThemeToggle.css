@@ -1,0 +1,104 @@
+.theme-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  display: inline-flex;
+  transition: transform var(--duration-fast) var(--ease-out);
+  align-items: center;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle-floating {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  animation: fadeIn 0.5s var(--ease-out) both;
+}
+
+.theme-toggle-track {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--glass-strong);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  transition: transform var(--duration-normal) var(--ease-spring), background var(--duration-normal) var(--ease-out);
+}
+
+.theme-toggle-thumb.is-light {
+  transform: translateX(0);
+  background: var(--accent-primary);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.theme-toggle-thumb.is-dark {
+  transform: translateX(28px);
+  background: #6366F1;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle-icon-wrapper {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.theme-toggle-icon {
+  transition: color var(--duration-normal) var(--ease-out);
+}
+
+.theme-toggle-icon.sun {
+  color: var(--text-muted);
+}
+
+.theme-toggle-icon.moon {
+  color: var(--text-muted);
+}
+
+/* Specific colors when active/inactive */
+.theme-toggle-thumb.is-light ~ .theme-toggle-icon-wrapper .theme-toggle-icon.sun {
+  color: #ffffff;
+}
+
+.theme-toggle-thumb.is-dark ~ .theme-toggle-icon-wrapper .theme-toggle-icon.moon {
+  color: #ffffff;
+}
+
+/* Adjust inline positioning in sidebar if needed */
+.theme-toggle-inline {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2) 0;
+}

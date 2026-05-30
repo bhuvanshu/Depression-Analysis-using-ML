@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import EnrollmentPage from './pages/student/EnrollmentPage';
 import QuestionnairePage from './pages/student/QuestionnairePage';
 import ResultPage from './pages/student/ResultPage';
@@ -9,10 +9,19 @@ import AdminLayout from './pages/admin/AdminLayout';
 import StudentsPage from './pages/admin/StudentsPage';
 import ReportsPage from './pages/admin/ReportsPage';
 import SettingsPage from './pages/admin/SettingsPage';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeToggle from './components/common/ThemeToggle';
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
+  // Hide the floating theme toggle on admin subroutes that are wrapped in AdminLayout
+  const isAdminDashboard = location.pathname.startsWith('/admin') &&
+                           location.pathname !== '/admin/login' &&
+                           location.pathname !== '/admin/signup';
+
   return (
-    <Router>
+    <>
+      {!isAdminDashboard && <ThemeToggle floating />}
       <Routes>
         {/* Student Flow */}
         <Route path="/" element={<EnrollmentPage />} />
@@ -29,6 +38,16 @@ export default function App() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </Router>
   );
 }

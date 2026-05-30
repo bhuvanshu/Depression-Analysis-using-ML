@@ -7,7 +7,8 @@ import { Bar, Line, Pie } from 'react-chartjs-2';
 import { TrendingUp, Brain, Info, BarChart3, Activity } from 'lucide-react';
 import Card from '../../components/common/Card';
 import { getDashboardStudents } from '../../services/api';
-import { chartDefaults } from '../../config/chartDefaults';
+import { getChartOptions } from '../../config/chartDefaults';
+import { useTheme } from '../../context/ThemeContext';
 import './ReportsPage.css';
 
 ChartJS.register(
@@ -73,6 +74,7 @@ function IntelligenceSummary({ students }) {
 }
 
 export default function ReportsPage() {
+  const { theme } = useTheme();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -246,9 +248,11 @@ export default function ReportsPage() {
             <Bar
               data={stressMetrics}
               options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+                ...getChartOptions(theme, 'linear'),
+                plugins: {
+                  ...getChartOptions(theme, 'linear').plugins,
+                  legend: { display: false }
+                }
               }}
             />
           </div>
@@ -263,14 +267,14 @@ export default function ReportsPage() {
             <Pie
               data={satisfactionPieData}
               options={{
-                ...chartDefaults,
+                ...getChartOptions(theme, 'radial'),
                 plugins: {
-                  ...chartDefaults.plugins,
+                  ...getChartOptions(theme, 'radial').plugins,
                   legend: {
                     position: 'bottom',
                     onClick: () => {},
                     labels: {
-                      color: '#94A3B8',
+                      ...getChartOptions(theme, 'radial').plugins.legend.labels,
                       font: { family: 'Inter', size: 11 }
                     }
                   }
@@ -289,19 +293,20 @@ export default function ReportsPage() {
             <Bar
               data={riskBarData}
               options={{
-                ...chartDefaults,
+                ...getChartOptions(theme, 'linear'),
                 scales: {
                   x: {
+                    ...getChartOptions(theme, 'linear').scales.x,
                     grid: { display: false },
-                    ticks: { color: '#64748B', font: { size: 11 } }
+                    ticks: { ...getChartOptions(theme, 'linear').scales.x.ticks, font: { size: 11 } }
                   },
                   y: {
-                    grid: { color: 'rgba(255,255,255,0.04)' },
-                    ticks: { color: '#64748B', stepSize: 1 }
+                    ...getChartOptions(theme, 'linear').scales.y,
+                    ticks: { ...getChartOptions(theme, 'linear').scales.y.ticks, stepSize: 1 }
                   }
                 },
                 plugins: {
-                  ...chartDefaults.plugins,
+                  ...getChartOptions(theme, 'linear').plugins,
                   legend: { display: false }
                 }
               }}
@@ -318,14 +323,14 @@ export default function ReportsPage() {
             <Pie
               data={suicidalThoughtsPieData}
               options={{
-                ...chartDefaults,
+                ...getChartOptions(theme, 'radial'),
                 plugins: {
-                  ...chartDefaults.plugins,
+                  ...getChartOptions(theme, 'radial').plugins,
                   legend: {
                     position: 'bottom',
                     onClick: () => {},
                     labels: {
-                      color: '#94A3B8',
+                      ...getChartOptions(theme, 'radial').plugins.legend.labels,
                       font: { family: 'Inter', size: 11 }
                     }
                   }
@@ -344,17 +349,18 @@ export default function ReportsPage() {
             <Bar
               data={deptChartData}
               options={{
-                ...chartDefaults,
+                ...getChartOptions(theme, 'linear'),
                 scales: {
                   x: {
+                    ...getChartOptions(theme, 'linear').scales.x,
                     stacked: true,
                     grid: { display: false },
-                    ticks: { color: '#64748B', font: { size: 11 } }
+                    ticks: { ...getChartOptions(theme, 'linear').scales.x.ticks, font: { size: 11 } }
                   },
                   y: {
+                    ...getChartOptions(theme, 'linear').scales.y,
                     stacked: true,
-                    grid: { color: 'rgba(255,255,255,0.04)' },
-                    ticks: { color: '#64748B', stepSize: 1 }
+                    ticks: { ...getChartOptions(theme, 'linear').scales.y.ticks, stepSize: 1 }
                   }
                 }
               }}
