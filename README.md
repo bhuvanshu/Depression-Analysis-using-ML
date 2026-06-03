@@ -1,6 +1,6 @@
-<![CDATA[<div align="center">
+<div align="center">
 
-# 🧠 MindCare — AI-Assisted Student Mental Health Risk Assessment & Institutional Analytics Platform
+# MindCare — AI-Assisted Student Mental Health Risk Assessment & Institutional Analytics Platform
 
 **A full-stack, cloud-deployed web platform that leverages machine learning to screen students for depression risk and equip institutions with actionable mental health analytics.**
 
@@ -20,41 +20,41 @@
 
 ---
 
-[Problem Statement](#-the-problem) · [Architecture](#-system-architecture) · [ML Pipeline](#-machine-learning-pipeline) · [Features](#-key-features) · [Screenshots](#-screenshots) · [Setup](#-setup--installation) · [API Reference](#-api-reference)
+[Problem Statement](#the-problem) · [Architecture](#system-architecture) · [ML Pipeline](#machine-learning-pipeline) · [Features](#key-features) · [Screenshots](#screenshots) · [Setup](#setup--installation) · [API Reference](#api-reference)
 
 </div>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [The Problem](#-the-problem)
-- [Project Objectives](#-project-objectives)
-- [Key Features](#-key-features)
-- [System Architecture](#-system-architecture)
-- [Technology Stack](#-technology-stack)
-- [Machine Learning Pipeline](#-machine-learning-pipeline)
-- [Dataset & Preprocessing](#-dataset--preprocessing)
-- [Model Selection & Evaluation](#-model-selection--evaluation)
-- [Performance Metrics](#-performance-metrics)
-- [Project Structure](#-project-structure)
-- [Backend Architecture](#-backend-architecture-spring-boot)
-- [Frontend Architecture](#-frontend-architecture-react--vite)
-- [Deployment Architecture](#-deployment-architecture)
-- [API Reference](#-api-reference)
-- [Setup & Installation](#-setup--installation)
-- [Screenshots](#-screenshots)
-- [Future Enhancements](#-future-enhancements)
-- [Ethical Considerations](#%EF%B8%8F-ethical-considerations)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Acknowledgements](#-acknowledgements)
+- [The Problem](#the-problem)
+- [Project Objectives](#project-objectives)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Machine Learning Pipeline](#machine-learning-pipeline)
+- [Dataset and Preprocessing](#dataset-and-preprocessing)
+- [Model Selection and Evaluation](#model-selection-and-evaluation)
+- [Performance Metrics](#performance-metrics)
+- [Project Structure](#project-structure)
+- [Backend Architecture - Spring Boot](#backend-architecture-spring-boot)
+- [Frontend Architecture - React and Vite](#frontend-architecture-react-and-vite)
+- [Deployment Architecture](#deployment-architecture)
+- [API Reference](#api-reference)
+- [Setup and Installation](#setup-and-installation)
+- [Screenshots](#screenshots)
+- [Future Enhancements](#future-enhancements)
+- [Ethical Considerations](#ethical-considerations)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
-Depression among university students is a **growing global crisis**. According to the WHO, depression is one of the leading causes of disability worldwide, and university-age populations are disproportionately affected. Studies estimate that **30–40% of university students** experience clinically significant depressive symptoms during their academic careers.
+Depression among university students is a **growing global crisis**. According to the WHO, depression is one of the leading causes of disability worldwide, and university-age populations are disproportionately affected. Studies estimate that **30-40% of university students** experience clinically significant depressive symptoms during their academic careers.
 
 Despite the scale of this issue, most institutions **lack systematic, data-driven screening mechanisms**. Traditional approaches rely on voluntary self-reporting or overburdened counselling centres, which means at-risk students often go unidentified until they reach a crisis point.
 
@@ -62,14 +62,14 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 
 - Identifies students who may exhibit patterns consistent with depression risk based on academic, lifestyle, and psychosocial indicators.
 - Provides institutions with aggregate analytics to allocate mental health resources effectively.
-- Delivers a **hybrid dual-axis risk interpretation** — combining absolute pattern-matching severity with relative institutional prioritization.
+- Delivers a **hybrid dual-axis risk interpretation** combining absolute pattern-matching severity with relative institutional prioritization.
 
-> [!IMPORTANT]
-> **This platform is a screening and decision-support tool, NOT a clinical diagnostic instrument.** Predictions are intended to support — never replace — professional mental health evaluation by licensed practitioners.
+> **Important:**
+> This platform is a screening and decision-support tool, NOT a clinical diagnostic instrument. Predictions are intended to support, never replace, professional mental health evaluation by licensed practitioners.
 
 ---
 
-## 🎯 Project Objectives
+## Project Objectives
 
 1. **Build an end-to-end machine learning pipeline** for depression risk classification using real-world student survey data.
 2. **Design a microservices architecture** with clear separation of concerns across the frontend, backend, and ML service.
@@ -80,7 +80,7 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 ### Student-Facing
 
@@ -99,63 +99,64 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 | **Secure Admin Authentication** | Signup/Login with Spring Security and college-scoped data isolation |
 | **Institutional Dashboard** | Summary metrics, risk distribution charts, and high-risk student alerts |
 | **Student Management** | Add individual students or bulk upload via CSV, with duplicate detection |
-| **Analytics & Reports** | Visual charts (Chart.js), risk breakdowns, and trend analysis |
+| **Analytics and Reports** | Visual charts (Chart.js), risk breakdowns, and trend analysis |
 | **Dark / Light Theme** | Full theme support with context-based toggling |
 
 ### Platform
 
 | Feature | Description |
 |---|---|
-| **REST API Integration** | Spring Boot ↔ Flask ML microservice communication |
+| **REST API Integration** | Spring Boot to Flask ML microservice communication |
 | **Cloud Deployment** | Multi-platform deployment (Vercel + Render + Railway) |
 | **Dockerized Backend** | Multi-stage Docker build for the Java backend |
 | **Responsive Design** | Mobile-friendly UI with reusable component library |
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                          CLIENT BROWSER                            │
-│                   React 19 + Vite 8 (SPA)                          │
-│           Deployed on Vercel · Dark/Light Theme Support             │
-└────────────────────────────┬────────────────────────────────────────┘
-                             │  HTTPS (REST API)
-                             ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      BACKEND API SERVER                            │
-│               Spring Boot 3.5 · Java 17 · Maven                   │
-│           Deployed on Render (Docker Container)                    │
-│                                                                     │
-│   ┌──────────────┐  ┌───────────────┐  ┌──────────────────┐        │
-│   │  Controllers │  │   Services    │  │  Repositories    │        │
-│   │  • Student   │  │  • Screening  │  │  (Spring Data    │        │
-│   │  • Screening │  │  • Dashboard  │  │   JPA + MySQL)   │        │
-│   │  • Dashboard │  │  • Student    │  │                  │        │
-│   │  • Admin     │  │  • Admin      │  │                  │        │
-│   │  • Health    │  │  • College    │  │                  │        │
-│   └──────┬───────┘  └───────┬───────┘  └────────┬─────────┘        │
-│          │                  │                    │                  │
-│          │     ┌────────────┘                    │                  │
-│          │     │  HTTP POST /predict             │                  │
-│          │     ▼                                 ▼                  │
-│   ┌──────────────────┐                 ┌──────────────────┐        │
-│   │  Flask ML        │                 │  MySQL Database   │        │
-│   │  Microservice    │                 │  (Railway)        │        │
-│   │  (Render)        │                 │                   │        │
-│   │                  │                 │  • students       │        │
-│   │  • /predict      │                 │  • screening_     │        │
-│   │  • /health       │                 │    results        │        │
-│   │  • /features     │                 │  • screening_     │        │
-│   │                  │                 │    responses      │        │
-│   │  Gradient        │                 │  • admins         │        │
-│   │  Boosting Model  │                 │  • colleges       │        │
-│   └──────────────────┘                 └──────────────────┘        │
-└─────────────────────────────────────────────────────────────────────┘
++---------------------------------------------------------------------+
+|                          CLIENT BROWSER                              |
+|                   React 19 + Vite 8 (SPA)                           |
+|           Deployed on Vercel - Dark/Light Theme Support              |
++-----------------------------+---------------------------------------+
+                              |  HTTPS (REST API)
+                              v
++---------------------------------------------------------------------+
+|                      BACKEND API SERVER                              |
+|               Spring Boot 3.5 - Java 17 - Maven                     |
+|           Deployed on Render (Docker Container)                      |
+|                                                                      |
+|   +--------------+  +---------------+  +------------------+          |
+|   |  Controllers |  |   Services    |  |  Repositories    |          |
+|   |  - Student   |  |  - Screening  |  |  (Spring Data    |          |
+|   |  - Screening |  |  - Dashboard  |  |   JPA + MySQL)   |          |
+|   |  - Dashboard |  |  - Student    |  |                  |          |
+|   |  - Admin     |  |  - Admin      |  |                  |          |
+|   |  - Health    |  |  - College    |  |                  |          |
+|   +------+-------+  +-------+-------+  +--------+---------+         |
+|          |                  |                    |                    |
+|          |     +------------+                    |                    |
+|          |     |  HTTP POST /predict             |                    |
+|          |     v                                 v                    |
+|   +------------------+                 +------------------+          |
+|   |  Flask ML        |                 |  MySQL Database   |         |
+|   |  Microservice    |                 |  (Railway)        |         |
+|   |  (Render)        |                 |                   |         |
+|   |                  |                 |  - students       |         |
+|   |  - /predict      |                 |  - screening_     |         |
+|   |  - /health       |                 |    results        |         |
+|   |  - /features     |                 |  - screening_     |         |
+|   |                  |                 |    responses      |         |
+|   |  Gradient        |                 |  - admins         |         |
+|   |  Boosting Model  |                 |  - colleges       |         |
+|   +------------------+                 +------------------+          |
++---------------------------------------------------------------------+
 ```
 
 **Data flow for a screening request:**
+
 1. **Student** completes the assessment questionnaire on the React frontend.
 2. **Frontend** sends responses to the Spring Boot backend via `POST /api/screening/submit`.
 3. **Spring Boot** forwards the feature vector to the Flask ML service via `POST /predict`.
@@ -165,7 +166,7 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 
 ---
 
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Frontend
 
@@ -176,7 +177,7 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 | React Router | 7 | Client-side routing (SPA) |
 | Chart.js + react-chartjs-2 | 4.5 / 5.3 | Data visualization and analytics charts |
 | Lucide React | 1.14 | Icon library |
-| Vanilla CSS | — | Custom styling with CSS variables for theming |
+| Vanilla CSS | - | Custom styling with CSS variables for theming |
 
 ### Backend
 
@@ -216,22 +217,22 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 
 ---
 
-## 🤖 Machine Learning Pipeline
+## Machine Learning Pipeline
 
 ```
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│  Raw Dataset  │───▶│  Data         │───▶│  Exploratory  │───▶│  Feature      │
-│  (Kaggle)     │    │  Cleaning     │    │  Data         │    │  Engineering  │
-│  27,901 rows  │    │  18,707 rows  │    │  Analysis     │    │  & Encoding   │
-└───────────────┘    └───────────────┘    └───────────────┘    └───────────────┘
-                                                                       │
-       ┌───────────────────────────────────────────────────────────────┘
-       ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│  Correlation  │───▶│  PCA          │───▶│  Model        │───▶│  Model        │
-│  Analysis     │    │  (Exploratory │    │  Training &   │    │  Deployment   │
-│  (Spearman)   │    │   Only)       │    │  Evaluation   │    │  (Flask API)  │
-└───────────────┘    └───────────────┘    └───────────────┘    └───────────────┘
++---------------+    +---------------+    +---------------+    +---------------+
+|  Raw Dataset  |--->|  Data         |--->|  Exploratory  |--->|  Feature      |
+|  (Kaggle)     |    |  Cleaning     |    |  Data         |    |  Engineering  |
+|  27,901 rows  |    |  18,707 rows  |    |  Analysis     |    |  and Encoding |
++---------------+    +---------------+    +---------------+    +---------------+
+                                                                       |
+       +---------------------------------------------------------------+
+       v
++---------------+    +---------------+    +---------------+    +---------------+
+|  Correlation  |--->|  PCA          |--->|  Model        |--->|  Model        |
+|  Analysis     |    |  (Exploratory |    |  Training and |    |  Deployment   |
+|  (Spearman)   |    |   Only)       |    |  Evaluation   |    |  (Flask API)  |
++---------------+    +---------------+    +---------------+    +---------------+
 ```
 
 ### Pipeline Stages
@@ -242,19 +243,19 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 | **Data Cleaning** | `training/cleaning.py` | Missing value handling, outlier detection, domain-specific validation |
 | **EDA** | `training/eda.py` | Distribution analysis, group comparisons, depression-stratified visualizations |
 | **Correlation Analysis** | `training/eda.py` | Spearman correlation heatmaps to identify contributing factors |
-| **PCA** | `training/pca.py` | Latent structure identification (**exploratory only**, not used for feature reduction) |
-| **Model Training** | `training/build_pipeline.py` | Unified sklearn `Pipeline` with encoding, scaling, and classification |
+| **PCA** | `training/pca.py` | Latent structure identification (exploratory only, not used for feature reduction) |
+| **Model Training** | `training/build_pipeline.py` | Unified sklearn Pipeline with encoding, scaling, and classification |
 | **Risk Classification** | `training/risk_analysis.py` | Percentile-based Q1/Q3 stratification and risk tier distribution analysis |
-| **Inference** | `inference/predictor.py` | Production predictor class loading `pipeline.joblib` |
+| **Inference** | `inference/predictor.py` | Production predictor class loading pipeline.joblib |
 | **Risk Interpretation** | `inference/risk.py` | Hybrid dual-axis risk engine (severity + institutional priority) |
-| **API Server** | `serve_model.py` | Flask REST API exposing `/predict`, `/health`, `/features` |
+| **API Server** | `serve_model.py` | Flask REST API exposing /predict, /health, /features |
 
-> [!NOTE]
-> **PCA was used exclusively for exploratory latent structure analysis** — to understand how features cluster and co-vary. The final model uses all 11 original features without dimensionality reduction, preserving interpretability.
+> **Note:**
+> PCA was used exclusively for exploratory latent structure analysis to understand how features cluster and co-vary. The final model uses all 11 original features without dimensionality reduction, preserving interpretability.
 
 ---
 
-## 📊 Dataset & Preprocessing
+## Dataset and Preprocessing
 
 **Source:** [Student Depression Dataset](https://www.kaggle.com/datasets/hopesb/student-depression-dataset) (Kaggle)
 
@@ -272,26 +273,26 @@ Despite the scale of this issue, most institutions **lack systematic, data-drive
 | 1 | Age | Numerical | Student's age |
 | 2 | Gender | Categorical | Male / Female |
 | 3 | Degree Group | Categorical | Undergraduate / Postgraduate grouping |
-| 4 | Academic Pressure | Ordinal (1–5) | Self-reported academic pressure level |
-| 5 | Study Satisfaction | Ordinal (1–5) | Satisfaction with academic environment |
+| 4 | Academic Pressure | Ordinal (1-5) | Self-reported academic pressure level |
+| 5 | Study Satisfaction | Ordinal (1-5) | Satisfaction with academic environment |
 | 6 | CGPA | Numerical | Cumulative Grade Point Average |
 | 7 | Work/Study Hours | Numerical | Daily hours spent on work or study |
 | 8 | Sleep Duration | Categorical | Binned sleep duration category |
-| 9 | Financial Stress | Ordinal (1–5) | Self-reported financial stress level |
+| 9 | Financial Stress | Ordinal (1-5) | Self-reported financial stress level |
 | 10 | Suicidal Thoughts | Binary | History of suicidal ideation (Yes / No) |
 | 11 | Family History of Mental Illness | Binary | Family history indicator (Yes / No) |
 
 ### Preprocessing Steps
 
-1. **Missing Value Handling** — Rows with critical missing values dropped; minor gaps imputed based on domain logic.
-2. **Domain Validation** — CGPA range checks, age constraints, and logical consistency enforcement.
-3. **Feature Encoding** — Ordinal encoding for ordered categories, one-hot/label encoding for nominal categories.
-4. **Outlier Treatment** — Statistical outlier detection and handling for numerical features.
-5. **Pipeline Unification** — All encoding and scaling steps integrated into a single `sklearn.Pipeline` object for reproducible inference.
+1. **Missing Value Handling** - Rows with critical missing values dropped; minor gaps imputed based on domain logic.
+2. **Domain Validation** - CGPA range checks, age constraints, and logical consistency enforcement.
+3. **Feature Encoding** - Ordinal encoding for ordered categories, one-hot/label encoding for nominal categories.
+4. **Outlier Treatment** - Statistical outlier detection and handling for numerical features.
+5. **Pipeline Unification** - All encoding and scaling steps integrated into a single sklearn Pipeline object for reproducible inference.
 
 ---
 
-## 🏆 Model Selection & Evaluation
+## Model Selection and Evaluation
 
 Three classification models were trained and evaluated using stratified cross-validation:
 
@@ -305,17 +306,17 @@ Three classification models were trained and evaluated using stratified cross-va
 
 ### Why Gradient Boosting Was Selected
 
-1. **Highest across all three metrics** — Accuracy (84.31%), F1 Score (88.36%), and ROC-AUC (90.91%).
-2. **Superior probability calibration** — Critical for the dual-axis risk framework, which relies on well-calibrated probability scores rather than just class labels.
-3. **Handles mixed feature types** — Effectively processes the mix of ordinal, categorical, and numerical features in the dataset.
-4. **Sequential error correction** — Each boosting iteration focuses on previously misclassified samples, improving performance on harder-to-classify students.
-5. **Ablation study validated robustness** — Feature ablation confirmed that the model is not over-reliant on any single predictor.
+1. **Highest across all three metrics** - Accuracy (84.31%), F1 Score (88.36%), and ROC-AUC (90.91%).
+2. **Superior probability calibration** - Critical for the dual-axis risk framework, which relies on well-calibrated probability scores rather than just class labels.
+3. **Handles mixed feature types** - Effectively processes the mix of ordinal, categorical, and numerical features in the dataset.
+4. **Sequential error correction** - Each boosting iteration focuses on previously misclassified samples, improving performance on harder-to-classify students.
+5. **Ablation study validated robustness** - Feature ablation confirmed that the model is not over-reliant on any single predictor.
 
 ---
 
-## 📈 Performance Metrics
+## Performance Metrics
 
-### Final Model — Gradient Boosting Classifier
+### Final Model: Gradient Boosting Classifier
 
 | Metric | Score |
 |---|---|
@@ -325,169 +326,170 @@ Three classification models were trained and evaluated using stratified cross-va
 
 ### Dual-Axis Risk Interpretation Framework
 
-**Axis 1 — Severity Interpretation (Absolute Thresholds)**
+**Axis 1: Severity Interpretation (Absolute Thresholds)**
 
 | Level | Probability Range | Meaning |
 |---|---|---|
-| 🔴 High Risk Tendency | > 0.85 | High similarity to depressive-class patterns |
-| 🟠 Elevated Tendency | 0.60 – 0.85 | Moderate-to-high similarity |
-| 🟡 Mild Tendency | 0.35 – 0.60 | Some similarity detected |
-| 🟢 Minimal Tendency | < 0.35 | Low similarity |
+| High Risk Tendency | > 0.85 | High similarity to depressive-class patterns |
+| Elevated Tendency | 0.60 - 0.85 | Moderate-to-high similarity |
+| Mild Tendency | 0.35 - 0.60 | Some similarity detected |
+| Minimal Tendency | < 0.35 | Low similarity |
 
-**Axis 2 — Institutional Priority (Percentile-Based Q1/Q3)**
+**Axis 2: Institutional Priority (Percentile-Based Q1/Q3)**
 
 | Tier | Percentile Group | Recommended Action |
 |---|---|---|
-| 🔴 High | Top 25% (> Q3) | Requires priority attention and further evaluation |
-| 🟡 Moderate | Middle 50% (Q1–Q3) | Suggests monitoring and supportive interventions |
-| 🟢 Low | Bottom 25% (< Q1) | Indicates general awareness level |
+| High | Top 25% (> Q3) | Requires priority attention and further evaluation |
+| Moderate | Middle 50% (Q1-Q3) | Suggests monitoring and supportive interventions |
+| Low | Bottom 25% (< Q1) | Indicates general awareness level |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Depression-Analysis-using-ML/
-│
-├── frontend/                          # React + Vite Frontend (SPA)
-│   ├── src/
-│   │   ├── components/
-│   │   │   └── common/                # Reusable UI components
-│   │   │       ├── Button.jsx/.css
-│   │   │       ├── Card.jsx/.css
-│   │   │       ├── Input.jsx/.css
-│   │   │       ├── Modal.jsx/.css
-│   │   │       ├── RiskBadge.jsx/.css
-│   │   │       └── ThemeToggle.jsx/.css
-│   │   ├── config/
-│   │   │   └── chartDefaults.js       # Chart.js theme-aware defaults
-│   │   ├── context/
-│   │   │   └── ThemeContext.jsx        # Dark/Light theme context provider
-│   │   ├── pages/
-│   │   │   ├── student/               # Student-facing flow
-│   │   │   │   ├── EnrollmentPage     # Step 1: Enrollment verification
-│   │   │   │   ├── QuestionnairePage  # Step 2: Assessment questionnaire
-│   │   │   │   └── ResultPage         # Step 3: Risk report display
-│   │   │   └── admin/                 # Admin-facing dashboard
-│   │   │       ├── LoginPage / SignupPage
-│   │   │       ├── AdminLayout        # Sidebar navigation layout
-│   │   │       ├── DashboardPage      # Analytics dashboard
-│   │   │       ├── StudentsPage       # Student management (CRUD)
-│   │   │       ├── ReportsPage        # Visual reports & charts
-│   │   │       └── SettingsPage       # Admin settings
-│   │   ├── services/
-│   │   │   └── api.js                 # Centralized API client
-│   │   ├── App.jsx                    # Root component with routing
-│   │   └── main.jsx                   # Application entry point
-│   ├── vercel.json                    # Vercel SPA rewrite rules
-│   └── package.json
-│
-├── backend-java/                      # Spring Boot Backend
-│   └── mindcare/
-│       ├── src/main/java/com/bhuvanshu/mindcare/
-│       │   ├── controller/            # REST API controllers
-│       │   │   ├── AdminController        # Admin auth endpoints
-│       │   │   ├── DashboardController    # Analytics & summary endpoints
-│       │   │   ├── HealthController       # Health check endpoints
-│       │   │   ├── ScreeningController    # Screening submission endpoint
-│       │   │   └── StudentController      # Student CRUD & verification
-│       │   ├── service/               # Business logic layer
-│       │   │   ├── AdminService           # Authentication logic
-│       │   │   ├── CollegeService         # College management
-│       │   │   ├── DashboardService       # Analytics aggregation
-│       │   │   ├── ScreeningService       # ML service orchestration
-│       │   │   └── StudentService         # Student management logic
-│       │   ├── entity/                # JPA entity classes
-│       │   │   ├── Admin, College, Student
-│       │   │   ├── ScreeningResult, ScreeningResponse
-│       │   ├── repository/            # Spring Data JPA repositories
-│       │   ├── dto/                   # Data Transfer Objects
-│       │   │   ├── ScreeningRequest / ScreeningResultResponse
-│       │   │   ├── AdminLoginRequest / AdminLoginResponse
-│       │   │   ├── DashboardStudentResponse
-│       │   │   ├── SeverityInterpretation / InstitutionalPriority
-│       │   │   └── Probability / BulkAddResponse
-│       │   └── config/               # Spring configuration
-│       │       ├── SecurityConfig         # CORS + Security rules
-│       │       ├── AppConfig              # RestTemplate bean
-│       │       └── GlobalExceptionHandler # Centralized error handling
-│       ├── Dockerfile                 # Multi-stage Docker build
-│       └── pom.xml                    # Maven dependencies
-│
-├── backend-ml/                        # Python ML Service
-│   ├── training/                      # Training pipeline scripts
-│   │   ├── config.py                  # Feature defs, thresholds, encoding maps
-│   │   ├── cleaning.py               # Data cleaning & validation
-│   │   ├── eda.py                     # Exploratory data analysis
-│   │   ├── pca.py                     # PCA exploratory analysis
-│   │   ├── build_pipeline.py         # Unified pipeline builder & model trainer
-│   │   ├── risk_analysis.py          # Risk stratification analysis
-│   │   └── utils.py                   # Shared utility functions
-│   ├── inference/                     # Production inference modules
-│   │   ├── predictor.py              # DepressionPredictor class
-│   │   ├── risk.py                    # Hybrid dual-axis risk engine
-│   │   └── schema.py                 # Input field metadata / schema
-│   ├── data/
-│   │   ├── raw/                       # Original Kaggle dataset
-│   │   └── processed/                 # Cleaned dataset
-│   ├── outputs/                       # Training artifacts & visualizations
-│   │   ├── eda/                       # EDA charts
-│   │   ├── correlation/              # Correlation heatmaps
-│   │   ├── pca/                       # PCA visualizations
-│   │   ├── logistic_regression/      # LR evaluation artifacts
-│   │   ├── random_forest/            # RF evaluation artifacts
-│   │   ├── gradient_boosting/        # GB evaluation artifacts
-│   │   ├── gb_ablation/             # Ablation study results
-│   │   └── risk_classification/      # Risk distribution analysis
-│   ├── explanations/                  # Documentation for each module
-│   ├── serve_model.py                # Flask API server entry point
-│   └── requirements.txt              # Python dependencies
-│
-├── Project Screenshots/              # Application screenshots
-└── README.md
+|
++-- frontend/                          # React + Vite Frontend (SPA)
+|   +-- src/
+|   |   +-- components/
+|   |   |   +-- common/                # Reusable UI components
+|   |   |       +-- Button.jsx/.css
+|   |   |       +-- Card.jsx/.css
+|   |   |       +-- Input.jsx/.css
+|   |   |       +-- Modal.jsx/.css
+|   |   |       +-- RiskBadge.jsx/.css
+|   |   |       +-- ThemeToggle.jsx/.css
+|   |   +-- config/
+|   |   |   +-- chartDefaults.js       # Chart.js theme-aware defaults
+|   |   +-- context/
+|   |   |   +-- ThemeContext.jsx        # Dark/Light theme context provider
+|   |   +-- pages/
+|   |   |   +-- student/               # Student-facing flow
+|   |   |   |   +-- EnrollmentPage     # Step 1: Enrollment verification
+|   |   |   |   +-- QuestionnairePage  # Step 2: Assessment questionnaire
+|   |   |   |   +-- ResultPage         # Step 3: Risk report display
+|   |   |   +-- admin/                 # Admin-facing dashboard
+|   |   |       +-- LoginPage / SignupPage
+|   |   |       +-- AdminLayout        # Sidebar navigation layout
+|   |   |       +-- DashboardPage      # Analytics dashboard
+|   |   |       +-- StudentsPage       # Student management (CRUD)
+|   |   |       +-- ReportsPage        # Visual reports and charts
+|   |   |       +-- SettingsPage       # Admin settings
+|   |   +-- services/
+|   |   |   +-- api.js                 # Centralized API client
+|   |   +-- App.jsx                    # Root component with routing
+|   |   +-- main.jsx                   # Application entry point
+|   +-- vercel.json                    # Vercel SPA rewrite rules
+|   +-- package.json
+|
++-- backend-java/                      # Spring Boot Backend
+|   +-- mindcare/
+|       +-- src/main/java/com/bhuvanshu/mindcare/
+|       |   +-- controller/            # REST API controllers
+|       |   |   +-- AdminController        # Admin auth endpoints
+|       |   |   +-- DashboardController    # Analytics and summary endpoints
+|       |   |   +-- HealthController       # Health check endpoints
+|       |   |   +-- ScreeningController    # Screening submission endpoint
+|       |   |   +-- StudentController      # Student CRUD and verification
+|       |   +-- service/               # Business logic layer
+|       |   |   +-- AdminService           # Authentication logic
+|       |   |   +-- CollegeService         # College management
+|       |   |   +-- DashboardService       # Analytics aggregation
+|       |   |   +-- ScreeningService       # ML service orchestration
+|       |   |   +-- StudentService         # Student management logic
+|       |   +-- entity/                # JPA entity classes
+|       |   |   +-- Admin, College, Student
+|       |   |   +-- ScreeningResult, ScreeningResponse
+|       |   +-- repository/            # Spring Data JPA repositories
+|       |   +-- dto/                   # Data Transfer Objects
+|       |   |   +-- ScreeningRequest / ScreeningResultResponse
+|       |   |   +-- AdminLoginRequest / AdminLoginResponse
+|       |   |   +-- DashboardStudentResponse
+|       |   |   +-- SeverityInterpretation / InstitutionalPriority
+|       |   |   +-- Probability / BulkAddResponse
+|       |   +-- config/               # Spring configuration
+|       |       +-- SecurityConfig         # CORS + Security rules
+|       |       +-- AppConfig              # RestTemplate bean
+|       |       +-- GlobalExceptionHandler # Centralized error handling
+|       +-- Dockerfile                 # Multi-stage Docker build
+|       +-- pom.xml                    # Maven dependencies
+|
++-- backend-ml/                        # Python ML Service
+|   +-- training/                      # Training pipeline scripts
+|   |   +-- config.py                  # Feature defs, thresholds, encoding maps
+|   |   +-- cleaning.py               # Data cleaning and validation
+|   |   +-- eda.py                     # Exploratory data analysis
+|   |   +-- pca.py                     # PCA exploratory analysis
+|   |   +-- build_pipeline.py         # Unified pipeline builder and model trainer
+|   |   +-- risk_analysis.py          # Risk stratification analysis
+|   |   +-- utils.py                   # Shared utility functions
+|   +-- inference/                     # Production inference modules
+|   |   +-- predictor.py              # DepressionPredictor class
+|   |   +-- risk.py                    # Hybrid dual-axis risk engine
+|   |   +-- schema.py                 # Input field metadata / schema
+|   +-- data/
+|   |   +-- raw/                       # Original Kaggle dataset
+|   |   +-- processed/                 # Cleaned dataset
+|   +-- outputs/                       # Training artifacts and visualizations
+|   |   +-- eda/                       # EDA charts
+|   |   +-- correlation/              # Correlation heatmaps
+|   |   +-- pca/                       # PCA visualizations
+|   |   +-- logistic_regression/      # LR evaluation artifacts
+|   |   +-- random_forest/            # RF evaluation artifacts
+|   |   +-- gradient_boosting/        # GB evaluation artifacts
+|   |   +-- gb_ablation/             # Ablation study results
+|   |   +-- risk_classification/      # Risk distribution analysis
+|   +-- explanations/                  # Documentation for each module
+|   +-- serve_model.py                # Flask API server entry point
+|   +-- requirements.txt              # Python dependencies
+|
++-- Project Screenshots/              # Application screenshots
++-- .gitignore
++-- README.md
 ```
 
 ---
 
-## ⚙️ Backend Architecture (Spring Boot)
+## Backend Architecture (Spring Boot)
 
 The backend follows a **layered architecture** with clear separation of concerns:
 
 ```
-Controller Layer  →  Service Layer  →  Repository Layer  →  MySQL
-       ↓                  ↓
-   Validation        Business Logic
-   Routing           ML Service Call (RestTemplate → Flask)
-   Response          Data Aggregation
+Controller Layer  -->  Service Layer  -->  Repository Layer  -->  MySQL
+       |                    |
+   Validation          Business Logic
+   Routing             ML Service Call (RestTemplate --> Flask)
+   Response            Data Aggregation
 ```
 
 ### Key Design Decisions
 
-- **College-Scoped Data Isolation** — Every request carries an `X-College-Name` header. The `DashboardService` and `StudentService` filter all queries by the admin's college, ensuring multi-tenant data isolation without complex auth tokens.
-- **ML Microservice Orchestration** — `ScreeningService` acts as an orchestrator: it receives the student's responses, transforms them into the ML-expected format, calls the Flask `/predict` endpoint via `RestTemplate`, and persists both the raw responses and the prediction result.
-- **Global Exception Handling** — `GlobalExceptionHandler` provides centralized, consistent error responses across all controllers.
-- **Docker Deployment** — Multi-stage Dockerfile (`maven:3.9.6-eclipse-temurin-17` for build, `eclipse-temurin:17-jre-jammy` for runtime) minimizes the production image size.
+- **College-Scoped Data Isolation** - Every request carries an `X-College-Name` header. The `DashboardService` and `StudentService` filter all queries by the admin's college, ensuring multi-tenant data isolation without complex auth tokens.
+- **ML Microservice Orchestration** - `ScreeningService` acts as an orchestrator: it receives the student's responses, transforms them into the ML-expected format, calls the Flask `/predict` endpoint via `RestTemplate`, and persists both the raw responses and the prediction result.
+- **Global Exception Handling** - `GlobalExceptionHandler` provides centralized, consistent error responses across all controllers.
+- **Docker Deployment** - Multi-stage Dockerfile (maven:3.9.6-eclipse-temurin-17 for build, eclipse-temurin:17-jre-jammy for runtime) minimizes the production image size.
 
 ### Entity-Relationship Overview
 
 | Entity | Key Fields | Relationships |
 |---|---|---|
-| `College` | name (unique) | One-to-Many → Admin, Student |
-| `Admin` | email, password, college | Many-to-One → College |
-| `Student` | enrollmentId, name, college | Many-to-One → College; One-to-Many → ScreeningResult |
-| `ScreeningResult` | prediction, probability, severity, priority | Many-to-One → Student; One-to-Many → ScreeningResponse |
-| `ScreeningResponse` | question, answer | Many-to-One → ScreeningResult |
+| `College` | name (unique) | One-to-Many: Admin, Student |
+| `Admin` | email, password, college | Many-to-One: College |
+| `Student` | enrollmentId, name, college | Many-to-One: College; One-to-Many: ScreeningResult |
+| `ScreeningResult` | prediction, probability, severity, priority | Many-to-One: Student; One-to-Many: ScreeningResponse |
+| `ScreeningResponse` | question, answer | Many-to-One: ScreeningResult |
 
 ---
 
-## 🎨 Frontend Architecture (React + Vite)
+## Frontend Architecture (React and Vite)
 
 ### Design Principles
 
-- **Component-Driven UI** — Reusable component library (`Button`, `Card`, `Input`, `Modal`, `RiskBadge`, `ThemeToggle`) ensures visual consistency.
-- **CSS Variables for Theming** — Dark/Light mode implemented via CSS custom properties toggled through `ThemeContext`, enabling seamless theme switching without CSS-in-JS overhead.
-- **Route-Based Code Splitting** — Student flow (`/`, `/questionnaire`, `/result`) and Admin flow (`/admin/*`) are cleanly separated.
-- **Centralized API Layer** — `services/api.js` provides a single fetch-wrapper with automatic auth header injection (`X-College-Name` from localStorage).
+- **Component-Driven UI** - Reusable component library (Button, Card, Input, Modal, RiskBadge, ThemeToggle) ensures visual consistency.
+- **CSS Variables for Theming** - Dark/Light mode implemented via CSS custom properties toggled through ThemeContext, enabling seamless theme switching without CSS-in-JS overhead.
+- **Route-Based Code Splitting** - Student flow (/, /questionnaire, /result) and Admin flow (/admin/*) are cleanly separated.
+- **Centralized API Layer** - `services/api.js` provides a single fetch-wrapper with automatic auth header injection (X-College-Name from localStorage).
 
 ### Application Routes
 
@@ -505,42 +507,42 @@ Controller Layer  →  Service Layer  →  Repository Layer  →  MySQL
 
 ---
 
-## ☁️ Deployment Architecture
+## Deployment Architecture
 
 ```
-                    ┌──────────────┐
-                    │    Users     │
-                    └──────┬───────┘
-                           │
-              ┌────────────▼────────────┐
-              │      Vercel CDN         │
-              │   (Frontend - React)    │
-              │   Global Edge Network   │
-              └────────────┬────────────┘
-                           │ API Calls
-              ┌────────────▼────────────┐
-              │        Render           │
-              │   (Backend - Spring     │
-              │    Boot in Docker)      │
-              └─────┬──────────┬────────┘
-                    │          │
-       ┌────────────▼──┐  ┌───▼────────────┐
-       │    Render      │  │    Railway      │
-       │  (ML Service   │  │  (MySQL 8       │
-       │   - Flask)     │  │   Database)     │
-       └───────────────┘  └────────────────┘
+                    +--------------+
+                    |    Users     |
+                    +------+-------+
+                           |
+              +------------v------------+
+              |      Vercel CDN         |
+              |   (Frontend - React)    |
+              |   Global Edge Network   |
+              +------------+------------+
+                           | API Calls
+              +------------v------------+
+              |        Render           |
+              |   (Backend - Spring     |
+              |    Boot in Docker)      |
+              +-----+-----------+-------+
+                    |           |
+       +------------v--+  +----v-----------+
+       |    Render      |  |    Railway      |
+       |  (ML Service   |  |  (MySQL 8       |
+       |   - Flask)     |  |   Database)     |
+       +----------------+  +----------------+
 ```
 
 | Component | Platform | Configuration |
 |---|---|---|
-| **Frontend** | Vercel | Auto-deploy from `frontend/` directory; SPA rewrites via `vercel.json` |
-| **Backend** | Render | Docker deployment using multi-stage `Dockerfile`; env vars for DB & ML URLs |
-| **ML Service** | Render | Python environment; Gunicorn WSGI server; `pipeline.joblib` loaded at startup |
+| **Frontend** | Vercel | Auto-deploy from frontend/ directory; SPA rewrites via vercel.json |
+| **Backend** | Render | Docker deployment using multi-stage Dockerfile; env vars for DB and ML URLs |
+| **ML Service** | Render | Python environment; Gunicorn WSGI server; pipeline.joblib loaded at startup |
 | **Database** | Railway | Managed MySQL 8; connection string via environment variables |
 
 ---
 
-## 📡 API Reference
+## API Reference
 
 ### Student Endpoints
 
@@ -554,7 +556,7 @@ Controller Layer  →  Service Layer  →  Repository Layer  →  MySQL
 
 | Method | Endpoint | Description | Request Body |
 |---|---|---|---|
-| `POST` | `/api/screening/submit` | Submit screening assessment | `ScreeningRequest` object |
+| `POST` | `/api/screening/submit` | Submit screening assessment | ScreeningRequest object |
 
 ### Dashboard Endpoints
 
@@ -576,13 +578,13 @@ Controller Layer  →  Service Layer  →  Repository Layer  →  MySQL
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/predict` | Submit student data → get prediction + risk levels |
+| `POST` | `/predict` | Submit student data, get prediction + risk levels |
 | `GET` | `/health` | Health check with model metadata and risk framework |
 | `GET` | `/features` | Return expected input fields with metadata |
 
 ---
 
-## 🚀 Setup & Installation
+## Setup and Installation
 
 ### Prerequisites
 
@@ -657,7 +659,7 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 <div align="center">
 
@@ -669,14 +671,14 @@ npm run dev
 | ![Questionnaire](Project%20Screenshots/Questionare.png) | ![Prediction Report](Project%20Screenshots/Prediction%20report.png) |
 | **Admin Dashboard** | **Student Management** |
 | ![Dashboard](Project%20Screenshots/Dashboard.png) | ![Students Page](Project%20Screenshots/Students%20page.png) |
-| **Reports & Analytics** | |
+| **Reports and Analytics** | |
 | ![Reports Page](Project%20Screenshots/Reports%20Page.png) | |
 
 </div>
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 | Enhancement | Description |
 |---|---|
@@ -692,36 +694,36 @@ npm run dev
 
 ---
 
-## ⚖️ Ethical Considerations
+## Ethical Considerations
 
-> [!CAUTION]
-> **This platform is a decision-support tool. It is NOT a clinical diagnostic instrument.**
+> **Caution:**
+> This platform is a decision-support tool. It is NOT a clinical diagnostic instrument.
 
 ### Important Disclaimers
 
-1. **Not a Diagnosis** — The model predicts statistical similarity to patterns observed in a dataset of depressed students. A "High Risk" result does **not** constitute a clinical diagnosis of depression.
+1. **Not a Diagnosis** - The model predicts statistical similarity to patterns observed in a dataset of depressed students. A "High Risk" result does not constitute a clinical diagnosis of depression.
 
-2. **Supplementary to Professional Care** — Predictions are intended to **support** — never replace — evaluation by licensed mental health professionals. No automated action (e.g., academic penalties, mandatory counselling) should be taken based solely on model output.
+2. **Supplementary to Professional Care** - Predictions are intended to support, never replace, evaluation by licensed mental health professionals. No automated action (e.g., academic penalties, mandatory counselling) should be taken based solely on model output.
 
-3. **Dataset Limitations** — The model is trained on the [Student Depression Dataset](https://www.kaggle.com/datasets/hopesb/student-depression-dataset) from Kaggle. It reflects patterns in that specific population and may not generalize to all cultural, demographic, or institutional contexts.
+3. **Dataset Limitations** - The model is trained on the [Student Depression Dataset](https://www.kaggle.com/datasets/hopesb/student-depression-dataset) from Kaggle. It reflects patterns in that specific population and may not generalize to all cultural, demographic, or institutional contexts.
 
-4. **Privacy & Consent** — Institutions deploying this platform must:
-   - Obtain **informed consent** from students before screening.
+4. **Privacy and Consent** - Institutions deploying this platform must:
+   - Obtain informed consent from students before screening.
    - Comply with applicable data protection regulations (GDPR, FERPA, or local equivalents).
    - Implement appropriate data access controls and retention policies.
    - Ensure screening results are accessible only to authorized personnel.
 
-5. **Bias & Fairness** — The model should be regularly audited for demographic bias across gender, age, and cultural subgroups. No single screening tool can capture the full complexity of mental health.
+5. **Bias and Fairness** - The model should be regularly audited for demographic bias across gender, age, and cultural subgroups. No single screening tool can capture the full complexity of mental health.
 
-6. **Transparency** — The platform provides probability scores, severity interpretations, and institutional priority rankings alongside every prediction. This transparency is intentional — stakeholders should understand the basis and limitations of every result.
+6. **Transparency** - The platform provides probability scores, severity interpretations, and institutional priority rankings alongside every prediction. This transparency is intentional. Stakeholders should understand the basis and limitations of every result.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these guidelines:
 
-1. **Fork** the repository
+1. **Fork** the repository.
 2. **Create** a feature branch:
    ```bash
    git checkout -b feature/your-feature-name
@@ -734,7 +736,7 @@ Contributions are welcome! Please follow these guidelines:
    ```bash
    git push origin feature/your-feature-name
    ```
-5. **Open a Pull Request** with a clear description of your changes
+5. **Open a Pull Request** with a clear description of your changes.
 
 ### Commit Convention
 
@@ -749,13 +751,13 @@ Contributions are welcome! Please follow these guidelines:
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 - **Dataset:** [Student Depression Dataset](https://www.kaggle.com/datasets/hopesb/student-depression-dataset) by HopesB on Kaggle
 - **Frameworks:** Spring Boot, React, Flask, scikit-learn
@@ -766,9 +768,8 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <div align="center">
 
-**Built with ❤️ for student well-being**
+**Built for student well-being**
 
-If this project was useful, please consider giving it a ⭐
+If this project was useful, please consider giving it a star.
 
 </div>
-]]>

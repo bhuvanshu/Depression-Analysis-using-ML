@@ -1,0 +1,16 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Virtual environments
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (root-level stray files)
+/package-lock.json
+/node_modules/
