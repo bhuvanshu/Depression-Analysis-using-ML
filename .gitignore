@@ -11,6 +11,9 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Project files
+Implementation_Path.md
+
 # Node (root-level stray files)
 /package-lock.json
 /node_modules/
