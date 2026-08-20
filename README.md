@@ -2,7 +2,7 @@
 
 # MindCare — AI-Assisted Student Mental Health Risk Assessment & Institutional Analytics Platform
 
-**A full-stack, cloud-deployed web platform that leverages machine learning to screen students for depression risk and equip institutions with actionable mental health analytics.**
+**A full-stack, cloud-native web platform for AI-powered student depression risk assessment.**
 
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
@@ -13,16 +13,19 @@
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 
-[![Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com/)
-[![Backend on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)](https://render.com/)
-[![DB on Railway](https://img.shields.io/badge/Database-Railway-0B0D0E?style=flat-square&logo=railway)](https://railway.app/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+![Project Status](https://img.shields.io/badge/Status-Complete_%26_Maintained-2EA043?style=flat-square)
+![Live Demo](https://img.shields.io/badge/Live_Demo-Offline-9E9E9E?style=flat-square)
+
+<sub>Deployment stack: [Vercel](https://vercel.com/) (frontend) · [Render](https://render.com/) (backend) · [Railway](https://railway.app/) (database)</sub>
 
 ---
 
-[Problem Statement](#the-problem) · [Architecture](#system-architecture) · [ML Pipeline](#machine-learning-pipeline) · [Features](#key-features) · [Screenshots](#screenshots) · [Setup](#setup--installation) · [API Reference](#api-reference)
+[Problem Statement](#the-problem) · [Architecture](#system-architecture) · [ML Pipeline](#machine-learning-pipeline) · [Features](#key-features) · [Screenshots](#screenshots) · [Setup](#setup-and-installation) · [API Reference](#api-reference)
 
 </div>
+
+> [!NOTE]
+> **Live Demo:** The hosted deployment is temporarily unavailable because the cloud hosting subscription has expired. The project itself is complete and actively maintained. The full source code, documentation, system architecture, screenshots, implementation details, and results remain available in this repository. Please explore the README below for the complete workflow, images, references, and setup instructions. The live deployment may be restored in the future.
 
 ---
 
@@ -47,7 +50,6 @@
 - [Future Enhancements](#future-enhancements)
 - [Ethical Considerations](#ethical-considerations)
 - [Contributing](#contributing)
-- [License](#license)
 - [Acknowledgements](#acknowledgements)
 
 ---
@@ -748,12 +750,6 @@ Contributions are welcome! Please follow these guidelines:
 | `refactor:` | Code restructuring (no behavior change) |
 | `test:` | Adding or updating tests |
 | `chore:` | Build/tooling changes |
-
----
-
-## License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
